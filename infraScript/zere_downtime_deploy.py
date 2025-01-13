@@ -9,11 +9,11 @@ from typing import Dict, Optional
 
 class ServiceManager:
     # 초기화 함수
-    def __init__(self, socat_port: int = 8081, sleep_duration: int = 3) -> None:
+    def __init__(self, socat_port: int = 8082, sleep_duration: int = 3) -> None:
         self.socat_port: int = socat_port
         self.sleep_duration: int = sleep_duration
         self.services: Dict[str, int] = {
-            'blog_1': 8082,
+            'blog_1': 8081,
             'blog_2': 8083
         }
         self.current_name: Optional[str] = None
