@@ -14,7 +14,7 @@ COPY settings.gradle .
 RUN chmod +x ./gradlew
 
 # 종속성 설치
-RUN ./gradlew dependencies --no-daemon
+RUN ./gradlew dependencies --no-daemon --scan
 
 # 소스 코드 복사
 COPY src src
