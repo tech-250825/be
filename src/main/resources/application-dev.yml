@@ -1,3 +1,5 @@
 custom:
   site:
     name: "My Site Dev"
+  secret:
+    key: "1234"
