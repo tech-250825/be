@@ -13,5 +13,5 @@ public enum GlobalResponseCode {
     INTERNAL_SERVER_ERROR(500, "서버 내부 오류가 발생하였습니다.");
 
     private final int code;        // HTTP 상태 코드
-    private final String message;  // 응답 메시지
+    private final String message;  // 응답 메시지!
 }
