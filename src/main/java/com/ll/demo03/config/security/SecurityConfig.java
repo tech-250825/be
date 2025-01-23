@@ -55,7 +55,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request ->
                         request.requestMatchers(
                                 new AntPathRequestMatcher("/"),
-//                                new AntPathRequestMatcher("/auth/success"),
+                                new AntPathRequestMatcher("/api/images/create"),
                                 new AntPathRequestMatcher("/auth/google/redirect")
                                 ).permitAll() //
                 .anyRequest().authenticated() //나머지는 인증 필요
