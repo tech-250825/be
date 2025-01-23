@@ -27,7 +27,7 @@ public class ImageController {
         // GPT 응답을 받아옴
         String gptResponse = imageService.sendToGpt(data);
 
-        // JSON 파싱
+        // JSON 파싱 ``
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonNode = objectMapper.readTree(gptResponse);
