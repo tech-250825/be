@@ -28,7 +28,7 @@ public record PrincipalDetails(
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return user.getRole().stream()                // Set<Role>을 스트림으로 변환
                 .map(role -> new SimpleGrantedAuthority(role.name())) // 각 Role을 문자열로 변환 후 권한 객체 생성
-                .collect(Collectors.toList());        // 리스트로 반환
+                .collect(Collectors.toList());        // 리스트로 반환..
     }
 
     @Override
