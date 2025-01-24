@@ -9,14 +9,12 @@ spring:
     timeout-per-shutdown-phase: 1h
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://43.203.126.129/default_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    url: jdbc:mysql://172.17.0.1:3306/stocknote
     username: root
-    password: 1234
-  #  data:
-  #    redis:
-  #      host: 172.17.0.1
-  #      port: 6379
-  #      password: ${custom.secret.spring.data.redis.password}
+  data:
+    redis:
+      host: 172.17.0.1
+      port: 6379
   jpa:
     hibernate:
       ddl-auto: update
