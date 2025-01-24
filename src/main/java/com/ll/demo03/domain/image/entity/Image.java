@@ -25,5 +25,6 @@ public class Image extends BaseEntity {
     private Member member;
 
     @Enumerated(EnumType.ORDINAL)
+    @Builder.Default
     private Set<UpscaledImg> upscaled_img = new HashSet<>(); //업스케일한 이미지 번호
 }

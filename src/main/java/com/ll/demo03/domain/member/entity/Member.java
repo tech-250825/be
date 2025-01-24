@@ -21,8 +21,10 @@ public class Member extends BaseEntity {
     private String account; //아이디
     private String email; //이메일
     private String profile; //프로필 사진
+    @Builder.Default
     private int token =5 ; //토큰 개수
 
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     private Set<Role> role = new HashSet<>();
 }
