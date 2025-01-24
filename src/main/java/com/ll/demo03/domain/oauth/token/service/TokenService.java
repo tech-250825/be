@@ -5,17 +5,18 @@ import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 public class TokenService {
 
-    private final RedisTemplate<String, String> redisTemplate;
+    private final StringRedisTemplate redisTemplate;
 
     @Value("${jwt.refresh-token.expire-time}")
     private long refreshTokenExpireTime;
 
-    public TokenService(RedisTemplate<String, String> redisTemplate) {
+    public TokenService(StringRedisTemplate redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 

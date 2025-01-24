@@ -56,11 +56,9 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         if (originalRequest == null) {
             originalRequest = request;  // 원본 요청이 없으면 직접 접근
         }
-        System.out.println(originalRequest);
 
         // Authorization 헤더 값을 확인합니다.
         String bearerToken = originalRequest.getHeader("Authorization");
-        System.out.println("Authorization Header: " + bearerToken);
 
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);  // "Bearer " 이후의 토큰을 반환

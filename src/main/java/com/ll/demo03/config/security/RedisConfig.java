@@ -7,6 +7,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
@@ -18,7 +19,7 @@ public class RedisConfig {
     @Value("${spring.data.redis.port}")
     private int redisPort;
 
-    @Value("${spring.data.redis.password}")
+    @Value("${spring.redis.password}")
     private String redisPassword;
 
     @Bean
@@ -32,8 +33,8 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisTemplate<String, String> redisTemplate() {
-        RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
+    public StringRedisTemplate redisTemplate() {
+        StringRedisTemplate redisTemplate = new StringRedisTemplate();
         redisTemplate.setConnectionFactory(redisConnectionFactory());
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(new StringRedisSerializer());
