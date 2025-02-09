@@ -24,7 +24,6 @@ public class MemberController {
     @PreAuthorize("isAuthenticated()")
     public GlobalResponse<MemberDto> getUserProfile(Authentication authentication) {
         String email = authentication.getName();
-        System.out.println(authentication);
         MemberDto userProfile = memberService.findMemberByEmail(email);
 
         return GlobalResponse.success(userProfile);

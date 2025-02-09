@@ -12,5 +12,5 @@ public class MemberDto {
     private String email;
     private String name;
     private String profile;
-    private int token;
+    private int credit;
 }

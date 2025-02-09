@@ -1,5 +1,6 @@
 package com.ll.demo03.config.security;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -7,7 +8,6 @@ import com.ll.demo03.domain.oauth.token.TokenProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 
@@ -20,15 +20,23 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
-        // accessToken, refreshToken 발급
         String accessToken = tokenProvider.generateAccessToken(authentication);
-        tokenProvider.generateRefreshToken(authentication, accessToken);
-        System.out.println(accessToken);
-        // 토큰 전달을 위한 redirect
-        String redirectUrl = UriComponentsBuilder.fromUriString(URI)
-                .queryParam("accessToken", accessToken)
-                .build().toUriString();
-        System.out.println(redirectUrl);
-        response.sendRedirect(redirectUrl);
+        String refreshToken = tokenProvider.generateRefreshToken(authentication, accessToken);
+
+        Cookie accessCookie = new Cookie("_hoauth", accessToken);
+        accessCookie.setHttpOnly(true);
+        accessCookie.setSecure(true);
+        accessCookie.setPath("/");
+        accessCookie.setMaxAge(3600); // 1시간
+
+        Cookie refreshCookie = new Cookie("_hrauth", refreshToken);
+        refreshCookie.setHttpOnly(true);
+        refreshCookie.setSecure(true);
+        refreshCookie.setPath("/");
+        refreshCookie.setMaxAge(3600); // 1시간
+
+        response.addCookie(accessCookie);
+        response.addCookie(refreshCookie);
+        response.sendRedirect(URI);
     }
 }

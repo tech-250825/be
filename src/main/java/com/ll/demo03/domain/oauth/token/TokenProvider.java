@@ -1,16 +1,14 @@
 package com.ll.demo03.domain.oauth.token;
 
-
 import com.ll.demo03.global.exception.CustomException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import com.ll.demo03.domain.oauth.token.entity.Token;
 import com.ll.demo03.domain.oauth.token.service.TokenService;
 import com.ll.demo03.global.error.ErrorCode;
-import com.ll.demo03.global.exception.CustomException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -36,6 +34,7 @@ public class TokenProvider {
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60L * 24 * 7;
     private static final String KEY_ROLE = "role";
     private final TokenService tokenService;
+    private final StringRedisTemplate redisTemplate;
 
     @PostConstruct
     private void setSecretKey() {
@@ -46,10 +45,13 @@ public class TokenProvider {
         return generateToken(authentication, ACCESS_TOKEN_EXPIRE_TIME);
     }
 
+
     // 1. refresh token 발급
-    public void generateRefreshToken(Authentication authentication, String accessToken) {
+    public String generateRefreshToken(Authentication authentication, String accessToken) {
         String refreshToken = generateToken(authentication, REFRESH_TOKEN_EXPIRE_TIME);
+        System.out.println("refreshToken = " + refreshToken);
         tokenService.saveOrUpdate(authentication.getName(), refreshToken, accessToken); // redis에 저장
+        return refreshToken;
     }
 
     private String generateToken(Authentication authentication, long expireTime) {
@@ -69,6 +71,29 @@ public class TokenProvider {
                 .compact();
     }
 
+    public String generateAccessTokenFromRefreshToken(String refreshToken) {
+        if (!validateToken(refreshToken)) {
+            throw new CustomException(ErrorCode.REFRESH_TOKEN_EXPIRED);
+        }
+
+        Claims claims = parseClaims(refreshToken);
+        String username = claims.getSubject();
+        String role = claims.get("role", String.class);
+
+        String storedToken = redisTemplate.opsForValue().get(username + ":refresh-token");
+        if (!refreshToken.equals(storedToken)) {
+            throw new CustomException(ErrorCode.NOT_FOUND_USER);
+        }
+
+        return Jwts.builder()
+                .setSubject(username)
+                .claim("role", role)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRE_TIME))
+                .signWith(secretKey, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
     public Authentication getAuthentication(String token) {
         Claims claims = parseClaims(token);
         List<SimpleGrantedAuthority> authorities = getAuthorities(claims);
@@ -83,20 +108,6 @@ public class TokenProvider {
                 claims.get(KEY_ROLE).toString()));
     }
 
-    // 3. accessToken 재발급
-    public String reissueAccessToken(String accessToken) {
-        if (StringUtils.hasText(accessToken)) {
-            Token token = tokenService.findByAccessTokenOrThrow(accessToken);
-            String refreshToken = token.getRefreshToken();
-
-            if (validateToken(refreshToken)) {
-                String reissueAccessToken = generateAccessToken(getAuthentication(refreshToken));
-                tokenService.updateToken(reissueAccessToken, token);
-                return reissueAccessToken;
-            }
-        }
-        return null;
-    }
 
     public boolean validateToken(String token) {
         if (!StringUtils.hasText(token)) {
@@ -106,6 +117,7 @@ public class TokenProvider {
         Claims claims = parseClaims(token);
         return claims.getExpiration().after(new Date());
     }
+
 
     private Claims parseClaims(String token) {
         try {

@@ -48,7 +48,7 @@ public record OAuth2UserInfo(
                 .name(name)
                 .email(email)
                 .profile(profile)
-                .role(Collections.singleton(Role.USER))
+                .role(Role.USER)
                 .build();
     }
 }

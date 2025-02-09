@@ -5,6 +5,8 @@ import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -17,48 +19,16 @@ import com.mashape.unirest.http.HttpResponse;
 import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 public class ImageService {
-
-    @Value("${openai.api.key}")
-    private String openAiApiKey;
 
     @Value("${piapi.api.key}")
     private String piApiKey;
 
     private final RestTemplate restTemplate;
 
-    @Autowired
-    public ImageService(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
-
-    public String sendToGpt(Map<String, String> data) {
-        String url = "https://api.openai.com/v1/chat/completions";
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + openAiApiKey);
-        headers.set("Content-Type", "application/json");
-
-        // 이스케이프 문자 추가 및 JSON 문법 수정
-        String body = "{\n" +
-                "  \"model\": \"gpt-4o-mini\",\n" +
-                "  \"messages\": [\n" +
-                "    {\"role\": \"system\", \"content\": \"In english, You are an artist. You are going to describe an illustration\\n" +
-                "                that meets the user's demand. Don't over-imagine. Use specific wording (ex, light and shadow texture, flat colors, cell shading and ink lines). The style description needs to go first and last in the prompt (ex, retro anime, japanese illustration), or use the director or\\n" +
-                "                artist's name related to the style (ex, Ghibli Studio, Hayao Miyazaki, Jeremy Geddes, Junji Ito, Naoko Takeuchi, ...), or specific style (ex: retro anime -> vhs effect, grainy texture, 80s anime, motion blur, realistic -> 4k). If it's animation or character,\\n" +
-                "                write simply, in 1~2 sentences. If the user wants a pretty girl, add 'in the style of guweiz'. Don't use korean.\\n" +
-                "                If it's realism, describe pose, layout, composition, add 4k. If the user seems to want retro anime, add --niji 5 at the end of the prompt.\"},\n" +
-                "    {\"role\": \"user\", \"content\": \"Here is the user's demand: " + data.get("style") + " " + data.get("object") + "\"}\n" +
-                "  ]\n" +
-                "}";
-
-        HttpEntity<String> entity = new HttpEntity<>(body, headers);
-        return restTemplate.exchange(url, HttpMethod.POST, entity, String.class).getBody();
-    }
-
-
     // 이미지 생성 (PiAPI 호출)
-    public String createImage(String prompt, String ratio) {
+    public String createImage(String prompt, String ratio, String webhook) {
         try {
             System.out.println(prompt);
             System.out.println(ratio);
@@ -67,7 +37,7 @@ public class ImageService {
             HttpResponse<String> response = (HttpResponse<String>) Unirest.post("https://api.piapi.ai/api/v1/task")
                     .header("x-api-key", piApiKey)
                     .header("Content-Type", "application/json")
-                    .body("{\r\n    \"model\": \"midjourney\",\r\n    \"task_type\": \"imagine\",\r\n    \"input\": {\r\n        \"prompt\": \"" + prompt + "\",\r\n        \"aspect_ratio\": \"" + ratio + "\",\r\n        \"process_mode\": \"fast\",\r\n        \"skip_prompt_check\": false,\r\n        \"bot_id\": 0\r\n    },\r\n    \"config\": {\r\n        \"service_mode\": \"\",\r\n        \"webhook_config\": {\r\n            \"endpoint\": \"https://webhook.site/\",\r\n            \"secret\": \"123456\"\r\n        }\r\n    }\r\n}")
+                    .body("{\r\n    \"model\": \"midjourney\",\r\n    \"task_type\": \"imagine\",\r\n    \"input\": {\r\n        \"prompt\": \"" + prompt + "\",\r\n        \"aspect_ratio\": \"" + ratio + "\",\r\n        \"process_mode\": \"fast\",\r\n        \"skip_prompt_check\": false,\r\n        \"bot_id\": 0\r\n    },\r\n    \"config\": {\r\n        \"service_mode\": \"\",\r\n        \"webhook_config\": {\r\n            \"endpoint\": \"" + webhook+ "\",\r\n            \"secret\": \"123456\"\r\n        }\r\n    }\r\n}")
                     .asString();
 
             return response.getBody();
@@ -136,6 +106,6 @@ public class ImageService {
 
     private String extractImageUrl(String response) {
         // JSON 파싱을 통해 이미지 URL 추출하는 코드
-        return "https://example.com/image.jpg"; // 예시
+        return "image_url"; // 예시
     }
 }

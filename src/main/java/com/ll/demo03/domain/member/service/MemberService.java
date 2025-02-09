@@ -23,7 +23,14 @@ public class MemberService {
                 .email(member.getEmail())
                 .name(member.getName())
                 .profile(member.getProfile())
-                .token(member.getToken())
+                .credit(member.getCredit())
                 .build();
+    }
+
+    public Long findIdByEmail(String email) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("회원을 찾을 수 없습니다. 이메일: " + email));
+
+        return member.getId();
     }
 }

@@ -1,47 +1,44 @@
 package com.ll.demo03.domain.oauth.token;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ll.demo03.global.error.ErrorCode;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
+import com.ll.demo03.global.error.ErrorResponse;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
+import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @RequiredArgsConstructor
 @Component
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
-
     private final TokenProvider tokenProvider;
-    private static final String TOKEN_PREFIX= "bearer";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         String accessToken = resolveToken(request);
-
-        // accessToken 검증
-        if (tokenProvider.validateToken(accessToken)) {
-            setAuthentication(accessToken);
-        } else {
-            // 만료되었을 경우 accessToken 재발급
-            String reissueAccessToken = tokenProvider.reissueAccessToken(accessToken);
-
-            if (StringUtils.hasText(reissueAccessToken)) {
-                setAuthentication(reissueAccessToken);
-
-                // 재발급된 accessToken 다시 전달
-                response.setHeader(AUTHORIZATION, TOKEN_PREFIX + reissueAccessToken);
+        try {
+            if (tokenProvider.validateToken(accessToken)) {
+                setAuthentication(accessToken);
             }
+        } catch (ExpiredJwtException | JwtException e) {
+            setErrorResponse(response, ErrorCode.ACCESS_TOKEN_EXPIRED);
+            return;
         }
-
         filterChain.doFilter(request, response);
     }
 
@@ -51,19 +48,37 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     }
 
     protected String resolveToken(HttpServletRequest request) {
-        // FirewalledRequest 객체에서 원본 요청을 가져옵니다.
         HttpServletRequest originalRequest = (HttpServletRequest) request.getAttribute("originalRequest");
         if (originalRequest == null) {
-            originalRequest = request;  // 원본 요청이 없으면 직접 접근
+            originalRequest = request;
         }
 
-        // Authorization 헤더 값을 확인합니다.
-        String bearerToken = originalRequest.getHeader("Authorization");
-
-        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);  // "Bearer " 이후의 토큰을 반환
+        Cookie[] cookies = originalRequest.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("_hoauth".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
         }
         return null;
     }
+
+    private void setErrorResponse(
+            HttpServletResponse response,
+            ErrorCode errorCode
+    ){
+        ObjectMapper objectMapper = new ObjectMapper();
+        response.setStatus(errorCode.getHttpStatus().value());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        ErrorResponse errorResponse = new ErrorResponse(LocalDateTime.now().toString(),errorCode.getHttpStatus().name(), errorCode.getMessage());
+        try{
+            response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+
 
 }

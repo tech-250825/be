@@ -11,19 +11,18 @@ spring:
       client:
         registration:
           google:
-            redirect-uri: https://api.hi.hohosznta.site/auth/google/redirect
+            redirect-uri: https://api.hi.hohosznta/auth/google/redirect
   lifecycle:
     # 스프링부트가 종료 요청을 받은 후 기다려줄 수 있는 최대한의 시간d
     timeout-per-shutdown-phase: 1h
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://172.17.0.1:3306/stocknote
+    url: jdbc:mysql://172.17.0.1:3306/midai
     username: root
   data:
     redis:
       host: 172.17.0.1
       port: 6379
-      password: 1234
   jpa:
     hibernate:
       ddl-auto: update

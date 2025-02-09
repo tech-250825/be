@@ -56,7 +56,10 @@ public class SecurityConfig {
                         request.requestMatchers(
                                 new AntPathRequestMatcher("/"),
                                 new AntPathRequestMatcher("/api/images/create"),
-                                new AntPathRequestMatcher("/auth/google/redirect")
+                                new AntPathRequestMatcher("/auth/token/verify"),
+                                new AntPathRequestMatcher("/ws/**"),
+                                new AntPathRequestMatcher("/auth/google/redirect"),
+                                        new AntPathRequestMatcher("/upload")
                                 ).permitAll() //
                 .anyRequest().authenticated() //나머지는 인증 필요
                 )

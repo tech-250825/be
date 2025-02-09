@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -26,9 +27,7 @@ public record PrincipalDetails(
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return user.getRole().stream()                // Set<Role>을 스트림으로 변환
-                .map(role -> new SimpleGrantedAuthority(role.name())) // 각 Role을 문자열로 변환 후 권한 객체 생성
-                .collect(Collectors.toList());        // 리스트로 반환..
+        return Collections.singleton(new SimpleGrantedAuthority(user.getRole().name()));
     }
 
     @Override
