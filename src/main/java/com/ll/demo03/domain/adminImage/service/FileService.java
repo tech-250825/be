@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@PreAuthorize("permitAll()")
 @RequiredArgsConstructor
 public class FileService {
     private final S3Client s3Client;
@@ -29,7 +30,6 @@ public class FileService {
     @Value("${r2.bucket}")
     private String bucket;
 
-    @PreAuthorize("permitAll()")
     public void uploadFile(MultipartFile file, String title) throws IOException {
         String fileKey = "images/" + file.getOriginalFilename();
 
