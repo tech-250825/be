@@ -59,7 +59,10 @@ public class SecurityConfig {
                                 "/auth/token/verify",
                                 "/ws/**",
                                 "/auth/google/redirect",
-                                        "/upload"
+                                        "/admin/image/upload",
+                                        "/admin/image/*",
+                                "/admin/image"
+
                                 ).permitAll() //
                 .anyRequest().authenticated() //나머지는 인증 필요
                 )

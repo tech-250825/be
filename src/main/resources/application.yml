@@ -4,7 +4,7 @@ server:
 spring:
 
   config:
-    import: "application-secret.yml"
+    import: "optional:application-secret.yml"
   autoconfigure:
     exclude:
   lifecycle:
@@ -12,7 +12,7 @@ spring:
     timeout-per-shutdown-phase: 1h
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://3.35.137.46:3306/stocknote
+    url: jdbc:mysql://3.35.137.46:3306/midai
     username: root
 
   security:
