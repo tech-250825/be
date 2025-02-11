@@ -30,4 +30,12 @@ public class AdminImageService {
     public void delete(Long id) {
         adminImageRepository.deleteById(id);
     }
+
+    public List<AdminImage> findByMainCategory(Long mainCategoryId) {
+        return adminImageRepository.findByCategoryParentId(mainCategoryId);
+    }
+
+    public List<AdminImage> findBySubCategory(Long subCategoryId) {
+        return adminImageRepository.findByCategoryId(subCategoryId);
+    }
 }
