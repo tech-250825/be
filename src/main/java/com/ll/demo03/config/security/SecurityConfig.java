@@ -59,7 +59,7 @@ public class SecurityConfig {
                                 new AntPathRequestMatcher("/auth/token/verify"),
                                 new AntPathRequestMatcher("/ws/**"),
                                 new AntPathRequestMatcher("/auth/google/redirect"),
-                                        new AntPathRequestMatcher("/upload")
+                                        new AntPathRequestMatcher("/upload", "POST")
                                 ).permitAll() //
                 .anyRequest().authenticated() //나머지는 인증 필요
                 )
