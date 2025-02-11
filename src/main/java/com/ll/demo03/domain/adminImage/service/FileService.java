@@ -5,6 +5,7 @@ import com.ll.demo03.domain.adminImage.entity.AdminImage;
 import com.ll.demo03.domain.adminImage.repository.AdminImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -28,6 +29,7 @@ public class FileService {
     @Value("${r2.bucket}")
     private String bucket;
 
+    @PreAuthorize("permitAll()")
     public void uploadFile(MultipartFile file, String title) throws IOException {
         String fileKey = "images/" + file.getOriginalFilename();
 
