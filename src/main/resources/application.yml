@@ -2,6 +2,7 @@ server:
   port: 8090
   shutdown: graceful
 spring:
+
   config:
     import: "application-secret.yml"
   autoconfigure:
@@ -11,8 +12,9 @@ spring:
     timeout-per-shutdown-phase: 1h
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/midai
+    url: jdbc:mysql://3.35.137.46:3306/stocknote
     username: root
+
   security:
     oauth2:
       client:
@@ -21,7 +23,7 @@ spring:
             redirect-uri: http://localhost:8090/auth/google/redirect
   data:
     redis:
-      host: 127.0.0.1
+      host: 3.35.137.46
       port: 6379
   jpa:
     hibernate:
@@ -31,6 +33,7 @@ spring:
         format_sql: false
         highlight_sql: false
         use_sql_comments: false
+        dialect: org.hibernate.dialect.MySQLDialect
 logging:
   level:
     com.ll.demo03: INFO
