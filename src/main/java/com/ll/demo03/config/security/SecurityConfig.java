@@ -54,12 +54,12 @@ public class SecurityConfig {
                 // request 인증, 인가 설정
                 .authorizeHttpRequests(request ->
                         request.requestMatchers(
-                                new AntPathRequestMatcher("/"),
-                                new AntPathRequestMatcher("/api/images/create"),
-                                new AntPathRequestMatcher("/auth/token/verify"),
-                                new AntPathRequestMatcher("/ws/**"),
-                                new AntPathRequestMatcher("/auth/google/redirect"),
-                                        new AntPathRequestMatcher("/upload")
+                                "/",
+                                "/api/images/create",
+                                "/auth/token/verify",
+                                "/ws/**",
+                                "/auth/google/redirect",
+                                       "/upload"
                                 ).permitAll() //
                 .anyRequest().authenticated() //나머지는 인증 필요
                 )
