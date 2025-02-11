@@ -2,9 +2,8 @@ server:
   port: 8090
   shutdown: graceful
 spring:
-
   config:
-    import: "application-secret.yml"
+    import: "optional:application-secret.yml"
   autoconfigure:
     exclude:
   lifecycle:
