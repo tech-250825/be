@@ -45,8 +45,12 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
-        return path.startsWith("/upload"); // /upload 요청은 JWT 인증 필터를 실행하지 않음
+        System.out.println("Checking shouldNotFilter for path: " + path);
+        boolean shouldSkip = path.startsWith("/upload");
+        System.out.println("shouldNotFilter result: " + shouldSkip);
+        return shouldSkip;
     }
+
 
 
     private void setAuthentication(String accessToken) {
