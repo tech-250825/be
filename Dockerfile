@@ -11,12 +11,11 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y ca-certificates curl wget unzip && update-ca-certificates
 
 # Gradle 배포 파일을 컨테이너 내부로 복사
-COPY gradle-8.6-bin.zip /root/.gradle/wrapper/dists/
+COPY gradle-8.6-bin.zip /root/.gradle/wrapper/dists/gradle-8.6-bin/gradle-8.6-bin.zip
 
 # 소스 코드 및 Gradle 래퍼 복사
 COPY gradlew .
 COPY gradle gradle
-COPY .gradle .gradle
 COPY build.gradle .
 COPY settings.gradle .
 
@@ -24,13 +23,19 @@ COPY settings.gradle .
 RUN chmod +x ./gradlew
 
 # Gradle 종속성 다운로드 (캐시 활용)
-RUN --mount=type=cache,target=/root/.gradle ./gradlew dependencies --no-daemon
+# RUN --mount=type=cache,target=/root/.gradle ./gradlew dependencies --no-daemon
+
+# Gradle 종속성 다운로드 (인터넷에서 받지 않고, 미리 복사된 ZIP 사용)
+RUN ./gradlew dependencies --no-daemon --offline
 
 # 소스 코드 복사
 COPY src src
 
 # 애플리케이션 빌드
-RUN --mount=type=cache,target=/root/.gradle ./gradlew build --no-daemon
+RUN ./gradlew build --no-daemon --offline
+
+# 애플리케이션 빌드
+# RUN --mount=type=cache,target=/root/.gradle ./gradlew build --no-daemon
 
 # 두 번째 스테이지: 실행 스테이지
 FROM ghcr.io/graalvm/jdk-community:21
