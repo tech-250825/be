@@ -24,7 +24,7 @@ resource "aws_vpc" "vpc_1" {
   enable_dns_hostnames = true
 
   tags = {
-    Name = "${var.prefix}-vpc-1"
+    Name = "hoit-v3"
   }
 }
 
@@ -197,6 +197,8 @@ resource "aws_instance" "ec2_1" {
   vpc_security_group_ids = [aws_security_group.sg_1.id]
   # 퍼블릭 IP 연결 설정
   associate_public_ip_address = true
+
+  key_name = "hoit-key"
 
   # 인스턴스에 IAM 역할 연결
   iam_instance_profile = aws_iam_instance_profile.instance_profile_1.name
