@@ -5,6 +5,7 @@ import com.ll.demo03.domain.adminImage.entity.AdminImage;
 import com.ll.demo03.domain.adminImage.repository.AdminImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@PreAuthorize("permitAll()")
 @RequiredArgsConstructor
 public class FileService {
     private final S3Client s3Client;
@@ -28,7 +30,7 @@ public class FileService {
     @Value("${r2.bucket}")
     private String bucket;
 
-    public void uploadFile(MultipartFile file, String title) throws IOException {
+    public String uploadFile(MultipartFile file, String title) throws IOException {
         String fileKey = "images/" + file.getOriginalFilename();
 
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
@@ -40,9 +42,22 @@ public class FileService {
         s3Client.putObject(putObjectRequest,
                 RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
 
-        AdminImage adminImage = new AdminImage();
-        adminImage.setUrl(title);
-        adminImageRepository.save(adminImage);
+        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                .signatureDuration(Duration.ofHours(1))  // URL 유효기간 1시간
+                .getObjectRequest(GetObjectRequest.builder()
+                        .bucket(bucket)
+                        .key(fileKey)
+                        .build())
+                .build();
+
+        String fileUrl = s3Presigner.presignGetObject(presignRequest).url().toString();
+
+//        AdminImage adminImage = new AdminImage();
+//        adminImage.setUrl(fileUrl);
+//        adminImage.setPrompt(title);
+//        adminImageRepository.save(adminImage);
+
+        return fileUrl;
     }
 
     public List<FileResponse> listFiles() {

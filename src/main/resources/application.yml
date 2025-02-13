@@ -2,9 +2,8 @@ server:
   port: 8090
   shutdown: graceful
 spring:
-
   config:
-    import: "application-secret.yml"
+    import: "optional:application-secret.yml"
   autoconfigure:
     exclude:
   lifecycle:
@@ -12,7 +11,7 @@ spring:
     timeout-per-shutdown-phase: 1h
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://3.35.137.46:3306/stocknote
+    url: jdbc:mysql://3.35.137.46:3306/midai
     username: root
 
   security:
@@ -41,6 +40,7 @@ logging:
     org.hibernate.orm.jdbc.bind: INFO
     org.hibernate.orm.jdbc.extract: INFO
     org.springframework.transaction.interceptor: INFO
+    org.springframework.security: DEBUG
 custom:
   site:
     name: "My Site Prod"

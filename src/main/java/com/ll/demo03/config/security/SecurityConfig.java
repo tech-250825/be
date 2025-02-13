@@ -16,7 +16,7 @@ import org.springframework.security.config.annotation.web.configurers.HeadersCon
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 @RequiredArgsConstructor
@@ -41,7 +41,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 // rest api 설정
-                .csrf(AbstractHttpConfigurer::disable) // csrf 비활성화 -> cookie를 사용하지 않으면 꺼도 된다. (cookie를 사용할 경우 httpOnly(XSS 방어), sameSite(CSRF 방어)로 방어해야 한다.)
+                .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable) // 기본 인증 로그인 비활성화
                 .formLogin(AbstractHttpConfigurer::disable) // 기본 login form 비활성화
                 .logout(AbstractHttpConfigurer::disable) // 기본 logout 비활성화
@@ -54,12 +54,15 @@ public class SecurityConfig {
                 // request 인증, 인가 설정
                 .authorizeHttpRequests(request ->
                         request.requestMatchers(
-                                new AntPathRequestMatcher("/"),
-                                new AntPathRequestMatcher("/api/images/create"),
-                                new AntPathRequestMatcher("/auth/token/verify"),
-                                new AntPathRequestMatcher("/ws/**"),
-                                new AntPathRequestMatcher("/auth/google/redirect"),
-                                        new AntPathRequestMatcher("/upload", "POST")
+                                "/",
+                                "/api/images/create",
+                                "/auth/token/verify",
+                                "/ws/**",
+                                "/auth/google/redirect",
+                                        "/admin/image/upload",
+                                        "/admin/image/*",
+                                "/admin/image"
+
                                 ).permitAll() //
                 .anyRequest().authenticated() //나머지는 인증 필요
                 )

@@ -29,6 +29,7 @@ public class R2Config {
                 .region(Region.of("auto"))
                 .credentialsProvider(StaticCredentialsProvider.create(
                         AwsBasicCredentials.create(accessKey, secretKey)))
+                .forcePathStyle(true)
                 .build();
     }
 
