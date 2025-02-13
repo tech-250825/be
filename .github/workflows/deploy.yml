@@ -77,11 +77,11 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          instance-ids: "i-0565cd04190c55b68"
+          instance-ids: "i-0308ba5a67c37681f"
           working-directory: /
           comment: Deploy
           command: |
             mkdir -p /dockerProjects/blog
-            curl -o /dockerProjects/blog/zere_downtime_deploy.py https://raw.githubusercontent.com/hohosznta/deploy-250113/main/infraScript/zere_downtime_deploy.py
+            curl -o /dockerProjects/blog/zere_downtime_deploy.py https://raw.githubusercontent.com/MID-AI/BE/main/infraScript/zere_downtime_deploy.py
             chmod +x /dockerProjects/blog/zere_downtime_deploy.py
             /dockerProjects/blog/zere_downtime_deploy.py
