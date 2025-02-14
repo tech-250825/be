@@ -61,7 +61,8 @@ public class SecurityConfig {
                                 "/auth/google/redirect",
                                         "/admin/image/upload",
                                         "/admin/image/*",
-                                "/admin/image"
+                                "/admin/image",
+                                        "/upload"
 
                                 ).permitAll() //
                 .anyRequest().authenticated() //나머지는 인증 필요
