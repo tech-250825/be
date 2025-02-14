@@ -3,7 +3,7 @@ server:
   shutdown: graceful
 spring:
   config:
-    import: "optional:application-secret.yml"
+    import: "application-secret.yml"
   autoconfigure:
     exclude:
   lifecycle:
@@ -11,8 +11,9 @@ spring:
     timeout-per-shutdown-phase: 1h
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://3.35.137.46:3306/midai
+    url: jdbc:mysql://localhost:3306/midai
     username: root
+    password: 1234
 
   security:
     oauth2:
@@ -22,7 +23,7 @@ spring:
             redirect-uri: http://localhost:8090/auth/google/redirect
   data:
     redis:
-      host: 3.35.137.46
+      host: localhost
       port: 6379
   jpa:
     hibernate:

@@ -16,7 +16,6 @@ import org.springframework.security.config.annotation.web.configurers.HeadersCon
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 @RequiredArgsConstructor
@@ -34,7 +33,9 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer() { // security를 적용하지 않을 리소스
         return web -> web.ignoring()
                 // error endpoint를 열어줘야 함, favicon.ico 추가!
-                .requestMatchers("/error", "/favicon.ico");
+                .requestMatchers("/error", "/favicon.ico",  "/swagger-ui/**",
+                        "/swagger-resources/**",
+                        "/v3/api-docs/**");
     }
 
     @Bean
@@ -61,7 +62,9 @@ public class SecurityConfig {
                                 "/auth/google/redirect",
                                         "/admin/image/upload",
                                         "/admin/image/*",
-                                "/admin/image"
+                                "/admin/image",
+                                "/swagger-ui/**",
+                                        "/swagger-resources/**"
 
                                 ).permitAll() //
                 .anyRequest().authenticated() //나머지는 인증 필요
