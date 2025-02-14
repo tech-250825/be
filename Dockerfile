@@ -1,14 +1,8 @@
 # 첫 번째 스테이지: 빌드 스테이지
-FROM gradle:jdk21-graal-jammy AS builder
-
-# 환경 변수 설정 (TLS 강제 활성화)
-ENV JAVA_TOOL_OPTIONS="-Dhttps.protocols=TLSv1.2,TLSv1.3"
+FROM gradle:jdk21-graal-jammy as builder
 
 # 작업 디렉토리 설정
 WORKDIR /app
-
-# Ubuntu 기반 패키지 설치 (Amazon Linux에서는 필요 없었음)
-RUN apt-get update && apt-get install -y ca-certificates curl wget unzip && update-ca-certificates
 
 # 소스 코드와 Gradle 래퍼 복사
 COPY gradlew .
