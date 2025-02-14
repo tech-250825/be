@@ -82,8 +82,6 @@ jobs:
           comment: Deploy
           command: |
             mkdir -p /dockerProjects/blog
-            curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-                 -o /dockerProjects/blog/zere_downtime_deploy.py \
-                 https://raw.githubusercontent.com/MID-AI/BE/main/infraScript/zere_downtime_deploy.py
+            curl -o /dockerProjects/blog/zere_downtime_deploy.py https://raw.githubusercontent.com/MID-AI/BE/main/infraScript/zere_downtime_deploy.py
             chmod +x /dockerProjects/blog/zere_downtime_deploy.py
             /dockerProjects/blog/zere_downtime_deploy.py
