@@ -90,4 +90,4 @@ jobs:
             mkdir -p /dockerProjects/blog
             curl -o /dockerProjects/blog/zere_downtime_deploy.py https://raw.githubusercontent.com/MID-AI/Hoit_BE/main/infraScript/zere_downtime_deploy.py
             chmod +x /dockerProjects/blog/zere_downtime_deploy.py
-            /dockerProjects/blog/zere_downtime_deploy.py
+            python3 /dockerProjects/blog/zere_downtime_deploy.py
