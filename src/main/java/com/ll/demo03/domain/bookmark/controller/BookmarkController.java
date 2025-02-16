@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/bookmarks")
+@RequestMapping("/image")
 @RequiredArgsConstructor
 public class BookmarkController {
 
     private final BookmarkService bookmarkService;
 
-    @PostMapping("/{adminImageId}")
+    @PostMapping("/{adminImageId}/bookmark")
     public GlobalResponse addBookmark(
             @PathVariable(name="adminImageId") Long adminImageId,
             @AuthenticationPrincipal UserDetails userDetails
@@ -28,7 +28,7 @@ public class BookmarkController {
         return GlobalResponse.success("북마크 등록에 성공했습니다.");
     }
 
-    @DeleteMapping("/{adminImageId}")
+    @DeleteMapping("/{adminImageId}/bookmark")
     public GlobalResponse deleteBookmark(
             @PathVariable(name="adminImageId") Long adminImageId,
             @AuthenticationPrincipal UserDetails userDetails
@@ -37,7 +37,7 @@ public class BookmarkController {
         return GlobalResponse.success("북마크 삭제에 성공했습니다.");
     }
 
-    @GetMapping("/my")
+    @GetMapping("/bookmark/my")
     public GlobalResponse<?> getMyBookmarks(@AuthenticationPrincipal UserDetails userDetails) {
         List<AdminImageResponse> bookmarks = bookmarkService.getMyBookmarks(userDetails.getUsername());
         return GlobalResponse.success(bookmarks);

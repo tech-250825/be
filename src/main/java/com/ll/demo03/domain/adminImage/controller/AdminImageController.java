@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@RequestMapping("/admin/image")
+@RequestMapping
 @RestController
 @RequiredArgsConstructor
 public class AdminImageController {
@@ -30,7 +30,7 @@ public class AdminImageController {
     private final AdminImageService adminImageService;
 
     //cloudflare에 이미지 파일 업로드하여 url 반환
-    @PostMapping("/upload")
+    @PostMapping("/admin/image/upload")
     public ResponseEntity<Map<String, String>> uploadFile(
             @RequestParam("file") MultipartFile file,
             @RequestParam("title") String title) {
@@ -47,7 +47,7 @@ public class AdminImageController {
     }
 
     // cloudflare에 있는 이미지 파일 조회
-    @GetMapping("/files")
+    @GetMapping("/admin/image/files")
     public ResponseEntity<List<FileResponse>> listFiles() {
         try {
             List<FileResponse> files = fileService.listFiles();
@@ -57,7 +57,7 @@ public class AdminImageController {
         }
     }
 
-    @PostMapping
+    @PostMapping("/admin/image")
     public GlobalResponse<String> createImage(
             @RequestBody AdminImageRequest request) {
         ImageCategory category = categoryService.findSubCategory(
@@ -69,7 +69,7 @@ public class AdminImageController {
         return GlobalResponse.success("이미지 등록 성공");
     }
 
-    @GetMapping
+    @GetMapping("/home")
     public GlobalResponse<List<AdminImageResponse>> getImage() {
         List<AdminImage> images = adminImageService.findAll();
         List<AdminImageResponse> responses = images.stream()
@@ -79,17 +79,17 @@ public class AdminImageController {
         return GlobalResponse.success(responses);
     }
 
-    @DeleteMapping("/{adminImageId}")
+    @DeleteMapping("/admin/image/{adminImageId}")
     public GlobalResponse<String> deleteImage(@PathVariable Long adminImageId) {
         try {
             adminImageService.delete(adminImageId);
-            return GlobalResponse.success("이미지 삭제 성공");
+            return GlobalResponse.success("이미지 삭제에 성공했습니다.");
         } catch (EntityNotFoundException e) {
             return GlobalResponse.error(ErrorCode.ENTITY_NOT_FOUND);
         }
     }
 
-    @GetMapping("/category/main/{mainCategoryId}")
+    @GetMapping("/home/main/{mainCategoryId}")
     public GlobalResponse<List<AdminImageResponse>> getImagesByMainCategory(
             @PathVariable(name = "mainCategoryId")  Long mainCategoryId) {
         List<AdminImage> images = adminImageService.findByMainCategory(mainCategoryId);
@@ -99,7 +99,7 @@ public class AdminImageController {
         return GlobalResponse.success(responses);
     }
 
-    @GetMapping("/category/sub/{subCategoryId}")
+    @GetMapping("/home/sub/{subCategoryId}")
     public GlobalResponse<List<AdminImageResponse>> getImagesBySubCategory(
             @PathVariable(name = "subCategoryId") Long subCategoryId) {
         List<AdminImage> images = adminImageService.findBySubCategory(subCategoryId);

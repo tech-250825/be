@@ -65,7 +65,8 @@ public class SecurityConfig {
                                 "/admin/image",
                                 "/swagger-ui/**",
                                         "/swagger-resources/**",
-                                        "/admin/image/**"
+                                        "/admin/image/**",
+                                "/home/**"
                                 ).permitAll() //
                 .anyRequest().authenticated() //나머지는 인증 필요
                 )
