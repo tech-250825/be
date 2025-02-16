@@ -70,7 +70,7 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/midai/be:${{ needs.makeTagAndRelease.outputs.tag_name }},
+            ghcr.io/midai/be:${{ needs.makeTagAndRelease.outputs.tag_name }}
             ghcr.io/midai/be:latest
   deploy:
     runs-on: ubuntu-latest
