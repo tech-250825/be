@@ -88,6 +88,6 @@ jobs:
           comment: Deploy
           command: |
             mkdir -p /dockerProjects/blog
-            curl -o /dockerProjects/blog/zere_downtime_deploy.py https://raw.githubusercontent.com/MID-AI/BE/main/infraScript/zere_downtime_deploy.py
+            curl -o /dockerProjects/blog/zere_downtime_deploy.py https://raw.githubusercontent.com/MID-AI/Hoit_BE/infraScript/zere_downtime_deploy.py
             chmod +x /dockerProjects/blog/zere_downtime_deploy.py
             /dockerProjects/blog/zere_downtime_deploy.py
