@@ -1,4 +1,4 @@
-# 첫 번째 스테이지: 빌드 스테이지
+# 첫 번째 스테이지: 빌드 스테이지, 대문자로 AS 작성
 FROM gradle:jdk21-graal-jammy AS builder
 
 # 작업 디렉토리 설정
@@ -31,5 +31,5 @@ WORKDIR /app
 # 첫 번째 스테이지에서 빌드된 JAR 파일 복사
 COPY --from=builder /app/build/libs/*.jar app.jar
 
-# 실행할 JAR 파일 지정
+# 실행할 JAR 파일 지장
 ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=prod", "app.jar"]
