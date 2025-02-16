@@ -35,7 +35,7 @@ jobs:
           prerelease: false
   buildImageAndPush:
     permissions: #403 error 해결 위한 explicit permission 추가
-      contents: read
+      contents: write
       packages: write
     name: 도커 이미지 빌드와 푸시
     needs: makeTagAndRelease
