@@ -12,6 +12,9 @@ on:
       - 'main'
 jobs:
   makeTagAndRelease:
+    permissions: #403 error 해결 위한 explicit permission 추가
+      contents: write
+      packages: write
     runs-on: ubuntu-latest
     outputs:
       tag_name: ${{ steps.create_tag.outputs.new_tag }}
