@@ -3,15 +3,13 @@ package com.ll.demo03.domain.hashtag.entity;
 import com.ll.demo03.domain.adminImage.entity.AdminImage;
 import com.ll.demo03.global.base.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import com.ll.demo03.global.base.BaseEntity;
 
 @Entity
 @Getter
+@Setter
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)

@@ -1,5 +1,6 @@
 package com.ll.demo03.domain.adminImage.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ll.demo03.domain.adminImage.dto.AdminImageRequest;
 import com.ll.demo03.domain.adminImage.dto.AdminImageResponse;
 import com.ll.demo03.domain.adminImage.dto.FileResponse;
@@ -31,18 +32,21 @@ public class AdminImageController {
 
     //cloudflare에 이미지 파일 업로드하여 url 반환
     @PostMapping("/admin/image/upload")
-    public ResponseEntity<Map<String, String>> uploadFile(
+    public ResponseEntity<Map<String, Object>> uploadFile(
             @RequestParam("file") MultipartFile file,
-            @RequestParam("title") String title) {
+            @RequestPart("metadata") AdminImageRequest adminImageRequest) {
         try {
-            String url=fileService.uploadFile(file, title);
+            System.out.println("Hashtags: " + adminImageRequest.getHashtags());
+
+            AdminImage adminImage=fileService.uploadFile(file, adminImageRequest);
+            AdminImageResponse adminImageResponse=AdminImageResponse.from(adminImage);
             return ResponseEntity.ok(Map.of(
                     "message", "파일 업로드 성공",
-                    "url", url
+                    "image", adminImageResponse
             ));
         } catch (IOException e) {
             return ResponseEntity.internalServerError()
-                    .body(Map.of("error", "파일 업로드 실패"));
+                    .body(Map.of("error", e));
         }
     }
 
@@ -57,17 +61,17 @@ public class AdminImageController {
         }
     }
 
-    @PostMapping("/admin/image")
-    public GlobalResponse<String> createImage(
-            @RequestBody AdminImageRequest request) {
-        ImageCategory category = categoryService.findSubCategory(
-                request.getMainCategoryId(),
-                request.getSubCategoryId()
-        );
-
-        AdminImage savedImage = adminImageService.save(request);
-        return GlobalResponse.success("이미지 등록 성공");
-    }
+//    @PostMapping("/admin/image")
+//    public GlobalResponse<String> createImage(
+//            @RequestBody AdminImageRequest request) {
+//        ImageCategory category = categoryService.findSubCategory(
+//                request.getMainCategoryId(),
+//                request.getSubCategoryId()
+//        );
+//
+//        AdminImage savedImage = adminImageService.save(request);
+//        return GlobalResponse.success("이미지 등록 성공");
+//    }
 
     @GetMapping("/home")
     public GlobalResponse<List<AdminImageResponse>> getImage() {
