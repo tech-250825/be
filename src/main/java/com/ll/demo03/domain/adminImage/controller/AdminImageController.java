@@ -58,20 +58,15 @@ public class AdminImageController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createImage(
+    public GlobalResponse<String> createImage(
             @RequestBody AdminImageRequest request) {
         ImageCategory category = categoryService.findSubCategory(
                 request.getMainCategoryId(),
                 request.getSubCategoryId()
         );
 
-        AdminImage adminImage = new AdminImage();
-        adminImage.setUrl(request.getUrl());
-        adminImage.setPrompt(request.getPrompt());
-        adminImage.setCategory(category);
-
-        AdminImage savedImage = adminImageService.save(adminImage);
-        return ResponseEntity.ok("이미지 등록 성공");
+        AdminImage savedImage = adminImageService.save(request);
+        return GlobalResponse.success("이미지 등록 성공");
     }
 
     @GetMapping
@@ -96,7 +91,7 @@ public class AdminImageController {
 
     @GetMapping("/category/main/{mainCategoryId}")
     public GlobalResponse<List<AdminImageResponse>> getImagesByMainCategory(
-            @PathVariable Long mainCategoryId) {
+            @PathVariable(name = "mainCategoryId")  Long mainCategoryId) {
         List<AdminImage> images = adminImageService.findByMainCategory(mainCategoryId);
         List<AdminImageResponse> responses = images.stream()
                 .map(AdminImageResponse::from)
@@ -106,7 +101,7 @@ public class AdminImageController {
 
     @GetMapping("/category/sub/{subCategoryId}")
     public GlobalResponse<List<AdminImageResponse>> getImagesBySubCategory(
-            @PathVariable Long subCategoryId) {
+            @PathVariable(name = "subCategoryId") Long subCategoryId) {
         List<AdminImage> images = adminImageService.findBySubCategory(subCategoryId);
         List<AdminImageResponse> responses = images.stream()
                 .map(AdminImageResponse::from)

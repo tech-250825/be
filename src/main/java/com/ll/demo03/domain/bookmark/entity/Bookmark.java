@@ -1,5 +1,6 @@
 package com.ll.demo03.domain.bookmark.entity;
 
+import com.ll.demo03.domain.adminImage.entity.AdminImage;
 import com.ll.demo03.domain.image.entity.Image;
 import com.ll.demo03.domain.member.entity.Member;
 import com.ll.demo03.global.base.BaseEntity;
@@ -23,7 +24,7 @@ public class Bookmark extends BaseEntity {
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "image_id") //FK 컬럼명
-    private Image image;
+    @JoinColumn(name = "adminImage_id") //FK 컬럼명
+    private AdminImage image;
 
 }

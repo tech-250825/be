@@ -1,5 +1,6 @@
 package com.ll.demo03.domain.bookmark.controller;
 
+import com.ll.demo03.domain.adminImage.dto.AdminImageResponse;
 import com.ll.demo03.domain.bookmark.entity.Bookmark;
 import com.ll.demo03.domain.bookmark.service.BookmarkService;
 import com.ll.demo03.global.dto.GlobalResponse;
@@ -12,33 +13,33 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/bookmarks")
+@RequestMapping("/bookmarks")
 @RequiredArgsConstructor
 public class BookmarkController {
 
     private final BookmarkService bookmarkService;
 
-    @PostMapping("/{imageId}")
+    @PostMapping("/{adminImageId}")
     public GlobalResponse addBookmark(
-            @PathVariable Long imageId,
+            @PathVariable(name="adminImageId") Long adminImageId,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        bookmarkService.addBookmark(imageId, userDetails.getUsername());
-        return GlobalResponse.success();
+        bookmarkService.addBookmark(adminImageId, userDetails.getUsername());
+        return GlobalResponse.success("북마크 등록에 성공했습니다.");
     }
 
-    @DeleteMapping("/{imageId}")
+    @DeleteMapping("/{adminImageId}")
     public GlobalResponse deleteBookmark(
-            @PathVariable Long imageId,
+            @PathVariable(name="adminImageId") Long adminImageId,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        bookmarkService.deleteBookmark(imageId, userDetails.getUsername());
-        return GlobalResponse.success();
+        bookmarkService.deleteBookmark(adminImageId, userDetails.getUsername());
+        return GlobalResponse.success("북마크 삭제에 성공했습니다.");
     }
 
     @GetMapping("/my")
     public GlobalResponse<?> getMyBookmarks(@AuthenticationPrincipal UserDetails userDetails) {
-        List<Bookmark> bookmarks = bookmarkService.getMyBookmarks(userDetails.getUsername());
+        List<AdminImageResponse> bookmarks = bookmarkService.getMyBookmarks(userDetails.getUsername());
         return GlobalResponse.success(bookmarks);
     }
 }

@@ -1,3 +1,6 @@
+app:
+  client:
+    urls: http://localhost:5173,https://hoit.my
 server:
   port: 8090
   shutdown: graceful
@@ -7,14 +10,12 @@ spring:
   autoconfigure:
     exclude:
   lifecycle:
-    # 스프링부트가 종료 요청을 받은 후 기다려줄 수 있는 최대한의 시간d
     timeout-per-shutdown-phase: 1h
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/midai
     username: root
     password: 1234
-
   security:
     oauth2:
       client:

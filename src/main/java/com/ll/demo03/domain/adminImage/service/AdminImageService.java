@@ -1,7 +1,10 @@
 package com.ll.demo03.domain.adminImage.service;
 
+import com.ll.demo03.domain.adminImage.dto.AdminImageRequest;
 import com.ll.demo03.domain.adminImage.entity.AdminImage;
 import com.ll.demo03.domain.adminImage.repository.AdminImageRepository;
+import com.ll.demo03.domain.hashtag.service.HashtagService;
+import com.ll.demo03.domain.imageCategory.service.CategoryService;
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -14,10 +17,18 @@ import java.util.List;
 public class AdminImageService {
 
     private final AdminImageRepository adminImageRepository;
+    private final HashtagService hashtagService;
+    private final CategoryService categoryService;
 
-    public AdminImage save(AdminImage adminImage) {
-        return adminImageRepository.save(adminImage);
+    public AdminImage save(AdminImageRequest adminImageRequest) {
+
+        AdminImage adminImage = adminImageRequest.toEntity(categoryService);
+        AdminImage savedImage =adminImageRepository.save(adminImage);
+        hashtagService.createHashtags(savedImage, adminImageRequest.getHashtags());
+
+        return savedImage;
     }
+
     public AdminImage findById(Long id) {
         return adminImageRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
