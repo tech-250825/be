@@ -1,6 +1,5 @@
 package com.ll.demo03.domain.adminImage.service;
 
-import com.ll.demo03.domain.adminImage.dto.AdminImageRequest;
 import com.ll.demo03.domain.adminImage.entity.AdminImage;
 import com.ll.demo03.domain.adminImage.repository.AdminImageRepository;
 import com.ll.demo03.domain.hashtag.service.HashtagService;
@@ -8,6 +7,8 @@ import com.ll.demo03.domain.imageCategory.service.CategoryService;
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,19 +33,19 @@ public class AdminImageService {
                 .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
     }
 
-    public List<AdminImage> findAll() {
-        return adminImageRepository.findAll();
+    public Page<AdminImage> findAll(Pageable pageable) {
+        return adminImageRepository.findAll(pageable);
     }
 
     public void delete(Long id) {
         adminImageRepository.deleteById(id);
     }
 
-    public List<AdminImage> findByMainCategory(Long mainCategoryId) {
-        return adminImageRepository.findByCategoryParentId(mainCategoryId);
+    public Page<AdminImage> findByMainCategory(Long mainCategoryId, Pageable pageable) {
+        return adminImageRepository.findByCategoryParentId(mainCategoryId, pageable);
     }
 
-    public List<AdminImage> findBySubCategory(Long subCategoryId) {
-        return adminImageRepository.findByCategoryId(subCategoryId);
+    public Page<AdminImage> findBySubCategory(Long subCategoryId,  Pageable pageable) {
+        return adminImageRepository.findByCategoryId(subCategoryId, pageable);
     }
 }

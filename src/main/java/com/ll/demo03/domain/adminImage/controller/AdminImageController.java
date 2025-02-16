@@ -13,6 +13,10 @@ import com.ll.demo03.global.dto.GlobalResponse;
 import com.ll.demo03.global.error.ErrorCode;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -74,11 +78,10 @@ public class AdminImageController {
 //    }
 
     @GetMapping("/home")
-    public GlobalResponse<List<AdminImageResponse>> getImage() {
-        List<AdminImage> images = adminImageService.findAll();
-        List<AdminImageResponse> responses = images.stream()
-                .map(AdminImageResponse::from)
-                .collect(Collectors.toList());
+    public GlobalResponse<Page<AdminImageResponse>> getImage(
+            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable){
+        Page<AdminImage> images = adminImageService.findAll(pageable);
+        Page<AdminImageResponse> responses = images.map(AdminImageResponse::from);
 
         return GlobalResponse.success(responses);
     }
@@ -94,22 +97,20 @@ public class AdminImageController {
     }
 
     @GetMapping("/home/main/{mainCategoryId}")
-    public GlobalResponse<List<AdminImageResponse>> getImagesByMainCategory(
-            @PathVariable(name = "mainCategoryId")  Long mainCategoryId) {
-        List<AdminImage> images = adminImageService.findByMainCategory(mainCategoryId);
-        List<AdminImageResponse> responses = images.stream()
-                .map(AdminImageResponse::from)
-                .collect(Collectors.toList());
+    public GlobalResponse<Page<AdminImageResponse>> getImagesByMainCategory(
+            @PathVariable(name = "mainCategoryId") Long mainCategoryId,
+            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<AdminImage> images = adminImageService.findByMainCategory(mainCategoryId, pageable);
+        Page<AdminImageResponse> responses = images.map(AdminImageResponse::from);
         return GlobalResponse.success(responses);
     }
 
     @GetMapping("/home/sub/{subCategoryId}")
-    public GlobalResponse<List<AdminImageResponse>> getImagesBySubCategory(
-            @PathVariable(name = "subCategoryId") Long subCategoryId) {
-        List<AdminImage> images = adminImageService.findBySubCategory(subCategoryId);
-        List<AdminImageResponse> responses = images.stream()
-                .map(AdminImageResponse::from)
-                .collect(Collectors.toList());
+    public GlobalResponse<Page<AdminImageResponse>> getImagesBySubCategory(
+            @PathVariable(name = "subCategoryId") Long subCategoryId,
+            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<AdminImage> images = adminImageService.findBySubCategory(subCategoryId, pageable);
+        Page<AdminImageResponse> responses = images.map(AdminImageResponse::from);
         return GlobalResponse.success(responses);
     }
 
