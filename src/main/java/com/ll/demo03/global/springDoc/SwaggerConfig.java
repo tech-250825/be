@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class SwaggerConfig {
-
+//
     @Bean
     public OpenAPI customOpenAPI() {
         // 토큰 인증을 위한 SecurityScheme 설정

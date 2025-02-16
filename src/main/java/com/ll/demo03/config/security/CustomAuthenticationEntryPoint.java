@@ -24,7 +24,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         ErrorCode errorCode = ErrorCode.SC_FORBIDDEN;
         response.setStatus(errorCode.getHttpStatus().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        ErrorResponse errorResponse = new ErrorResponse(LocalDateTime.now().toString(),errorCode.getHttpStatus().name(), "error happend");
+        ErrorResponse errorResponse = new ErrorResponse(LocalDateTime.now().toString(),errorCode.getHttpStatus().name(), "인가에 실패했습니다.");
 
         // 응답을 클라이언트에 전달
         response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
