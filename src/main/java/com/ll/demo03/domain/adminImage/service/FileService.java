@@ -1,8 +1,12 @@
 package com.ll.demo03.domain.adminImage.service;
 
+import com.ll.demo03.domain.adminImage.dto.AdminImageRequest;
 import com.ll.demo03.domain.adminImage.dto.FileResponse;
 import com.ll.demo03.domain.adminImage.entity.AdminImage;
 import com.ll.demo03.domain.adminImage.repository.AdminImageRepository;
+import com.ll.demo03.domain.hashtag.service.HashtagService;
+import com.ll.demo03.domain.imageCategory.service.CategoryService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,9 +20,12 @@ import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignReques
 
 import java.io.IOException;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
+@Transactional
 @Service
 @PreAuthorize("permitAll()")
 @RequiredArgsConstructor
@@ -26,12 +33,24 @@ public class FileService {
     private final S3Client s3Client;
     private final S3Presigner s3Presigner;
     private final AdminImageRepository adminImageRepository;
+    private final CategoryService categoryService;
+    private final HashtagService hashtagService;
 
     @Value("${r2.bucket}")
     private String bucket;
 
-    public String uploadFile(MultipartFile file, String title) throws IOException {
-        String fileKey = "images/" + file.getOriginalFilename();
+    public AdminImage uploadFile(MultipartFile file, AdminImageRequest adminImageRequest) throws IOException {
+        String originalFilename = file.getOriginalFilename();
+        String extension = "";
+        if (originalFilename != null && originalFilename.contains(".")) {
+            extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+        }
+
+        String timestamp = String.valueOf(Instant.now().toEpochMilli());
+        int randomNum = new Random().nextInt(100000);
+        String randomFileName = timestamp + "_" + randomNum + extension;
+
+        String fileKey = "images/" + randomFileName;
 
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucket)
@@ -41,23 +60,12 @@ public class FileService {
 
         s3Client.putObject(putObjectRequest,
                 RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
+        String fileUrl = "https://hoit.my/" + fileKey;
 
-        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
-                .signatureDuration(Duration.ofHours(1))  // URL 유효기간 1시간
-                .getObjectRequest(GetObjectRequest.builder()
-                        .bucket(bucket)
-                        .key(fileKey)
-                        .build())
-                .build();
-
-        String fileUrl = s3Presigner.presignGetObject(presignRequest).url().toString();
-
-//        AdminImage adminImage = new AdminImage();
-//        adminImage.setUrl(fileUrl);
-//        adminImage.setPrompt(title);
-//        adminImageRepository.save(adminImage);
-
-        return fileUrl;
+        AdminImage adminImage = adminImageRequest.toEntity(categoryService, fileUrl);
+        AdminImage savedImage = adminImageRepository.save(adminImage);
+        hashtagService.createHashtags(savedImage, adminImageRequest.getHashtags());
+        return savedImage;
     }
 
     public List<FileResponse> listFiles() {

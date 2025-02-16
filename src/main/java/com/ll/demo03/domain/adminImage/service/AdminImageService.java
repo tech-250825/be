@@ -20,14 +20,12 @@ public class AdminImageService {
     private final HashtagService hashtagService;
     private final CategoryService categoryService;
 
-    public AdminImage save(AdminImageRequest adminImageRequest) {
-
-        AdminImage adminImage = adminImageRequest.toEntity(categoryService);
-        AdminImage savedImage =adminImageRepository.save(adminImage);
-        hashtagService.createHashtags(savedImage, adminImageRequest.getHashtags());
-
-        return savedImage;
-    }
+//    public AdminImage save(AdminImageRequest adminImageRequest) {
+//        AdminImage adminImage = adminImageRequest.toEntity(categoryService);
+//        AdminImage savedImage =adminImageRepository.save(adminImage);
+//        hashtagService.createHashtags(savedImage, adminImageRequest.getHashtags());
+//        return savedImage;
+//    }
 
     public AdminImage findById(Long id) {
         return adminImageRepository.findById(id)
