@@ -13,7 +13,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class Image extends BaseEntity {
     private String style;
-    private String object;
+    private String ratio;
     private String prompt;
     private String taskid;
     private String image_url1;

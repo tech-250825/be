@@ -23,7 +23,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         ErrorCode errorCode = ErrorCode.ACCESS_DENIED;
         response.setStatus(errorCode.getHttpStatus().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        ErrorResponse errorResponse = new ErrorResponse(LocalDateTime.now().toString(),errorCode.getHttpStatus().name(), errorCode.getMessage());
+        ErrorResponse errorResponse = new ErrorResponse(LocalDateTime.now().toString(),errorCode.getHttpStatus().name(), "FAILED IN AUTHENTICATION");
 
         // 응답을 클라이언트에 전달
         response.getWriter().write(objectMapper.writeValueAsString(errorResponse));

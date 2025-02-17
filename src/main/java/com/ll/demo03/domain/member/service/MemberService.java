@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import com.ll.demo03.domain.member.dto.MemberDto;
 import com.ll.demo03.domain.member.entity.Member;
 import com.ll.demo03.domain.member.repository.MemberRepository;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,5 +33,10 @@ public class MemberService {
                 .orElseThrow(() -> new EntityNotFoundException("회원을 찾을 수 없습니다. 이메일: " + email));
 
         return member.getId();
+    }
+
+    @Scheduled(cron = "0 0 0 * * *")
+    public void resetDailyCredit() {
+        memberRepository.resetAllMembersCredit();
     }
 }

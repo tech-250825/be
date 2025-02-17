@@ -28,10 +28,11 @@ public class ImageService {
     private final RestTemplate restTemplate;
 
     // 이미지 생성 (PiAPI 호출)
-    public String createImage(String prompt, String ratio, String webhook) {
+    public String createImage(String prompt, String ratio, String referenceImage, String webhook) {
         try {
-            System.out.println(prompt);
-            System.out.println(ratio);
+            if(referenceImage !=null ){
+                prompt = prompt + "--sref " + referenceImage;
+            }
             // 헤더 설정
             Unirest.setTimeouts(0, 0);
             HttpResponse<String> response = (HttpResponse<String>) Unirest.post("https://api.piapi.ai/api/v1/task")

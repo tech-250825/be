@@ -60,7 +60,7 @@ public class FileService {
 
         s3Client.putObject(putObjectRequest,
                 RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
-        String fileUrl = "https://hoit.my/" + fileKey;
+        String fileUrl = "https://image.hoit.my/" + fileKey;
 
         AdminImage adminImage = adminImageRequest.toEntity(categoryService, fileUrl);
         AdminImage savedImage = adminImageRepository.save(adminImage);

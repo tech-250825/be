@@ -6,6 +6,7 @@ import jakarta.persistence.Enumerated;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import com.ll.demo03.global.base.BaseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -27,4 +28,5 @@ public class Member extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
 }

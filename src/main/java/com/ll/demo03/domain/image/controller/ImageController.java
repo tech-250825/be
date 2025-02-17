@@ -2,6 +2,7 @@ package com.ll.demo03.domain.image.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ll.demo03.domain.image.dto.ImageRequest;
 import com.ll.demo03.domain.image.dto.ImageUrlsResponse;
 import com.ll.demo03.domain.image.dto.WebhookEvent;
 import com.ll.demo03.domain.image.entity.Image;
@@ -12,7 +13,9 @@ import com.ll.demo03.domain.member.entity.Member;
 import com.ll.demo03.domain.member.repository.MemberRepository;
 import com.ll.demo03.global.dto.GlobalResponse;
 import com.ll.demo03.global.error.ErrorCode;
+import com.ll.demo03.global.exception.CustomException;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +32,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @RequiredArgsConstructor
+@Transactional
 @RestController
 @RequestMapping("/api/images")
 @Slf4j  // 로깅 추가
@@ -44,21 +48,28 @@ public class ImageController {
 
     @PostMapping(value = "/create", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     @PreAuthorize("isAuthenticated()")
-    public SseEmitter createImage(@RequestBody Map<String, String> data, Authentication authentication) {
+    public SseEmitter createImage(@RequestBody ImageRequest imageRequest, Authentication authentication) {
 
         Optional<Member> optionalMember = memberRepository.findByEmail(authentication.getName());
         Member member = optionalMember.orElseThrow(() -> new RuntimeException("Member not found"));
+        int credit = member.getCredit();
+        if (credit <= 0) {
+            throw new CustomException(ErrorCode.NO_CREDIT);
+        }
+        credit -= 1;
+        member.setCredit(credit);
 
-        // 타임아웃을 10분으로 설정
         SseEmitter emitter = new SseEmitter(600000L); // 10분
-
         try {
 
             emitter.send(SseEmitter.event()
                     .name("status")
                     .data("이미지 생성 중..."));
 
-            String response = imageService.createImage(data.get("prompt"), data.get("ratio"), webhookUrl+"/api/images/webhook");
+            String referenceImage = imageRequest.getReference_image();
+            String prompt = imageRequest.getPrompt();
+            String ratio = imageRequest.getRatio();
+            String response = imageService.createImage(prompt, ratio, referenceImage != null ? referenceImage : null, webhookUrl+"/api/images/webhook");
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
                 JsonNode rootNode = objectMapper.readTree(response);
@@ -72,6 +83,10 @@ public class ImageController {
 
                 Image image = new Image();
                 image.setTaskid(taskId);
+                image.setPrompt(prompt);
+                image.setRatio(ratio);
+                image.setMember(member);
+
                 imageRepository.save(image);
                 sseEmitterRepository.save(taskId, emitter);
 
