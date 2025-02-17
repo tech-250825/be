@@ -1,5 +1,6 @@
 package com.ll.demo03.domain.image.controller;
 
+import com.ll.demo03.domain.image.dto.ImageUrlsResponse;
 import com.ll.demo03.domain.image.dto.WebhookEvent;
 import com.ll.demo03.domain.image.entity.Image;
 import com.ll.demo03.domain.image.repository.ImageRepository;
@@ -116,9 +117,10 @@ public class ImageController {
             // SSE로 클라이언트에게 결과 전송
             SseEmitter emitter = sseEmitterRepository.get(taskId);
             if (emitter != null) {
+                ImageUrlsResponse response = new ImageUrlsResponse(imageUrls);
                 emitter.send(SseEmitter.event()
                         .name("result")
-                        .data(imageUrls));
+                        .data(response));  // ImageUrlsResponse 객체로 전송
                 emitter.complete();
                 sseEmitterRepository.remove(taskId);
             }
@@ -129,6 +131,7 @@ public class ImageController {
             return GlobalResponse.error(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
+
 
 //    @GetMapping("/status/{taskId}")
 //    public GlobalResponse<String> checkStatus(@PathVariable String taskId) {
