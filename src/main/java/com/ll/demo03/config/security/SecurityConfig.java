@@ -57,6 +57,7 @@ public class SecurityConfig {
                         request.requestMatchers(
                                 "/",
                                 "/api/images/create",
+                                        "/api/images/webhook",
                                 "/auth/token/verify",
                                 "/ws/**",
                                 "/auth/google/redirect",

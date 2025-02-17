@@ -40,6 +40,7 @@ logging:
     org.hibernate.orm.jdbc.extract: INFO
     org.springframework.transaction.interceptor: INFO
 custom:
+  webhook-url: https://api.hoit.my
   site:
     name: "My Site Prod"
 management:

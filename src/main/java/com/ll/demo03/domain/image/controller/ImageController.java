@@ -1,5 +1,7 @@
 package com.ll.demo03.domain.image.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ll.demo03.domain.image.dto.ImageUrlsResponse;
 import com.ll.demo03.domain.image.dto.WebhookEvent;
 import com.ll.demo03.domain.image.entity.Image;
@@ -12,7 +14,9 @@ import com.ll.demo03.global.dto.GlobalResponse;
 import com.ll.demo03.global.error.ErrorCode;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -24,11 +28,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/images")
 @Slf4j  // 로깅 추가
 public class ImageController {
+
+    @Value("${custom.webhook-url}")
+    private String webhookUrl;
 
     private final ImageService imageService;
     private final MemberRepository memberRepository;
@@ -46,66 +53,81 @@ public class ImageController {
         SseEmitter emitter = new SseEmitter(600000L); // 10분
 
         try {
-//            // 초기 연결 성공 이벤트 전송
-//            emitter.send(SseEmitter.event()
-//                    .name("connect")
-//                    .data("Connected successfully"));
 
-            // 이미지 생성 시작 상태 전송
             emitter.send(SseEmitter.event()
                     .name("status")
                     .data("이미지 생성 중..."));
 
-            // 이미지 생성 요청 및 taskId 수신
-            String taskId = imageService.createImage(data.get("prompt"), data.get("ratio"), "https://api.hoit.my/api/images/webhook");
-            log.info("Image creation started with taskId: {}", taskId);
+            String response = imageService.createImage(data.get("prompt"), data.get("ratio"), webhookUrl+"/api/images/webhook");
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                JsonNode rootNode = objectMapper.readTree(response);
+                String taskId = rootNode.path("data").path("task_id").asText();
 
-            // taskId를 클라이언트에게 전송
-            emitter.send(SseEmitter.event()
-                    .name("task_id")
-                    .data(taskId));
+                System.out.println("Extracted task_id: " + taskId);
 
-            // 추후 webhook 응답을 위해 emitter 저장
-            Image image = new Image();
-            image.setTaskid(taskId);
-            imageRepository.save(image);
-            sseEmitterRepository.save(taskId, emitter);
+                emitter.send(SseEmitter.event()
+                        .name("task_id")
+                        .data(taskId));
 
-            // 타임아웃 및 완료 핸들러 설정
-            emitter.onTimeout(() -> {
-                log.warn("SSE connection timed out for taskId: {}", taskId);
-                sseEmitterRepository.remove(taskId);
-                emitter.complete();
-            });
+                Image image = new Image();
+                image.setTaskid(taskId);
+                imageRepository.save(image);
+                sseEmitterRepository.save(taskId, emitter);
 
-            emitter.onCompletion(() -> {
-                log.info("SSE connection completed for taskId: {}", taskId);
-                sseEmitterRepository.remove(taskId);
-            });
+                emitter.onTimeout(() -> {
+                    log.warn("SSE connection timed out for taskId: {}", taskId);
+                    sseEmitterRepository.remove(taskId);
+                    emitter.complete();
+                });
 
+                emitter.onCompletion(() -> {
+                    log.info("SSE connection completed for taskId: {}", taskId);
+                    sseEmitterRepository.remove(taskId);
+                });
+
+            } catch (Exception e) {
+                log.error("JSON 파싱 오류: ",  e);
+                emitter.completeWithError(e);
+            }
         } catch (Exception e) {
-            log.error("Error during image creation process: ", e);
+            log.error("이미지 생성 중 오류 발생: ", e);
             emitter.completeWithError(e);
         }
-
         return emitter;
     }
 
 
+
     @PostMapping("/webhook")
-    public GlobalResponse handleWebhook(@RequestBody WebhookEvent event) {
+    public GlobalResponse handleWebhook(
+            @RequestHeader(value = "X-Webhook-Secret", required = false) String secret,
+            @RequestBody WebhookEvent event) {
+        if (!"123456".equals(secret)) {
+            log.error("Unauthorized webhook request. Secret key mismatch or missing");
+            return GlobalResponse.error(ErrorCode.ACCESS_DENIED);
+        }
         try {
             log.info("Received webhook event: {}", event);
 
-            // taskId와 이미지 URL들 추출
-            String taskId = event.getData().getTask_id();
-            List<String> imageUrls = event.getData().getOutput().getImage_urls();
+            if (!"completed".equals(event.getData().getStatus())) {
+                log.info("Task not yet completed, status: {}", event.getData().getStatus());
+                return GlobalResponse.success();
+            }
 
-            // DB에서 Image 엔티티 찾기
+            String taskId = event.getData().getTask_id();
+            System.out.println("Received taskId: " + taskId);
+            List<String> imageUrls = event.getData().getOutput().getImage_urls();
+            System.out.println("Received imageUrls: " + imageUrls);
+
+            if (imageUrls == null || imageUrls.isEmpty()) {
+                log.info("No image URLs available yet for taskId: {}", taskId);
+                return GlobalResponse.success();
+            }
+
             Image image = imageRepository.findByTaskid(taskId)
                     .orElseThrow(() -> new EntityNotFoundException("Image not found"));
 
-            // 이미지 URL 저장
             if (imageUrls != null && imageUrls.size() >= 4) {
                 image.setImage_url1(imageUrls.get(0));
                 image.setImage_url2(imageUrls.get(1));
@@ -114,13 +136,12 @@ public class ImageController {
                 imageRepository.save(image);
             }
 
-            // SSE로 클라이언트에게 결과 전송
             SseEmitter emitter = sseEmitterRepository.get(taskId);
             if (emitter != null) {
                 ImageUrlsResponse response = new ImageUrlsResponse(imageUrls);
                 emitter.send(SseEmitter.event()
                         .name("result")
-                        .data(response));  // ImageUrlsResponse 객체로 전송
+                        .data(response));
                 emitter.complete();
                 sseEmitterRepository.remove(taskId);
             }
