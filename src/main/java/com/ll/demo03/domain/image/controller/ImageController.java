@@ -56,7 +56,7 @@ public class ImageController {
                     .data("이미지 생성 중..."));
 
             // 이미지 생성 요청 및 taskId 수신
-            String taskId = imageService.createImage(data.get("prompt"), data.get("ratio"), "https://webhook.site/2f180bf9-0d86-4f1c-a966-6bd71962f387");
+            String taskId = imageService.createImage(data.get("prompt"), data.get("ratio"), "https://api.hoit.my/api/images/webhook");
             log.info("Image creation started with taskId: {}", taskId);
 
             // taskId를 클라이언트에게 전송
