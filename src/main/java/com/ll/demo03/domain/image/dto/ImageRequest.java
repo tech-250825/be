@@ -7,7 +7,4 @@ import lombok.Getter;
 public class ImageRequest {
     private String prompt;
     private String ratio;
-
-    @Nullable
-    private String reference_image;
 }

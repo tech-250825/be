@@ -1,10 +1,12 @@
 package com.ll.demo03.domain.image.service;
 
+import com.ll.demo03.domain.referenceImage.service.ReferenceImageService;
 import com.ll.demo03.global.dto.GlobalResponse;
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,22 +18,38 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.mashape.unirest.http.HttpResponse;
+import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+
+import java.io.IOException;
+import java.time.Instant;
 import java.util.Map;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ImageService {
 
     @Value("${piapi.api.key}")
     private String piApiKey;
 
-    private final RestTemplate restTemplate;
+    @Value("${r2.bucket}")
+    private String bucket;
 
+    private final RestTemplate restTemplate;
+    private final S3Client s3Client;
+    private final ReferenceImageService referenceImageService;
+
+    // 이미지 생성 (PiAPI 호출)
     // 이미지 생성 (PiAPI 호출)
     public String createImage(String prompt, String ratio, String referenceImage, String webhook) {
         try {
+            System.out.println("prompt: " + prompt);
             if(referenceImage !=null ){
-                prompt = prompt + "--sref " + referenceImage;
+                prompt = prompt + " --sref " + referenceImage;
             }
             // 헤더 설정
             Unirest.setTimeouts(0, 0);

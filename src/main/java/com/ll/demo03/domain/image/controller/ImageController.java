@@ -11,6 +11,7 @@ import com.ll.demo03.domain.image.repository.SseEmitterRepository;
 import com.ll.demo03.domain.image.service.ImageService;
 import com.ll.demo03.domain.member.entity.Member;
 import com.ll.demo03.domain.member.repository.MemberRepository;
+import com.ll.demo03.domain.referenceImage.service.ReferenceImageService;
 import com.ll.demo03.global.dto.GlobalResponse;
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
@@ -24,6 +25,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import org.springframework.security.core.Authentication;
 
@@ -45,10 +47,15 @@ public class ImageController {
     private final MemberRepository memberRepository;
     private final ImageRepository imageRepository;
     private final SseEmitterRepository sseEmitterRepository;
+    private final ReferenceImageService referenceImageService;
 
     @PostMapping(value = "/create", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     @PreAuthorize("isAuthenticated()")
-    public SseEmitter createImage(@RequestBody ImageRequest imageRequest, Authentication authentication) {
+    public SseEmitter createImage(
+            @RequestParam(required = false) MultipartFile file,
+            @RequestPart("metadata") ImageRequest imageRequest,
+                                  Authentication authentication
+    ) {
 
         Optional<Member> optionalMember = memberRepository.findByEmail(authentication.getName());
         Member member = optionalMember.orElseThrow(() -> new RuntimeException("Member not found"));
@@ -58,6 +65,7 @@ public class ImageController {
         }
         credit -= 1;
         member.setCredit(credit);
+        memberRepository.save(member);
 
         SseEmitter emitter = new SseEmitter(600000L); // 10분
         try {
@@ -66,10 +74,15 @@ public class ImageController {
                     .name("status")
                     .data("이미지 생성 중..."));
 
-            String referenceImage = imageRequest.getReference_image();
+
             String prompt = imageRequest.getPrompt();
             String ratio = imageRequest.getRatio();
-            String response = imageService.createImage(prompt, ratio, referenceImage != null ? referenceImage : null, webhookUrl+"/api/images/webhook");
+            String referenceImage=null;
+            if (file != null && !file.isEmpty()) {
+                referenceImage = referenceImageService.uploadFile(file);
+            }
+
+            String response = imageService.createImage( prompt, ratio, referenceImage, webhookUrl+"/api/images/webhook");
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
                 JsonNode rootNode = objectMapper.readTree(response);
