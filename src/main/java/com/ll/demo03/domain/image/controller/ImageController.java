@@ -17,20 +17,22 @@ import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import org.springframework.security.core.Authentication;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -43,11 +45,15 @@ public class ImageController {
     @Value("${custom.webhook-url}")
     private String webhookUrl;
 
+    @Value("${openai.api.key}")
+    private String openAiApiKey;
+
     private final ImageService imageService;
     private final MemberRepository memberRepository;
     private final ImageRepository imageRepository;
     private final SseEmitterRepository sseEmitterRepository;
     private final ReferenceImageService referenceImageService;
+    private final RestTemplate restTemplate;
 
     @PostMapping(value = "/create", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     @PreAuthorize("isAuthenticated()")
@@ -56,6 +62,7 @@ public class ImageController {
             @RequestPart("metadata") ImageRequest imageRequest,
                                   Authentication authentication
     ) {
+
 
         Optional<Member> optionalMember = memberRepository.findByEmail(authentication.getName());
         Member member = optionalMember.orElseThrow(() -> new RuntimeException("Member not found"));
@@ -67,6 +74,14 @@ public class ImageController {
         member.setCredit(credit);
         memberRepository.save(member);
 
+        String prompt = imageRequest.getPrompt();
+        String ratio = imageRequest.getRatio();
+        boolean isSafe = moderatePrompt(prompt);
+        if (!isSafe) {
+            log.warn("Prompt 검열 실패: {}", prompt);
+            throw new CustomException(ErrorCode.INAPPROPRIATE_CONTENT);
+        }
+
         SseEmitter emitter = new SseEmitter(600000L); // 10분
         try {
 
@@ -75,8 +90,6 @@ public class ImageController {
                     .data("이미지 생성 중..."));
 
 
-            String prompt = imageRequest.getPrompt();
-            String ratio = imageRequest.getRatio();
             String referenceImage=null;
             if (file != null && !file.isEmpty()) {
                 referenceImage = referenceImageService.uploadFile(file);
@@ -178,6 +191,54 @@ public class ImageController {
         } catch (Exception e) {
             log.error("Error processing webhook: ", e);
             return GlobalResponse.error(ErrorCode.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private boolean moderatePrompt(String prompt) {
+        String openAiUrl = "https://api.openai.com/v1/chat/completions";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(openAiApiKey);
+
+        String requestBody = String.format(
+                "{\n" +
+                        "  \"model\": \"gpt-4\",\n" +
+                        "  \"messages\": [\n" +
+                        "    {\"role\": \"system\", \"content\": \"You are a content moderation assistant. Analyze the user's input and determine if it contains inappropriate, offensive, or NSFW content. " +
+                        "Try to censor even inappropriate words that Midjourney can't draw, such as sexual elements, sexual clothing. " +
+                        "Cigarette and Tobacco are not subject to censorship. Respond with 'Content approved'. " +
+                        "If it does, respond with 'Content flagged: [reason]'. If not, respond with 'Content approved'. " +
+                        "Use the following categories to flag content: hate speech, adult content, racism, sexism, or illegal activities.\"},\n" +
+                        "    {\"role\": \"user\", \"content\": \"%s\"}\n" +
+                        "  ],\n" +
+                        "  \"temperature\": 0\n" +
+                        "}", prompt);
+
+        HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
+
+        try {
+            ResponseEntity<String> responseEntity = restTemplate.exchange(openAiUrl, HttpMethod.POST, requestEntity, String.class);
+            String responseBody = responseEntity.getBody();
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode rootNode = objectMapper.readTree(responseBody);
+            String result = rootNode.path("choices").get(0).path("message").path("content").asText().trim(); // 응답 문자열 가져오기
+
+            log.info("OpenAI 검열 응답: {}", result);
+
+            // 📌 검열 로직 수정
+            if (result.equalsIgnoreCase("Content approved")) {
+                return true;  // ✅ 정상적인 프롬프트
+            } else if (result.startsWith("Content flagged:")) {
+                return false; // 🚨 검열 대상
+            } else {
+                log.warn("Unexpected response from OpenAI: {}", result);
+                return false;  // 🚨 예외적인 응답도 검열된 것으로 간주
+            }
+        } catch (Exception e) {
+            log.error("OpenAI API 요청 실패: ", e);
+            return true;  // API 오류 시 기본적으로 검열을 우회 (필요하면 `false`로 변경 가능)
         }
     }
 
