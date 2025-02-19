@@ -1,10 +1,7 @@
-package com.ll.demo03.domain.image.dto;
+package com.ll.demo03.domain.imageGenerate.dto;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.List;
 
 @Getter @Setter
 public class WebhookEvent {

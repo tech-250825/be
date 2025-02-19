@@ -1,5 +1,6 @@
 package com.ll.demo03.domain.member.repository;
 
+import com.ll.demo03.domain.member.entity.AuthProvider;
 import com.ll.demo03.domain.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -15,4 +16,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Modifying
     @Query("UPDATE Member m SET m.credit = 5")
     void resetAllMembersCredit();
+
+    Optional<Member> findByProviderAndProviderId(AuthProvider provider, String providerId);
 }

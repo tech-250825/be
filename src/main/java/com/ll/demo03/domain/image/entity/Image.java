@@ -1,27 +1,32 @@
 package com.ll.demo03.domain.image.entity;
-import com.ll.demo03.domain.member.entity.Member;
+
+
+import com.ll.demo03.domain.imageGenerate.entity.ImageGenerate;
 import com.ll.demo03.global.base.BaseEntity;
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToOne;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.Builder;
 import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
 @SuperBuilder
+@NoArgsConstructor
 public class Image extends BaseEntity {
-    private String style;
-    private String ratio;
-    private String prompt;
-    private String taskid;
-    private String image_url1;
-    private String image_url2;
-    private String image_url3;
-    private String image_url4;
+    private String url;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id") //FK 컬럼명
-    private Member member;
+    private ImageGenerate imageGenerate;
+
+    public static Image of(String url, ImageGenerate imageGenerate) {
+        Image image = new Image();
+        image.url = url;
+        image.imageGenerate = imageGenerate;
+        return image;
+    }
 }

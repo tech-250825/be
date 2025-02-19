@@ -7,9 +7,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import com.ll.demo03.global.base.BaseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
-
-import java.util.HashSet;
-import java.util.Set;
+import com.ll.demo03.domain.member.entity.AuthProvider;
 
 @Getter
 @Setter
@@ -28,5 +26,10 @@ public class Member extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Enumerated(EnumType.STRING)
+    private AuthProvider provider;
+
+    private String providerId;
 
 }

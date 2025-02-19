@@ -26,6 +26,9 @@ public enum ErrorCode {
     //크레딧
     NO_CREDIT(HttpStatus.BAD_REQUEST, "크레딧이 부족합니다."),
 
+    // 이미지 없음
+    IMAGE_NOT_FOUND(HttpStatus.BAD_REQUEST, "해당 이미지가 존재하지 않습니다."),
+
 
     // User
     NOT_FOUND_USER(HttpStatus.BAD_REQUEST, "해당 유저가 존재하지 않습니다"),

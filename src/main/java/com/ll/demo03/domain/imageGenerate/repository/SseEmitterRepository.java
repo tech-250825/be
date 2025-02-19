@@ -1,4 +1,4 @@
-package com.ll.demo03.domain.image.repository;
+package com.ll.demo03.domain.imageGenerate.repository;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;

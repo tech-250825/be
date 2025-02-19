@@ -1,4 +1,4 @@
-package com.ll.demo03.domain.image.dto;
+package com.ll.demo03.domain.imageGenerate.dto;
 
 import java.util.List;
 

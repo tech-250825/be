@@ -8,31 +8,49 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 public class TokenService {
 
-    private final StringRedisTemplate redisTemplate;
+    private final RedisTemplate<String, String> redisTemplate;
 
     @Value("${jwt.refresh-token.expire-time}")
     private long refreshTokenExpireTime;
 
-    public TokenService(StringRedisTemplate redisTemplate) {
+    public TokenService(RedisTemplate<String, String> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
     public void saveOrUpdate(String username, String refreshToken, String accessToken) {
-        // Redis에 토큰 저장
-        // refreshToken을 저장하고, 해당 사용자의 토큰과 연결
-        System.out.println(refreshTokenExpireTime);
         redisTemplate.opsForValue().set(username + ":refresh-token", refreshToken, refreshTokenExpireTime);
         redisTemplate.opsForValue().set(username + ":access-token", accessToken);
     }
 
+    public void updateToken(String newAccessToken, Token token) {
+        String username = token.getUsername();
+        String newRefreshToken = token.getRefreshToken();
+
+        this.saveOrUpdate(username, newRefreshToken, newAccessToken);
+    }
+
+
+    public Token findByAccessTokenOrThrow(String accessToken) {
+        String storedToken = redisTemplate.opsForValue().get(accessToken);
+
+        if (storedToken == null) {
+            throw new CustomException(ErrorCode.ACCESS_TOKEN_EXPIRED);
+        }
+        return new Token(accessToken, storedToken); // 예시로 Token 클래스 사용
+    }
+
+    public String getRefreshToken(String username) {
+        return redisTemplate.opsForValue().get(username + ":refresh-token");
+    }
+
     public void deleteToken(String username) {
-        // Redis에서 토큰 삭제
         redisTemplate.delete(username + ":refresh-token");
         redisTemplate.delete(username + ":access-token");
     }

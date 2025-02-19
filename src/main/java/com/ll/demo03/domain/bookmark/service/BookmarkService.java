@@ -5,8 +5,6 @@ import com.ll.demo03.domain.adminImage.entity.AdminImage;
 import com.ll.demo03.domain.adminImage.repository.AdminImageRepository;
 import com.ll.demo03.domain.bookmark.entity.Bookmark;
 import com.ll.demo03.domain.bookmark.repository.BookmarkRepository;
-import com.ll.demo03.domain.image.entity.Image;
-import com.ll.demo03.domain.image.repository.ImageRepository;
 import com.ll.demo03.domain.member.entity.Member;
 import com.ll.demo03.domain.member.repository.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -26,9 +24,7 @@ public class BookmarkService {
     private final AdminImageRepository adminImageRepository;
 
     @Transactional
-    public void addBookmark(Long imageId, String userEmail) {
-        Member member = memberRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new RuntimeException("Member not found"));
+    public void addBookmark(Long imageId, Member member) {
 
         AdminImage image = adminImageRepository.findById(imageId)
                 .orElseThrow(() -> new EntityNotFoundException("Image not found with id: " + imageId));
@@ -41,9 +37,7 @@ public class BookmarkService {
     }
 
     @Transactional
-    public void deleteBookmark(Long imageId, String userEmail) {
-        Member member = memberRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new RuntimeException("Member not found"));
+    public void deleteBookmark(Long imageId, Member member) {
 
         Bookmark bookmark = bookmarkRepository.findByMemberAndImageId(member, imageId)
                 .orElseThrow(() -> new RuntimeException("Bookmark not found"));
@@ -52,9 +46,7 @@ public class BookmarkService {
     }
 
     @Transactional
-    public List<AdminImageResponse> getMyBookmarks(String userEmail) {
-        Member member = memberRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new RuntimeException("Member not found"));
+    public List<AdminImageResponse> getMyBookmarks( Member member) {
         List<Bookmark> bookmarks = bookmarkRepository.findByMember(member);
 
         List<AdminImageResponse> responses = bookmarks.stream()

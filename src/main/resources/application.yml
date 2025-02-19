@@ -53,6 +53,6 @@ logging:
     org.springframework.transaction.interceptor: INFO
     org.springframework.security: DEBUG
 custom:
-  webhook-url: https://0395-211-217-117-9.ngrok-free.app
+  webhook-url: https://72c3-116-44-217-211.ngrok-free.app
   site:
     name: "My Site Prod"

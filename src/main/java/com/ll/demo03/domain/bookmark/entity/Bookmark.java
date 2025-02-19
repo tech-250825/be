@@ -1,7 +1,6 @@
 package com.ll.demo03.domain.bookmark.entity;
 
 import com.ll.demo03.domain.adminImage.entity.AdminImage;
-import com.ll.demo03.domain.image.entity.Image;
 import com.ll.demo03.domain.member.entity.Member;
 import com.ll.demo03.global.base.BaseEntity;
 import jakarta.persistence.Entity;

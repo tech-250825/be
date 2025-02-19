@@ -1,15 +1,12 @@
-package com.ll.demo03.domain.image.service;
+package com.ll.demo03.domain.imageGenerate.service;
 
 import com.ll.demo03.domain.referenceImage.service.ReferenceImageService;
-import com.ll.demo03.global.dto.GlobalResponse;
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -18,20 +15,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.mashape.unirest.http.HttpResponse;
-import org.springframework.web.multipart.MultipartFile;
-import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
-import java.io.IOException;
-import java.time.Instant;
 import java.util.Map;
-import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class ImageService {
+public class ImageGenerateService {
 
     @Value("${piapi.api.key}")
     private String piApiKey;

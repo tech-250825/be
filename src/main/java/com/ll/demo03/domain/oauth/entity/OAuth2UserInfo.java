@@ -1,5 +1,6 @@
 package com.ll.demo03.domain.oauth.entity;
 
+import com.ll.demo03.domain.member.entity.AuthProvider;
 import lombok.Builder;
 import com.ll.demo03.domain.member.entity.Member;
 import com.ll.demo03.domain.member.entity.Role;
@@ -13,7 +14,9 @@ import java.util.Map;
 public record OAuth2UserInfo(
         String name,
         String email,
-        String profile
+        String profile,
+        String provider,
+        String providerId
 ) {
 
     public static OAuth2UserInfo of(String registrationId, Map<String, Object> attributes) {
@@ -29,6 +32,8 @@ public record OAuth2UserInfo(
                 .name((String) attributes.get("name"))
                 .email((String) attributes.get("email"))
                 .profile((String) attributes.get("picture"))
+                .provider("GOOGLE")
+                .providerId(attributes.get("sub").toString())
                 .build();
     }
 
@@ -40,6 +45,8 @@ public record OAuth2UserInfo(
                 .name((String) profile.get("nickname"))
                 .email((String) account.get("email"))
                 .profile((String) profile.get("profile_image_url"))
+                .provider("KAKAO")
+                .providerId(attributes.get("id").toString())
                 .build();
     }
 
@@ -48,6 +55,8 @@ public record OAuth2UserInfo(
                 .name(name)
                 .email(email)
                 .profile(profile)
+                .provider(AuthProvider.valueOf(provider))
+                .providerId(providerId)
                 .role(Role.USER)
                 .build();
     }

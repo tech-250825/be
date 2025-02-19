@@ -1,19 +1,18 @@
 package com.ll.demo03.domain.adminImage.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ll.demo03.domain.adminImage.dto.AdminImageRequest;
 import com.ll.demo03.domain.adminImage.dto.AdminImageResponse;
 import com.ll.demo03.domain.adminImage.dto.FileResponse;
 import com.ll.demo03.domain.adminImage.entity.AdminImage;
 import com.ll.demo03.domain.adminImage.service.AdminImageService;
 import com.ll.demo03.domain.adminImage.service.FileService;
-import com.ll.demo03.domain.imageCategory.entity.ImageCategory;
 import com.ll.demo03.domain.imageCategory.service.CategoryService;
 import com.ll.demo03.global.dto.GlobalResponse;
 import com.ll.demo03.global.error.ErrorCode;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -24,7 +23,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RequestMapping
 @RestController
@@ -79,10 +77,16 @@ public class AdminImageController {
 
     @GetMapping("/home")
     public GlobalResponse<Page<AdminImageResponse>> getImage(
-            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable){
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size,
+            @RequestParam(name = "sort", defaultValue = "createdAt,desc") String sort) {
+
+        String[] sortParams = sort.split(",");
+        Sort sorting = Sort.by(Sort.Direction.fromString(sortParams[1]), sortParams[0]);
+        Pageable pageable = PageRequest.of(page, size, sorting);
+
         Page<AdminImage> images = adminImageService.findAll(pageable);
         Page<AdminImageResponse> responses = images.map(AdminImageResponse::from);
-
         return GlobalResponse.success(responses);
     }
 
@@ -99,7 +103,14 @@ public class AdminImageController {
     @GetMapping("/home/main/{mainCategoryId}")
     public GlobalResponse<Page<AdminImageResponse>> getImagesByMainCategory(
             @PathVariable(name = "mainCategoryId") Long mainCategoryId,
-            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size,
+            @RequestParam(name = "sort", defaultValue = "createdAt,desc") String sort) {
+
+        String[] sortParams = sort.split(",");
+        Sort sorting = Sort.by(Sort.Direction.fromString(sortParams[1]), sortParams[0]);
+        Pageable pageable = PageRequest.of(page, size, sorting);
+
         Page<AdminImage> images = adminImageService.findByMainCategory(mainCategoryId, pageable);
         Page<AdminImageResponse> responses = images.map(AdminImageResponse::from);
         return GlobalResponse.success(responses);
@@ -108,7 +119,14 @@ public class AdminImageController {
     @GetMapping("/home/sub/{subCategoryId}")
     public GlobalResponse<Page<AdminImageResponse>> getImagesBySubCategory(
             @PathVariable(name = "subCategoryId") Long subCategoryId,
-            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size,
+            @RequestParam(name = "sort", defaultValue = "createdAt,desc") String sort) {
+
+        String[] sortParams = sort.split(",");
+        Sort sorting = Sort.by(Sort.Direction.fromString(sortParams[1]), sortParams[0]);
+        Pageable pageable = PageRequest.of(page, size, sorting);
+
         Page<AdminImage> images = adminImageService.findBySubCategory(subCategoryId, pageable);
         Page<AdminImageResponse> responses = images.map(AdminImageResponse::from);
         return GlobalResponse.success(responses);

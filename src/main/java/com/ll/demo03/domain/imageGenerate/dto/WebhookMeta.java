@@ -1,4 +1,4 @@
-package com.ll.demo03.domain.image.dto;
+package com.ll.demo03.domain.imageGenerate.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;

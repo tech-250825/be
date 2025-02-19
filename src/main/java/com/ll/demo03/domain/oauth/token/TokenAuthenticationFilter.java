@@ -42,17 +42,6 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        String path = request.getRequestURI();
-        System.out.println("Checking shouldNotFilter for path: " + path);
-        boolean shouldSkip = path.startsWith("/upload");
-        System.out.println("shouldNotFilter result: " + shouldSkip);
-        return shouldSkip;
-    }
-
-
-
     private void setAuthentication(String accessToken) {
         Authentication authentication = tokenProvider.getAuthentication(accessToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
