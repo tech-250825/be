@@ -75,21 +75,6 @@ public class AdminImageController {
 //        return GlobalResponse.success("이미지 등록 성공");
 //    }
 
-    @GetMapping("/home")
-    public GlobalResponse<Page<AdminImageResponse>> getImage(
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sort", defaultValue = "createdAt,desc") String sort) {
-
-        String[] sortParams = sort.split(",");
-        Sort sorting = Sort.by(Sort.Direction.fromString(sortParams[1]), sortParams[0]);
-        Pageable pageable = PageRequest.of(page, size, sorting);
-
-        Page<AdminImage> images = adminImageService.findAll(pageable);
-        Page<AdminImageResponse> responses = images.map(AdminImageResponse::from);
-        return GlobalResponse.success(responses);
-    }
-
     @DeleteMapping("/admin/image/{adminImageId}")
     public GlobalResponse<String> deleteImage(@PathVariable Long adminImageId) {
         try {
@@ -100,34 +85,26 @@ public class AdminImageController {
         }
     }
 
-    @GetMapping("/home/main/{mainCategoryId}")
-    public GlobalResponse<Page<AdminImageResponse>> getImagesByMainCategory(
-            @PathVariable(name = "mainCategoryId") Long mainCategoryId,
+    @GetMapping("/home")
+    public GlobalResponse<Page<AdminImageResponse>> getImagesByCategory(
+            @RequestParam(name = "maintag", required = false) Long mainCategoryId,
+            @RequestParam(name = "subtag", required = false) Long subCategoryId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sort", defaultValue = "createdAt,desc") String sort) {
+            @RequestParam(name = "sort", defaultValue = "desc") String sortDirection) {
 
-        String[] sortParams = sort.split(",");
-        Sort sorting = Sort.by(Sort.Direction.fromString(sortParams[1]), sortParams[0]);
+        Sort sorting = Sort.by(Sort.Direction.fromString(sortDirection), "createdAt");
         Pageable pageable = PageRequest.of(page, size, sorting);
 
-        Page<AdminImage> images = adminImageService.findByMainCategory(mainCategoryId, pageable);
-        Page<AdminImageResponse> responses = images.map(AdminImageResponse::from);
-        return GlobalResponse.success(responses);
-    }
+        Page<AdminImage> images;
+        if (subCategoryId != null) {
+            images = adminImageService.findBySubCategory(subCategoryId, pageable);
+        } else if (mainCategoryId != null) {
+            images = adminImageService.findByMainCategory(mainCategoryId, pageable);
+        } else {
+            images = adminImageService.findAll(pageable);
+        }
 
-    @GetMapping("/home/sub/{subCategoryId}")
-    public GlobalResponse<Page<AdminImageResponse>> getImagesBySubCategory(
-            @PathVariable(name = "subCategoryId") Long subCategoryId,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "20") int size,
-            @RequestParam(name = "sort", defaultValue = "createdAt,desc") String sort) {
-
-        String[] sortParams = sort.split(",");
-        Sort sorting = Sort.by(Sort.Direction.fromString(sortParams[1]), sortParams[0]);
-        Pageable pageable = PageRequest.of(page, size, sorting);
-
-        Page<AdminImage> images = adminImageService.findBySubCategory(subCategoryId, pageable);
         Page<AdminImageResponse> responses = images.map(AdminImageResponse::from);
         return GlobalResponse.success(responses);
     }
