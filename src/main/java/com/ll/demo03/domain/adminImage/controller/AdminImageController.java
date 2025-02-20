@@ -1,5 +1,6 @@
 package com.ll.demo03.domain.adminImage.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ll.demo03.domain.adminImage.dto.AdminImageRequest;
 import com.ll.demo03.domain.adminImage.dto.AdminImageResponse;
 import com.ll.demo03.domain.adminImage.dto.FileResponse;
@@ -36,21 +37,26 @@ public class AdminImageController {
     @PostMapping("/admin/image/upload")
     public ResponseEntity<Map<String, Object>> uploadFile(
             @RequestParam("file") MultipartFile file,
-            @RequestPart("metadata") AdminImageRequest adminImageRequest) {
+            @RequestParam("metadata") String metadata) {
         try {
+            // JSON 문자열을 객체로 변환
+            ObjectMapper objectMapper = new ObjectMapper();
+            AdminImageRequest adminImageRequest = objectMapper.readValue(metadata, AdminImageRequest.class);
+
             System.out.println("Hashtags: " + adminImageRequest.getHashtags());
 
-            AdminImage adminImage=fileService.uploadFile(file, adminImageRequest);
-            AdminImageResponse adminImageResponse=AdminImageResponse.from(adminImage);
+            AdminImage adminImage = fileService.uploadFile(file, adminImageRequest);
+            AdminImageResponse adminImageResponse = AdminImageResponse.from(adminImage);
             return ResponseEntity.ok(Map.of(
                     "message", "파일 업로드 성공",
                     "image", adminImageResponse
             ));
         } catch (IOException e) {
             return ResponseEntity.internalServerError()
-                    .body(Map.of("error", e));
+                    .body(Map.of("error", e.getMessage()));
         }
     }
+
 
     // cloudflare에 있는 이미지 파일 조회
     @GetMapping("/admin/image/files")
