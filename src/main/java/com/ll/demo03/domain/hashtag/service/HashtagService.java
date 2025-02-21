@@ -22,7 +22,11 @@ public class HashtagService {
         }
 
         List<Hashtag> hashtags = hashtagNames.stream()
-                .map(name -> Hashtag.create(name, adminImage))
+                .map(name -> {
+                    Hashtag hashtag = Hashtag.create(name, adminImage);
+                    adminImage.addHashtag(hashtag);
+                    return hashtag;
+                })
                 .collect(Collectors.toList());
 
         hashtagRepository.saveAll(hashtags);

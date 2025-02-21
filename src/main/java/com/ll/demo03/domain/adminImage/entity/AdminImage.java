@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import lombok.Builder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,5 +30,11 @@ public class AdminImage extends BaseEntity {
     private ImageCategory category;
 
     @OneToMany(mappedBy = "adminImage", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<Hashtag> hashtags = new ArrayList<>();
+
+    public void addHashtag(Hashtag hashtag) {
+        hashtags.add(hashtag);
+        hashtag.setAdminImage(this);
+    }
 }

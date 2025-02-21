@@ -114,5 +114,4 @@ public class AdminImageController {
         Page<AdminImageResponse> responses = images.map(AdminImageResponse::from);
         return GlobalResponse.success(responses);
     }
-
 }
