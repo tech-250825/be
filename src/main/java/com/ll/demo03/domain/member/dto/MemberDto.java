@@ -8,16 +8,12 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class MemberDto {
-    private String email;
-    private String name;
-    private String profile;
+    private String nickname;
     private int credit;
 
     public static MemberDto of(Member member) {
         return MemberDto.builder()
-                .email(member.getEmail())
-                .name(member.getName())
-                .profile(member.getProfile())
+                .nickname(member.getNickname())
                 .credit(member.getCredit())
                 .build();
     }

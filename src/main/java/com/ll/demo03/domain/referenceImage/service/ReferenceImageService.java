@@ -1,10 +1,5 @@
 package com.ll.demo03.domain.referenceImage.service;
 
-import com.ll.demo03.domain.adminImage.dto.AdminImageRequest;
-import com.ll.demo03.domain.adminImage.entity.AdminImage;
-import com.ll.demo03.domain.adminImage.repository.AdminImageRepository;
-import com.ll.demo03.domain.hashtag.service.HashtagService;
-import com.ll.demo03.domain.imageCategory.service.CategoryService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

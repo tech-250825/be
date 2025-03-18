@@ -18,4 +18,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     void resetAllMembersCredit();
 
     Optional<Member> findByProviderAndProviderId(AuthProvider provider, String providerId);
+
+    boolean existsByNickname(String nickname);
 }

@@ -1,18 +1,14 @@
 package com.ll.demo03.domain.referenceImage.controller;
 
-import com.ll.demo03.domain.adminImage.dto.AdminImageResponse;
-import com.ll.demo03.domain.adminImage.entity.AdminImage;
 import com.ll.demo03.domain.referenceImage.service.ReferenceImageService;
 import com.ll.demo03.global.dto.GlobalResponse;
 import com.ll.demo03.global.error.ErrorCode;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Map;
 
 @RequiredArgsConstructor
 @Transactional
@@ -21,7 +17,7 @@ import java.util.Map;
 public class ReferenceImageController {
     private final ReferenceImageService referenceImageService;
 
-    @PostMapping("/image")
+    @PostMapping("/mypage")
     public GlobalResponse<String> uploadFile(
             @RequestParam("file") MultipartFile file) {
         try {

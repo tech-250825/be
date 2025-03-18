@@ -61,12 +61,12 @@ public class SecurityConfig {
                                 "/auth/token/verify",
                                 "/ws/**",
                                 "/auth/google/redirect",
-                                        "/admin/image/upload",
-                                        "/admin/image/*",
-                                "/admin/image",
+                                        "/admin/mypage/upload",
+                                        "/admin/mypage/*",
+                                "/admin/mypage",
                                 "/swagger-ui/**",
                                         "/swagger-resources/**",
-                                        "/admin/image/**",
+                                        "/admin/mypage/**",
                                 "/home/**",
                                 "/actuator/health"
                                 ).permitAll() //

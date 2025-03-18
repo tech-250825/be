@@ -1,32 +1,46 @@
 package com.ll.demo03.domain.image.entity;
-
-
-import com.ll.demo03.domain.imageGenerate.entity.ImageGenerate;
+import com.ll.demo03.domain.member.entity.Member;
+import com.ll.demo03.domain.task.entity.Task;
 import com.ll.demo03.global.base.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ManyToOne;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.Builder;
+import jakarta.persistence.*;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
 @Entity
-@SuperBuilder
 @NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
 public class Image extends BaseEntity {
+
+    @Builder.Default
+    private Boolean isBookmarked = false;
+
     private String url;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private ImageGenerate imageGenerate;
+    @JoinColumn(name = "user_id")
+    private Member member;
 
-    public static Image of(String url, ImageGenerate imageGenerate) {
-        Image image = new Image();
-        image.url = url;
-        image.imageGenerate = imageGenerate;
-        return image;
+    @ManyToOne(fetch= FetchType.LAZY)
+    @JoinColumn(name = "task_id")
+    private Task task;
+
+    public static Image of(String url, Task task) {
+        return Image.builder()
+                .url(url)
+                .task(task)
+                .member(task.getMember())
+                .build();
     }
+
+    public boolean isBookmarked() {
+        return Boolean.TRUE.equals(isBookmarked);
+    }
+
+    public void toggleBookmark() {
+        this.isBookmarked = !this.isBookmarked();
+    }
+
 }
