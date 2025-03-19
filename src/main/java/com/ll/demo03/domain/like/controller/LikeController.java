@@ -4,44 +4,54 @@ import com.ll.demo03.domain.image.dto.ImageResponseDto;
 import com.ll.demo03.domain.like.service.LikeService;
 import com.ll.demo03.domain.member.entity.Member;
 import com.ll.demo03.domain.oauth.entity.PrincipalDetails;
-import com.ll.demo03.global.dto.GlobalResponse;
+import com.ll.demo03.global.exception.CustomException;
+import org.springframework.http.ResponseEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/mypage")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class LikeController {
 
     private final LikeService likeService;
 
     @PostMapping("/{imageId}/like")
-    public GlobalResponse addBookmark(
+    public ResponseEntity<?>  addLike(
             @PathVariable(name="imageId") Long imageId,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
-        Member member = principalDetails.user();
-        likeService.addLike(imageId, member);
-        return GlobalResponse.success("좋아요 등록에 성공했습니다.");
+        try {
+            Member member = principalDetails.user();
+            likeService.addLike(imageId, member);
+            return ResponseEntity.ok().body(Map.of("message", "Like added successfully"));
+        }catch (CustomException e){
+            throw e;
+        }
     }
 
     @DeleteMapping("/{imageId}/like")
-    public GlobalResponse deleteBookmark(
+    public ResponseEntity<?>  deleteLike(
             @PathVariable(name="imageId") Long imageId,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
-        Member member = principalDetails.user();
-        likeService.deleteLike(imageId, member);
-        return GlobalResponse.success("좋아요 삭제에 성공했습니다.");
+        try{
+            Member member = principalDetails.user();
+            likeService.deleteLike(imageId, member);
+            return ResponseEntity.ok().body(Map.of("message", "Like deleted successfully"));
+        }catch (CustomException e){
+            throw e;
+        }
     }
 
-    @GetMapping("/like/my")
-    public GlobalResponse<?> getMyBookmarks(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+    @GetMapping("/mypage/like")
+    public ResponseEntity<List<ImageResponseDto>> getMyLikes(@AuthenticationPrincipal PrincipalDetails principalDetails) {
         Member member = principalDetails.user();
         List<ImageResponseDto> bookmarks = likeService.getMyLikes(member);
-        return GlobalResponse.success(bookmarks);
+        return ResponseEntity.ok(bookmarks);
     }
 }

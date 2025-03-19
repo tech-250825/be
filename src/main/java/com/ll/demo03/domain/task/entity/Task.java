@@ -19,7 +19,6 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @SuperBuilder
 public class Task extends BaseEntity {
-    private String refImage;
     private String ratio;
     private String rawPrompt;
     private String gptPrompt;

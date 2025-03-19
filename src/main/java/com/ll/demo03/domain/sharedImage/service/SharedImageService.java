@@ -6,6 +6,8 @@ import com.ll.demo03.domain.sharedImage.repository.SharedImageRepository;
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,12 +21,12 @@ public class SharedImageService {
     private final SharedImageRepository sharedImageRepository;
     private final ImageRepository imageRepository;
 
-    public List<SharedImage> getAllSharedImages() {
-        return sharedImageRepository.findAll();
+    public Page<SharedImage> getAllSharedImages(Pageable pageable) {
+        return sharedImageRepository.findAll(pageable);
     }
 
-    public List<SharedImage> getMySharedImages(Long memberId) {
-        return sharedImageRepository.findAllByImage_Member_Id(memberId);
+    public Page<SharedImage> getMySharedImages(Long memberId, Pageable pageable) {
+        return sharedImageRepository.findAllByImage_Member_Id(memberId, pageable);
     }
 
     public Optional<SharedImage> getSharedImageById(Long id) {
@@ -46,17 +48,9 @@ public class SharedImageService {
         sharedImage.setImage(image);
         sharedImage.setLikeCount(0);
 
-        return sharedImageRepository.save(sharedImage);
-    }
+        SharedImage saved = sharedImageRepository.save(sharedImage);
 
-
-    @Transactional
-    public SharedImage updateLikeCount(Long id, int likeCount) {
-        SharedImage sharedImage = sharedImageRepository.findById(id)
-                .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
-
-        sharedImage.setLikeCount(likeCount);
-        return sharedImageRepository.save(sharedImage);
+        return saved;
     }
 
 

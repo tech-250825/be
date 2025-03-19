@@ -56,14 +56,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request ->
                         request.requestMatchers(
                                 "/",
-                                "/api/images/create",
+                                "/api/shared-images",
+                                        "/api/shared-images/**",
                                         "/api/images/webhook",
                                 "/auth/token/verify",
                                 "/ws/**",
                                 "/auth/google/redirect",
-                                        "/admin/mypage/upload",
-                                        "/admin/mypage/*",
-                                "/admin/mypage",
                                 "/swagger-ui/**",
                                         "/swagger-resources/**",
                                         "/admin/mypage/**",

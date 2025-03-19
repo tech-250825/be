@@ -10,6 +10,6 @@ import java.util.Optional;
 public interface LikeRepository extends JpaRepository<Like, Long> {
 
     Optional<Like> findByMemberAndImageId(Member member, Long imageId);
-
+    boolean existsByMemberIdAndImageId(Long memberId, Long imageId);
     List<Like> findByMember(Member member);
 }

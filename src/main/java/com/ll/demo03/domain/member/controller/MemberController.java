@@ -6,9 +6,11 @@ import com.ll.demo03.domain.member.service.MemberService;
 import com.ll.demo03.domain.oauth.entity.PrincipalDetails;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import com.ll.demo03.domain.member.dto.MemberDto;
 import com.ll.demo03.global.dto.GlobalResponse;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -19,29 +21,29 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = " 회원 API", description = "User")
 public class MemberController {
 
-    private MemberService memberService;
+    private final MemberService memberService;
 
     @GetMapping("/profile")
     @PreAuthorize("isAuthenticated()")
-    public GlobalResponse<MemberDto> getUserProfile(
+    public ResponseEntity<MemberDto> getUserProfile(
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
         Member member = principalDetails.user();
         MemberDto userProfile = MemberDto.of(member);
 
-        return GlobalResponse.success(userProfile);
+        return ResponseEntity.ok(userProfile);
     }
 
     @PutMapping("/nickname")
     @PreAuthorize("isAuthenticated()")
-    public GlobalResponse<MemberDto> updateNickname(
+    public ResponseEntity<MemberDto> updateNickname(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestBody @Valid UpdateNicknameRequest request
     ) {
         Long memberId = principalDetails.user().getId();
         MemberDto updatedMember = memberService.updateNickname(memberId, request.getNickname());
 
-        return GlobalResponse.success(updatedMember);
+        return ResponseEntity.ok(updatedMember);
     }
 
 

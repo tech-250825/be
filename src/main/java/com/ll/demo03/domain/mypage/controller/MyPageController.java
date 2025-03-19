@@ -77,7 +77,7 @@ public class MyPageController {
                 .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
         if (!image.getMember().getId().equals(member.getId())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You are not authorized to share this mypage");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You are not authorized to bookmark this image");
         }
 
         image.toggleBookmark();
@@ -85,15 +85,15 @@ public class MyPageController {
 
         return ResponseEntity.ok(Map.of(
                 "imageId", image.getId(),
-                "shared", image.getIsBookmarked()
+                "bookmarked", image.getIsBookmarked()
         ));
     }
 
-    @GetMapping("/bookmark")
+    @GetMapping("/mypage/bookmark")
     public Page<ImageResponseDto> getBookmarkedImages(
             @PageableDefault(page = 0, size = 12) Pageable pageable
     ) {
-        Page<Image> sharedImages = imageRepository.findByBookmarkedOrderByCreatedAtDesc(true, pageable);
+        Page<Image> sharedImages = imageRepository.findByIsBookmarkedOrderByCreatedAtDesc(true, pageable);
         return sharedImages.map(ImageResponseDto::of);
     }
 }

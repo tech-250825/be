@@ -19,7 +19,6 @@ import java.util.Random;
 @SuperBuilder
 public class Member extends BaseEntity {
     private String name;
-    private String account;
     private String email;
     private String profile;
 

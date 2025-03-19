@@ -1,5 +1,6 @@
 package com.ll.demo03.domain.mypage.folder.controller;
 
+import com.ll.demo03.domain.mypage.folder.dto.FolderRequestDto;
 import com.ll.demo03.domain.mypage.folder.dto.FolderResponseDto;
 import com.ll.demo03.domain.mypage.folder.service.FolderService;
 import com.ll.demo03.domain.oauth.entity.PrincipalDetails;
@@ -36,7 +37,7 @@ public class FolderController {
     @PostMapping
     public ResponseEntity<?> createFolder(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @RequestBody @Valid FolderResponseDto requestDto
+            @RequestBody @Valid FolderRequestDto requestDto
     ) {
         return ResponseEntity.ok(folderService.createFolder(principalDetails.user(), requestDto));
     }
@@ -54,7 +55,7 @@ public class FolderController {
     public ResponseEntity<?> modifyFolderName(
             @PathVariable Long folderId,
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @RequestBody @Valid FolderResponseDto requestDto
+            @RequestBody @Valid FolderRequestDto requestDto
     ) {
         return ResponseEntity.ok(folderService.modifyFolderName(principalDetails.user(), folderId, requestDto));
     }

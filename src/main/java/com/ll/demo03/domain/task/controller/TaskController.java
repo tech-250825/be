@@ -101,7 +101,7 @@ public class TaskController {
                 sref = referenceImageService.uploadFile(srefImage);
             }
 
-            String response = taskService.createImage( newPrompt, ratio, cref, sref, "https://70f0-116-44-217-211.ngrok-free.app"+"/api/images/webhook");
+            String response = taskService.createImage( newPrompt, ratio, cref, sref, "https://api.hoit.my"+"/api/images/webhook");
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
                 JsonNode rootNode = objectMapper.readTree(response);
@@ -177,10 +177,12 @@ public class TaskController {
                     .orElseThrow(() -> new EntityNotFoundException("Image not found"));
 
             if (imageUrls != null && imageUrls.size() >= 4) {
-                imageUrls.subList(0, 4).forEach(url -> {
-                    Image image = Image.of(url, task);
+                List<String> firstFourUrls = imageUrls.subList(0, 4);
+                for (int i = 0; i < firstFourUrls.size(); i++) {
+                    Image image = Image.of(firstFourUrls.get(i), task);
+                    image.setImgIndex(i + 1);
                     imageRepository.save(image);
-                });
+                }
             }
 
             SseEmitter emitter = sseEmitterRepository.get(taskId);
@@ -214,7 +216,7 @@ public class TaskController {
                         "    {\"role\": \"system\", \"content\": \"You are a content moderation assistant. Analyze the user's input and determine if it contains inappropriate, offensive, or NSFW content. " +
                         "Try to censor even inappropriate words that Midjourney can't draw, such as sexual elements, sexual clothing. " +
                         "Cigarette and Tobacco are not subject to censorship. Respond with 'Content approved'. " +
-                        "If it does, respond with 'Content flagged: [reason]'. If not, respond with 'Content approved'. " +
+                        "If it does, respond with 'Content flagged: [reason]'. If not, respond with 'Content approved.' " +
                         "Use the following categories to flag content: hate speech, adult content, racism, sexism, or illegal activities.\"},\n" +
                         "    {\"role\": \"user\", \"content\": \"%s\"}\n" +
                         "  ],\n" +
@@ -233,13 +235,13 @@ public class TaskController {
 
             log.info("OpenAI 검열 응답: {}", result);
 
-            if (result.equalsIgnoreCase("Content approved")) {
+            if (result.equalsIgnoreCase("Content approved.")) {
                 return true;
             } else if (result.startsWith("Content flagged:")) {
                 return false;
             } else {
                 log.warn("Unexpected response from OpenAI: {}", result);
-                return false;
+                return true;
             }
         } catch (Exception e) {
             log.error("OpenAI API 요청 실패: ", e);
@@ -263,9 +265,10 @@ public class TaskController {
                         "                artist's name related to the style (ex, Ghibli Studio, Hayao Miyazaki, Jeremy Geddes, Junji Ito, Naoko Takeuchi, ...), or specific style (ex: retro anime -> vhs effect, grainy texture, 80s anime, motion blur, realistic -> 4k). If it's animation or character,\\n" +
                         "                write simply, in 1~2 sentences. If the user wants a pretty girl, add 'in the style of guweiz'. Don't use korean.\\n" +
                         "                If it's realism, describe pose, layout, composition, add 4k. If the user seems to want retro anime, add --niji 5 at the end of the prompt.\"},\n" +
-                        "    {\"role\": \"user\", \"content\": \"Here is the user's demand: %s" +
-                        "  ]\n" +
-                        "}", prompt);
+                        "    {\"role\": \"user\", \"content\": \"" + prompt + "\"}\n" +
+                        "  ],\n" +
+                        "  \"temperature\": 0\n" +
+                        "}");
 
         HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
 

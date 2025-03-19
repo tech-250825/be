@@ -2,6 +2,7 @@ package com.ll.demo03.domain.mypage.folder.service;
 
 import com.ll.demo03.domain.image.entity.Image;
 import com.ll.demo03.domain.member.entity.Member;
+import com.ll.demo03.domain.mypage.folder.dto.FolderRequestDto;
 import com.ll.demo03.domain.mypage.folder.dto.FolderResponseDto;
 import com.ll.demo03.domain.mypage.folder.entity.Folder;
 import com.ll.demo03.domain.mypage.folder.repository.FolderRepository;
@@ -29,7 +30,7 @@ public class FolderService {
     }
 
     @Transactional
-    public Map<String, Object> createFolder(Member member, FolderResponseDto requestDto) {
+    public Map<String, Object> createFolder(Member member, FolderRequestDto requestDto) {
         Folder folder = Folder.builder()
                 .name(requestDto.getName())
                 .member(member)
@@ -52,7 +53,7 @@ public class FolderService {
     }
 
     @Transactional
-    public Map<String, Object> modifyFolderName(Member member, Long folderId, FolderResponseDto requestDto) {
+    public Map<String, Object> modifyFolderName(Member member, Long folderId, FolderRequestDto requestDto) {
         Folder folder = folderRepository.findById(folderId)
                 .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 

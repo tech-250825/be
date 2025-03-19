@@ -12,6 +12,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@Table(name="image")
 public class Image extends BaseEntity {
 
     @Builder.Default
@@ -26,6 +27,8 @@ public class Image extends BaseEntity {
     @ManyToOne(fetch= FetchType.LAZY)
     @JoinColumn(name = "task_id")
     private Task task;
+
+    private int imgIndex;
 
     public static Image of(String url, Task task) {
         return Image.builder()

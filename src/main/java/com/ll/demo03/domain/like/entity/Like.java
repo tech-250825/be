@@ -3,10 +3,7 @@ package com.ll.demo03.domain.like.entity;
 import com.ll.demo03.domain.image.entity.Image;
 import com.ll.demo03.domain.member.entity.Member;
 import com.ll.demo03.global.base.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,6 +14,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
+@Table(name = "user_like")
 public class Like extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id") //FK 컬럼명
