@@ -1,6 +1,6 @@
 app:
   client:
-    urls: http://localhost:5173, https://hoit.my
+    url: https://hoit.my
 server:
   port: 8090
   shutdown: graceful

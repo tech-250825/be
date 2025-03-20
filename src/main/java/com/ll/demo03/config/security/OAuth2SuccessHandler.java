@@ -19,8 +19,8 @@ import java.util.List;
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private final TokenProvider tokenProvider;
 
-    @Value("${app.client.urls}")
-    private List<String> clientUrls;
+    @Value("${app.client.url}")
+    private String redirectUrl;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -32,26 +32,18 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         accessCookie.setHttpOnly(true);
         accessCookie.setSecure(false);
         accessCookie.setPath("/");
+        accessCookie.setDomain(".hoit.my");
         accessCookie.setMaxAge(3600); // 1시간
 
         Cookie refreshCookie = new Cookie("_hrauth", refreshToken);
         refreshCookie.setHttpOnly(true);
         refreshCookie.setSecure(false);
         refreshCookie.setPath("/");
+        refreshCookie.setDomain(".hoit.my");
         refreshCookie.setMaxAge(3600); // 1시간
 
         response.addCookie(accessCookie);
         response.addCookie(refreshCookie);
-
-        String origin = request.getHeader("Origin");
-        String referer = request.getHeader("Referer");
-
-
-        String redirectUrl = clientUrls.stream()
-                .filter(url -> origin != null && origin.startsWith(url) ||
-                        referer != null && referer.startsWith(url))
-                .findFirst()
-                .orElse(clientUrls.get(0));
 
         response.sendRedirect(redirectUrl);
     }
