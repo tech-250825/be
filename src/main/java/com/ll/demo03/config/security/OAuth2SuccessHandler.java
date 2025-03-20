@@ -32,14 +32,14 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         accessCookie.setHttpOnly(true);
         accessCookie.setSecure(false);
         accessCookie.setPath("/");
-        accessCookie.setDomain(".hoit.my");
+        accessCookie.setDomain("hoit.my");
         accessCookie.setMaxAge(3600); // 1시간
 
         Cookie refreshCookie = new Cookie("_hrauth", refreshToken);
         refreshCookie.setHttpOnly(true);
         refreshCookie.setSecure(false);
         refreshCookie.setPath("/");
-        refreshCookie.setDomain(".hoit.my");
+        refreshCookie.setDomain("hoit.my");
         refreshCookie.setMaxAge(3600); // 1시간
 
         response.addCookie(accessCookie);

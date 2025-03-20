@@ -1,6 +1,6 @@
 app:
   client:
-    url: https://hoit.my
+    url: https://www.hoit.my
 server:
   port: 8090
   shutdown: graceful
