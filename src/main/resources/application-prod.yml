@@ -19,7 +19,6 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://172.17.0.1:3306/midai
     username: root
-    password: 1234
   data:
     redis:
       host: 172.17.0.1
