@@ -1,5 +1,7 @@
 package com.ll.demo03.config.security;
 
+import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,6 +17,7 @@ import java.nio.charset.StandardCharsets;
 
 @RequiredArgsConstructor
 @Component
+@Slf4j
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private final TokenProvider tokenProvider;
 
@@ -38,16 +41,13 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         // 사용자 지정 리다이렉트 URL 확인
         String targetUrl = defaultRedirectUrl;
 
-        // state 매개변수에서 리다이렉트 URL 추출
-        String state = request.getParameter("state");
-        if (state != null && !state.isEmpty()) {
-            try {
-                String customRedirectUrl = URLDecoder.decode(state, StandardCharsets.UTF_8);
-                if (isValidRedirectUrl(customRedirectUrl)) {
-                    targetUrl = customRedirectUrl;
-                }
-            } catch (Exception e) {
-                // 디코딩 오류 시 기본 URL 사용
+        HttpSession session = request.getSession(false);
+
+        if (session != null) {
+            String redirectUrl = (String) session.getAttribute("OAUTH2_REDIRECT_URL");
+            if (redirectUrl != null && isValidRedirectUrl(redirectUrl)) {
+                targetUrl = redirectUrl;
+                session.removeAttribute("OAUTH2_REDIRECT_URL");  // 사용 후 제거
             }
         }
 

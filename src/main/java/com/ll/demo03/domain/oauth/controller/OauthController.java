@@ -3,6 +3,7 @@ package com.ll.demo03.domain.oauth.controller;
 import com.ll.demo03.domain.oauth.token.TokenProvider;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -24,15 +25,14 @@ public class OauthController {
 
     @GetMapping("/login/google")
     public ResponseEntity<Map<String, String>> getLoginUrl(
-            @RequestParam(required = false) String redirectUrl
+            @RequestParam(required = false) String redirectUrl,
+            HttpSession session
     ) {
-        String encodedRedirectUrl = redirectUrl != null ?
-                java.net.URLEncoder.encode(redirectUrl, java.nio.charset.StandardCharsets.UTF_8) : "";
+        if (redirectUrl != null && !redirectUrl.isEmpty()) {
+            session.setAttribute("OAUTH2_REDIRECT_URL", redirectUrl);
+        }
 
         String loginUrl = "/oauth2/authorization/google";
-        if (!encodedRedirectUrl.isEmpty()) {
-            loginUrl += "?state=" + encodedRedirectUrl;
-        }
 
         Map<String, String> response = new HashMap<>();
         response.put("url", loginUrl);
