@@ -61,7 +61,7 @@ public class SecurityConfig {
                                         "/api/images/webhook",
                                         "/api/upscale-images/webhook",
                                 "/auth/token/verify",
-                                "/api/auth/login/google",
+                                "/api/auth/login/*",
                                 "/ws/**",
                                 "/auth/google/redirect",
                                 "/swagger-ui/**",

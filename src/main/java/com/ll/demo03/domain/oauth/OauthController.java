@@ -23,8 +23,6 @@ import com.ll.demo03.domain.member.repository.MemberRepository;
 public class OauthController {
 
     private final TokenProvider tokenProvider;
-    private final MemberRepository memberRepository;
-
 
     @GetMapping("/login/google")
     public ResponseEntity<Map<String, String>> getLoginUrl(
@@ -71,12 +69,11 @@ public class OauthController {
         refreshCookie.setHttpOnly(true);
         refreshCookie.setSecure(true);
         refreshCookie.setPath("/");
-        refreshCookie.setMaxAge(3600); // 1시간
+        refreshCookie.setMaxAge(3600);
 
         response.addCookie(accessCookie);
         response.addCookie(refreshCookie);
 
-        // 응답 데이터 구성
         Map<String, Object> responseData = new HashMap<>();
         responseData.put("success", true);
         responseData.put("redirectUrl", redirectUrl);
@@ -84,9 +81,6 @@ public class OauthController {
         return ResponseEntity.ok(responseData);
     }
 
-    /**
-     * 쿠키 기반 로그인 상태 확인
-     */
     @GetMapping("/login/status")
     public ResponseEntity<Map<String, Object>> checkLoginStatus(
             @CookieValue(name = "_hoauth", required = false) String accessToken
@@ -98,9 +92,6 @@ public class OauthController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * 로그아웃 처리
-     */
     @GetMapping("/logout")
     public ResponseEntity<Map<String, Object>> logout(HttpServletResponse response) {
         // 쿠키 제거
@@ -119,7 +110,6 @@ public class OauthController {
         response.addCookie(accessCookie);
         response.addCookie(refreshCookie);
 
-        // 시큐리티 컨텍스트 클리어
         SecurityContextHolder.clearContext();
 
         Map<String, Object> responseData = new HashMap<>();
