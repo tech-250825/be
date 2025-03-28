@@ -1,4 +1,7 @@
 server:
+  docker:
+    compose:
+      enabled: false
   port: 8090
   shutdown: graceful
 spring:

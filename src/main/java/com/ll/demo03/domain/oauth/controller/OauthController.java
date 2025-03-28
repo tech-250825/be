@@ -1,4 +1,4 @@
-package com.ll.demo03.domain.oauth;
+package com.ll.demo03.domain.oauth.controller;
 
 import com.ll.demo03.domain.oauth.token.TokenProvider;
 import jakarta.servlet.http.Cookie;
@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import com.ll.demo03.domain.member.repository.MemberRepository;
 
 @RestController
 @RequiredArgsConstructor
@@ -94,7 +92,7 @@ public class OauthController {
 
     @GetMapping("/logout")
     public ResponseEntity<Map<String, Object>> logout(HttpServletResponse response) {
-        // 쿠키 제거
+
         Cookie accessCookie = new Cookie("_hoauth", null);
         accessCookie.setHttpOnly(true);
         accessCookie.setSecure(true);
