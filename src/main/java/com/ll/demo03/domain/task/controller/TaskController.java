@@ -92,7 +92,7 @@ public class TaskController {
                     ratio,
                     cref,
                     sref,
-                    "https://158d-116-44-217-211.ngrok-free.app/api/images/webhook",
+                    "https://api.hoit.my/api/images/webhook",
                     member.getId(),
                     prompt
             );
