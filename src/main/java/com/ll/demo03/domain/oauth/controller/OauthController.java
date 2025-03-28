@@ -80,30 +80,4 @@ public class OauthController {
 
         return ResponseEntity.ok(response);
     }
-
-    @GetMapping("/logout")
-    public ResponseEntity<Map<String, Object>> logout(HttpServletResponse response) {
-
-        Cookie accessCookie = new Cookie("_hoauth", null);
-        accessCookie.setHttpOnly(true);
-        accessCookie.setSecure(true);
-        accessCookie.setPath("/");
-        accessCookie.setMaxAge(0);
-
-        Cookie refreshCookie = new Cookie("_hrauth", null);
-        refreshCookie.setHttpOnly(true);
-        refreshCookie.setSecure(true);
-        refreshCookie.setPath("/");
-        refreshCookie.setMaxAge(0);
-
-        response.addCookie(accessCookie);
-        response.addCookie(refreshCookie);
-
-        SecurityContextHolder.clearContext();
-
-        Map<String, Object> responseData = new HashMap<>();
-        responseData.put("success", true);
-
-        return ResponseEntity.ok(responseData);
-    }
 }
