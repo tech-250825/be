@@ -69,6 +69,10 @@ dependencies {
 	//
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
+	runtimeOnly("org.springframework.boot:spring-boot-docker-compose")
+	implementation("org.springframework.boot:spring-boot-starter-amqp")
+	testImplementation("org.springframework.amqp:spring-rabbit-test")
+
 }
 
 tasks.named('test') {

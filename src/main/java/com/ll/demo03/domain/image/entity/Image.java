@@ -1,7 +1,9 @@
 package com.ll.demo03.domain.image.entity;
 import com.ll.demo03.domain.member.entity.Member;
 import com.ll.demo03.domain.task.entity.Task;
+import com.ll.demo03.domain.upscaledTask.entity.UpscaleTask;
 import com.ll.demo03.global.base.BaseEntity;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -24,17 +26,31 @@ public class Image extends BaseEntity {
     @JoinColumn(name = "user_id")
     private Member member;
 
+    @Nullable
     @ManyToOne(fetch= FetchType.LAZY)
     @JoinColumn(name = "task_id")
     private Task task;
 
     private int imgIndex;
 
+    @Nullable
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "upscaleTask_id")
+    private UpscaleTask upscaleTask;
+
     public static Image of(String url, Task task) {
         return Image.builder()
                 .url(url)
                 .task(task)
                 .member(task.getMember())
+                .build();
+    }
+
+    public static Image ofUpscale(String url, UpscaleTask upscaleTask) {
+        return Image.builder()
+                .url(url)
+                .upscaleTask(upscaleTask)
+                .member(upscaleTask.getMember())
                 .build();
     }
 

@@ -3,22 +3,18 @@ package com.ll.demo03.domain.task.controller;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ll.demo03.domain.task.dto.ImageRequest;
-import com.ll.demo03.domain.task.dto.ImageUrlsResponse;
+import com.ll.demo03.domain.task.dto.ImageRequestMessage;
 import com.ll.demo03.domain.task.dto.WebhookEvent;
-import com.ll.demo03.domain.task.entity.Task;
-import com.ll.demo03.domain.image.entity.Image;
-import com.ll.demo03.domain.image.repository.ImageRepository;
-import com.ll.demo03.domain.task.repository.TaskRepository;
-import com.ll.demo03.domain.task.repository.SseEmitterRepository;
-import com.ll.demo03.domain.task.service.TaskService;
+import com.ll.demo03.domain.task.service.ImageMessageConsumer;
+import com.ll.demo03.domain.task.service.ImageMessageProducer;
 import com.ll.demo03.domain.member.entity.Member;
 import com.ll.demo03.domain.member.repository.MemberRepository;
 import com.ll.demo03.domain.oauth.entity.PrincipalDetails;
 import com.ll.demo03.domain.referenceImage.service.ReferenceImageService;
+import com.ll.demo03.domain.task.service.TaskService;
 import com.ll.demo03.global.dto.GlobalResponse;
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,9 +29,6 @@ import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @Transactional
@@ -50,17 +43,16 @@ public class TaskController {
     @Value("${openai.api.key}")
     private String openAiApiKey;
 
-    private final TaskService taskService;
     private final MemberRepository memberRepository;
-    private final TaskRepository taskRepository;
-    private final ImageRepository imageRepository;
-    private final SseEmitterRepository sseEmitterRepository;
+    private final ImageMessageProducer imageMessageProducer;
     private final ReferenceImageService referenceImageService;
+    private final ImageMessageConsumer imageMessageConsumer;
     private final RestTemplate restTemplate;
+    private final TaskService taskService;
 
-    @PostMapping(value = "/create", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @PostMapping(value = "/create")
     @PreAuthorize("isAuthenticated()")
-    public SseEmitter createImage(
+    public GlobalResponse createImage(
             @RequestParam(required = false) MultipartFile crefImage,
             @RequestParam(required = false) MultipartFile srefImage,
             @RequestPart("metadata") ImageRequest imageRequest,
@@ -85,15 +77,9 @@ public class TaskController {
 
         String newPrompt = modifyPrompt(prompt);
 
-        SseEmitter emitter = new SseEmitter(600000L); // 10분
         try {
-
-            emitter.send(SseEmitter.event()
-                    .name("status")
-                    .data("이미지 생성 중..."));
-
-            String cref=null;
-            String sref=null;
+            String cref = null;
+            String sref = null;
             if (crefImage != null && !crefImage.isEmpty()) {
                 cref = referenceImageService.uploadFile(crefImage);
             }
@@ -101,51 +87,24 @@ public class TaskController {
                 sref = referenceImageService.uploadFile(srefImage);
             }
 
-            String response = taskService.createImage( newPrompt, ratio, cref, sref, "https://api.hoit.my"+"/api/images/webhook");
-            try {
-                ObjectMapper objectMapper = new ObjectMapper();
-                JsonNode rootNode = objectMapper.readTree(response);
-                String taskId = rootNode.path("data").path("task_id").asText();
+            ImageRequestMessage requestMessage = new ImageRequestMessage(
+                    newPrompt,
+                    ratio,
+                    cref,
+                    sref,
+                    "https://158d-116-44-217-211.ngrok-free.app/api/images/webhook",
+                    member.getId(),
+                    prompt
+            );
 
-                System.out.println("Extracted task_id: " + taskId);
+            imageMessageProducer.sendImageCreationMessage(requestMessage);
 
-                emitter.send(SseEmitter.event()
-                        .name("task_id")
-                        .data(taskId));
-
-                Task task = new Task();
-                task.setTaskId(taskId);
-                task.setRawPrompt(prompt);
-                task.setGptPrompt(newPrompt);
-                task.setRatio(ratio);
-                task.setMember(member);
-
-                taskRepository.save(task);
-                sseEmitterRepository.save(taskId, emitter);
-
-                emitter.onTimeout(() -> {
-                    log.warn("SSE connection timed out for taskId: {}", taskId);
-                    sseEmitterRepository.remove(taskId);
-                    emitter.complete();
-                });
-
-                emitter.onCompletion(() -> {
-                    log.info("SSE connection completed for taskId: {}", taskId);
-                    sseEmitterRepository.remove(taskId);
-                });
-
-            } catch (Exception e) {
-                log.error("JSON 파싱 오류: ",  e);
-                emitter.completeWithError(e);
-            }
+            return GlobalResponse.success();
         } catch (Exception e) {
-            log.error("이미지 생성 중 오류 발생: ", e);
-            emitter.completeWithError(e);
+            log.error("이미지 생성 요청 중 오류 발생: ", e);
+            return GlobalResponse.error(ErrorCode.INTERNAL_SERVER_ERROR);
         }
-        return emitter;
     }
-
-
 
     @PostMapping("/webhook")
     public GlobalResponse handleWebhook(
@@ -155,45 +114,12 @@ public class TaskController {
             log.error("Unauthorized webhook request. Secret key mismatch or missing");
             return GlobalResponse.error(ErrorCode.ACCESS_DENIED);
         }
+
         try {
             log.info("Received webhook event: {}", event);
-
-            if (!"completed".equals(event.getData().getStatus())) {
-                log.info("Task not yet completed, status: {}", event.getData().getStatus());
-                return GlobalResponse.success();
-            }
-
             String taskId = event.getData().getTask_id();
-            System.out.println("Received taskId: " + taskId);
-            List<String> imageUrls = event.getData().getOutput().getImage_urls();
-            System.out.println("Received imageUrls: " + imageUrls);
-
-            if (imageUrls == null || imageUrls.isEmpty()) {
-                log.info("No mypage URLs available yet for taskId: {}", taskId);
-                return GlobalResponse.success();
-            }
-
-            Task task = taskRepository.findByTaskId(taskId)
-                    .orElseThrow(() -> new EntityNotFoundException("Image not found"));
-
-            if (imageUrls != null && imageUrls.size() >= 4) {
-                List<String> firstFourUrls = imageUrls.subList(0, 4);
-                for (int i = 0; i < firstFourUrls.size(); i++) {
-                    Image image = Image.of(firstFourUrls.get(i), task);
-                    image.setImgIndex(i + 1);
-                    imageRepository.save(image);
-                }
-            }
-
-            SseEmitter emitter = sseEmitterRepository.get(taskId);
-            if (emitter != null) {
-                ImageUrlsResponse response = new ImageUrlsResponse(imageUrls);
-                emitter.send(SseEmitter.event()
-                        .name("result")
-                        .data(response));
-                emitter.complete();
-                sseEmitterRepository.remove(taskId);
-            }
+            taskService.processWebhookEvent(event);
+            imageMessageConsumer.acknowledgeTask(taskId);
 
             return GlobalResponse.success();
         } catch (Exception e) {
@@ -289,17 +215,4 @@ public class TaskController {
             return prompt;
         }
     }
-
-//    @PostMapping("/upscale")
-//    public GlobalResponse<String> upscaleImage(@RequestBody Map<String, String> data) {
-//        String originTaskId = data.get("originTaskId");
-//        int index = Integer.parseInt(data.get("index"));
-//
-//        log.info("Starting upscale for taskId: {} with index: {}", originTaskId, index);
-//
-//        String taskId = imageService.upscale(originTaskId, index);
-//        String upscaledImageUrl = imageService.checkTaskStatus(taskId);
-//
-//        return GlobalResponse.success(upscaledImageUrl);
-//    }
 }

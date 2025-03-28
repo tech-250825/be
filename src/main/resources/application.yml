@@ -1,10 +1,15 @@
 app:
   client:
-    url: https://www.hoit.my
+    url: http://localhost:5173
 server:
   port: 8090
   shutdown: graceful
 spring:
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: admin
+    password: admin
   config:
     import: "application-secret.yml"
   autoconfigure:
