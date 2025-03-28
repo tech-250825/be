@@ -38,6 +38,10 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         response.addHeader("Set-Cookie", accessCookieStr);
         response.addHeader("Set-Cookie", refreshCookieStr);
 
+        // localhost용 CORS 설정
+        response.addHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+        response.addHeader("Access-Control-Allow-Credentials", "true");
+
         // 사용자 지정 리다이렉트 URL 확인
         String targetUrl = defaultRedirectUrl;
 
