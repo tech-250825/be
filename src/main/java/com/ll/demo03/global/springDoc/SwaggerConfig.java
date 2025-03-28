@@ -21,7 +21,7 @@ public class SwaggerConfig {
                 .bearerFormat("JWT");
 
         return new OpenAPI()
-                .info(new Info().title("StockNote REST API").version("1.0.0"))
+                .info(new Info().title("HOIT REST API").version("1.0.0"))
                 .components(new Components().addSecuritySchemes("bearerAuth", securityScheme))
                 .addSecurityItem(new SecurityRequirement().addList("bearerAuth"));
     }
