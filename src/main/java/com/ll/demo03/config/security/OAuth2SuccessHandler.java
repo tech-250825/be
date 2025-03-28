@@ -1,7 +1,6 @@
 package com.ll.demo03.config.security;
 
 import org.springframework.beans.factory.annotation.Value;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -29,23 +28,12 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         String accessToken = tokenProvider.generateAccessToken(authentication);
         String refreshToken = tokenProvider.generateRefreshToken(authentication, accessToken);
 
-        // 쿠키 설정
-        Cookie accessCookie = new Cookie("_hoauth", accessToken);
-        accessCookie.setHttpOnly(true);
-        accessCookie.setSecure(true);
-        accessCookie.setPath("/");
-        accessCookie.setMaxAge(3600); // 1시간
+        // SameSite=None 속성을 포함한 쿠키 설정 (직접 헤더 설정)
+        String accessCookieStr = "_hoauth=" + accessToken + "; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=3600";
+        String refreshCookieStr = "_hrauth=" + refreshToken + "; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=3600";
 
-        Cookie refreshCookie = new Cookie("_hrauth", refreshToken);
-        refreshCookie.setHttpOnly(true);
-        refreshCookie.setSecure(true);
-        refreshCookie.setPath("/");
-        refreshCookie.setMaxAge(3600); // 1시간
-
-        response.addHeader("Set-Cookie", "myCookie=cookieValue; Path=/; Secure; HttpOnly; SameSite=None");
-
-        response.addCookie(accessCookie);
-        response.addCookie(refreshCookie);
+        response.addHeader("Set-Cookie", accessCookieStr);
+        response.addHeader("Set-Cookie", refreshCookieStr);
 
         // 사용자 지정 리다이렉트 URL 확인
         String targetUrl = defaultRedirectUrl;
@@ -54,7 +42,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         String state = request.getParameter("state");
         if (state != null && !state.isEmpty()) {
             try {
-                // URL 디코딩
                 String customRedirectUrl = URLDecoder.decode(state, StandardCharsets.UTF_8);
                 if (isValidRedirectUrl(customRedirectUrl)) {
                     targetUrl = customRedirectUrl;

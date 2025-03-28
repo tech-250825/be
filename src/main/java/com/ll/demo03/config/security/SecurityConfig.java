@@ -54,21 +54,21 @@ public class SecurityConfig {
 
                 // request 인증, 인가 설정
                 .authorizeHttpRequests(request ->
-                        request.requestMatchers(
-                                "/",
-                                "/api/shared-images",
-                                        "/api/shared-images/**",
-                                        "/api/images/webhook",
-                                        "/api/upscale-images/webhook",
-                                "/auth/token/verify",
-                                "/api/auth/login/*",
-                                "/ws/**",
-                                "/auth/google/redirect",
-                                "/swagger-ui/**",
-                                        "/swagger-resources/**",
-                                        "/admin/mypage/**",
-                                "/home/**",
-                                "/actuator/health"
+                                request.requestMatchers(
+                                                "/",
+                                                "/api/shared-images",
+                                                "/api/shared-images/**",
+                                                "/api/images/webhook",
+                                                "/api/upscale-images/webhook",
+                                                "/auth/token/verify",
+                                                "/api/auth/login/*",
+                                                "/ws/**",
+                                                "/auth/google/redirect",
+                                                "/swagger-ui/**",
+                                                "/swagger-resources/**",
+                                                "/admin/mypage/**",
+                                                "/home/**",
+                                                "/actuator/health"
                                 ).permitAll() //
                 .anyRequest().authenticated() //나머지는 인증 필요
                 )

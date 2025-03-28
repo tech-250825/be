@@ -640,3 +640,10 @@
 2025-03-28 16:30:08.169111+00:00 [info] <0.2905.0> connection 172.21.0.1:53702 -> 172.21.0.2:5672 has a client-provided name: rabbitConnectionFactory#1cd61e23:0
 2025-03-28 16:30:08.178267+00:00 [info] <0.2905.0> connection 172.21.0.1:53702 -> 172.21.0.2:5672 - rabbitConnectionFactory#1cd61e23:0: user 'admin' authenticated and granted access to vhost '/'
 2025-03-28 16:30:20.631669+00:00 [info] <0.2905.0> closing AMQP connection (172.21.0.1:53702 -> 172.21.0.2:5672 - rabbitConnectionFactory#1cd61e23:0, vhost: '/', user: 'admin', duration: '12s')
+2025-03-28 17:04:13.133258+00:00 [info] <0.3032.0> accepting AMQP connection 172.21.0.1:38068 -> 172.21.0.2:5672
+2025-03-28 17:04:13.177641+00:00 [info] <0.3032.0> connection 172.21.0.1:38068 -> 172.21.0.2:5672 has a client-provided name: rabbitConnectionFactory#5b60dff4:0
+2025-03-28 17:04:13.182551+00:00 [info] <0.3032.0> connection 172.21.0.1:38068 -> 172.21.0.2:5672 - rabbitConnectionFactory#5b60dff4:0: user 'admin' authenticated and granted access to vhost '/'
+2025-03-28 17:16:42.604423+00:00 [info] <0.3032.0> closing AMQP connection (172.21.0.1:38068 -> 172.21.0.2:5672 - rabbitConnectionFactory#5b60dff4:0, vhost: '/', user: 'admin', duration: '12M, 29s')
+2025-03-28 17:17:00.612131+00:00 [info] <0.3090.0> accepting AMQP connection 172.21.0.1:58420 -> 172.21.0.2:5672
+2025-03-28 17:17:00.654674+00:00 [info] <0.3090.0> connection 172.21.0.1:58420 -> 172.21.0.2:5672 has a client-provided name: rabbitConnectionFactory#51417131:0
+2025-03-28 17:17:00.658962+00:00 [info] <0.3090.0> connection 172.21.0.1:58420 -> 172.21.0.2:5672 - rabbitConnectionFactory#51417131:0: user 'admin' authenticated and granted access to vhost '/'

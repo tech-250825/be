@@ -57,20 +57,11 @@ public class OauthController {
         String accessToken = tokenProvider.generateAccessToken(authentication);
         String refreshToken = tokenProvider.generateRefreshToken(authentication, accessToken);
 
-        Cookie accessCookie = new Cookie("_hoauth", accessToken);
-        accessCookie.setHttpOnly(true);
-        accessCookie.setSecure(true);
-        accessCookie.setPath("/");
-        accessCookie.setMaxAge(3600);
+        String accessCookieStr = "_hoauth=" + accessToken + "; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=3600";
+        String refreshCookieStr = "_hrauth=" + refreshToken + "; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=3600";
 
-        Cookie refreshCookie = new Cookie("_hrauth", refreshToken);
-        refreshCookie.setHttpOnly(true);
-        refreshCookie.setSecure(true);
-        refreshCookie.setPath("/");
-        refreshCookie.setMaxAge(3600);
-
-        response.addCookie(accessCookie);
-        response.addCookie(refreshCookie);
+        response.addHeader("Set-Cookie", accessCookieStr);
+        response.addHeader("Set-Cookie", refreshCookieStr);
 
         Map<String, Object> responseData = new HashMap<>();
         responseData.put("success", true);
