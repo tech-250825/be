@@ -19,6 +19,7 @@ public class CorsConfig {
         configuration.setAllowedOriginPatterns(List.of("http://localhost:5713", "https://www.hoit.my")); // 모든 도메인 허용
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE")); // 모든 메소드 허용
         configuration.setAllowedHeaders(List.of("*")); // 모든 헤더 허용
+        configuration.setExposedHeaders(List.of("Set-Cookie"));
         configuration.setAllowCredentials(true); // 자격 증명 허용
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
