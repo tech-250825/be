@@ -46,10 +46,10 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         // AccessToken 쿠키 생성 및 응답에 추가
         ResponseCookie accessTokenCookie = ResponseCookie.from("_hoauth", accessToken)
                 .httpOnly(true)
-                .secure(true)
+                .secure(false)
                 .path("/")
                 .maxAge(3600)
-                .sameSite("None")
+//                .sameSite("None")
                 .domain(".hoit.my")
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
@@ -57,10 +57,10 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 // RefreshToken 쿠키 생성 및 응답에 추가
         ResponseCookie refreshTokenCookie = ResponseCookie.from("_hrauth", refreshToken)
                 .httpOnly(true)
-                .secure(true)
+                .secure(false)
                 .path("/")
                 .maxAge(3600)
-                .sameSite("None")
+//                .sameSite("None")
                 .domain(".hoit.my")
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
