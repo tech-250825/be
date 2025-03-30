@@ -1,6 +1,6 @@
 app:
   client:
-    url: https://localhost:5173
+    url: https://localhost.com:5173
 server:
   port: 8090
   shutdown: graceful
