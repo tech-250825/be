@@ -50,7 +50,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                 .path("/")
                 .maxAge(3600)
                 .sameSite("None")
-//                .domain("api.hoit.my")
+                .domain("localhost.com")
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
 
@@ -61,7 +61,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                 .path("/")
                 .maxAge(3600)
                 .sameSite("None")
-//                .domain("api.hoit.my")
+                .domain("localhost.com")
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
 
