@@ -53,9 +53,7 @@ public class TaskController {
     @PostMapping(value = "/create")
     @PreAuthorize("isAuthenticated()")
     public GlobalResponse createImage(
-            @RequestParam(required = false) MultipartFile crefImage,
-            @RequestParam(required = false) MultipartFile srefImage,
-            @RequestPart("metadata") ImageRequest imageRequest,
+            @RequestBody ImageRequest imageRequest,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
         Member member = principalDetails.user();
@@ -69,6 +67,10 @@ public class TaskController {
 
         String prompt = imageRequest.getPrompt();
         String ratio = imageRequest.getRatio();
+
+        String cref = imageRequest.getCrefUrl();
+        String sref = imageRequest.getSrefUrl();
+
         boolean isSafe = moderatePrompt(prompt);
         if (!isSafe) {
             log.warn("Prompt 검열 실패: {}", prompt);
@@ -78,21 +80,12 @@ public class TaskController {
         String newPrompt = modifyPrompt(prompt);
 
         try {
-            String cref = null;
-            String sref = null;
-            if (crefImage != null && !crefImage.isEmpty()) {
-                cref = referenceImageService.uploadFile(crefImage);
-            }
-            if (srefImage != null && !srefImage.isEmpty()) {
-                sref = referenceImageService.uploadFile(srefImage);
-            }
-
             ImageRequestMessage requestMessage = new ImageRequestMessage(
                     newPrompt,
                     ratio,
                     cref,
                     sref,
-                    "https://api.hoit.my/api/images/webhook",
+                    webhookUrl+"/api/images/webhook",
                     member.getId(),
                     prompt
             );
@@ -117,9 +110,8 @@ public class TaskController {
 
         try {
             log.info("Received webhook event: {}", event);
-            String taskId = event.getData().getTask_id();
             taskService.processWebhookEvent(event);
-            imageMessageConsumer.acknowledgeTask(taskId);
+
 
             return GlobalResponse.success();
         } catch (Exception e) {

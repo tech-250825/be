@@ -4,6 +4,7 @@ import com.ll.demo03.domain.image.entity.Image;
 import com.ll.demo03.domain.image.repository.ImageRepository;
 import com.ll.demo03.domain.referenceImage.service.ReferenceImageService;
 import com.ll.demo03.domain.sse.repository.SseEmitterRepository;
+import com.ll.demo03.domain.task.dto.AckInfo;
 import com.ll.demo03.domain.task.dto.ImageUrlsResponse;
 import com.ll.demo03.domain.task.dto.WebhookEvent;
 import com.ll.demo03.domain.task.entity.Task;
@@ -27,8 +28,10 @@ import com.mashape.unirest.http.HttpResponse;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import software.amazon.awssdk.services.s3.S3Client;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
@@ -42,9 +45,7 @@ public class TaskService {
     @Value("${r2.bucket}")
     private String bucket;
 
-    private final RestTemplate restTemplate;
-    private final S3Client s3Client;
-    private final ReferenceImageService referenceImageService;
+    private final Map<String, AckInfo> pendingAcks = new ConcurrentHashMap<>();
     private final TaskRepository taskRepository;
     private final ImageRepository imageRepository;
     private final SseEmitterRepository sseEmitterRepository;
@@ -116,6 +117,7 @@ public class TaskService {
                             .data(response));
 
                     log.info("클라이언트에게 이미지 URL 전송 완료: {}, memberId: {}", taskId, memberId);
+                    acknowledgeTask(taskId);
 
                     sseEmitterRepository.removeTaskMapping(taskId);
                 } catch (Exception e) {
@@ -127,6 +129,21 @@ public class TaskService {
             }
         } catch (Exception e) {
             log.error("웹훅 이벤트 처리 중 오류 발생: {}", e.getMessage(), e);
+        }
+    }
+
+    public void acknowledgeTask(String taskId) {
+        AckInfo ackInfo = pendingAcks.remove(taskId);
+        if (ackInfo != null) {
+            try {
+                ackInfo.getChannel().basicAck(ackInfo.getDeliveryTag(), false);
+                log.info("Task acknowledged: {}", taskId);
+            } catch (IOException e) {
+                log.error("Failed to acknowledge task: {}", taskId, e);
+                pendingAcks.put(taskId, ackInfo);
+            }
+        } else {
+            log.warn("Attempted to acknowledge unknown task: {}", taskId);
         }
     }
 }

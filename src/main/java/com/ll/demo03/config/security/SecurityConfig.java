@@ -59,6 +59,7 @@ public class SecurityConfig {
                                                 "/api/shared-images",
                                                 "/api/shared-images/**",
                                                 "/api/images/webhook",
+                                                "/api/videos/webhook",
                                                 "/api/upscale-images/webhook",
                                                 "/auth/token/verify",
                                                 "/api/auth/login/*",

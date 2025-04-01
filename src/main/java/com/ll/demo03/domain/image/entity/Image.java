@@ -2,6 +2,7 @@ package com.ll.demo03.domain.image.entity;
 import com.ll.demo03.domain.member.entity.Member;
 import com.ll.demo03.domain.task.entity.Task;
 import com.ll.demo03.domain.upscaledTask.entity.UpscaleTask;
+import com.ll.demo03.domain.videoTask.entity.VideoTask;
 import com.ll.demo03.global.base.BaseEntity;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
@@ -38,6 +39,11 @@ public class Image extends BaseEntity {
     @JoinColumn(name = "upscaleTask_id")
     private UpscaleTask upscaleTask;
 
+    @Nullable
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "videoTask_id")
+    private VideoTask videoTask;
+
     public static Image of(String url, Task task) {
         return Image.builder()
                 .url(url)
@@ -51,6 +57,14 @@ public class Image extends BaseEntity {
                 .url(url)
                 .upscaleTask(upscaleTask)
                 .member(upscaleTask.getMember())
+                .build();
+    }
+
+    public static Image ofVideo(String url, VideoTask videoTask) {
+        return Image.builder()
+                .url(url)
+                .videoTask(videoTask)
+                .member(videoTask.getMember())
                 .build();
     }
 

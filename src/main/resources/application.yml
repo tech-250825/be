@@ -1,6 +1,6 @@
 app:
   client:
-    url: https://www.hoit.my:5173
+    url: https://front.hoit.my:3000
 server:
   port: 8090
   shutdown: graceful
@@ -53,6 +53,6 @@ logging:
     org.springframework.transaction.interceptor: INFO
     org.springframework.security: DEBUG
 custom:
-  webhook-url: https://72c3-116-44-217-211.ngrok-free.app
+  webhook-url: https://3979-116-44-217-211.ngrok-free.app
   site:
     name: "My Site Prod"

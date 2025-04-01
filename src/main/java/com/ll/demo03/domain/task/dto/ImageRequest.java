@@ -6,4 +6,6 @@ import lombok.Getter;
 public class ImageRequest {
     private String prompt;
     private String ratio;
+    private String crefUrl;
+    private String srefUrl;
 }
