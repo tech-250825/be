@@ -16,8 +16,6 @@ import com.ll.demo03.global.exception.CustomException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +28,6 @@ import org.springframework.web.bind.annotation.*;
 public class VideoTaskController {
 
     private final MemberRepository memberRepository;
-    private final RabbitTemplate rabbitTemplate;
     private final VideoTaskService videoTaskService;
     private final ImageMessageProducer imageMessageProducer;
 
