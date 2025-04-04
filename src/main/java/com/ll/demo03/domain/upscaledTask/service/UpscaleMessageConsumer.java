@@ -33,16 +33,13 @@ public class UpscaleMessageConsumer {
     private final SseEmitterRepository sseEmitterRepository;
     private final MemberRepository memberRepository;
     private final UpscaleTaskRepository upscaleTaskRepository;
-    private final Map<String, AckInfo> pendingAcks = new ConcurrentHashMap<>();
 
     @Value("${custom.webhook-url}")
     private String webhookUrl;
 
     @RabbitListener(queues = RabbitMQConfig.UPSCALE_QUEUE)
     public void processImageCreation(
-            UpscaleTaskRequest message,
-            Channel channel,
-            @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag
+            UpscaleTaskRequest message
     ) {
 
         try {
@@ -76,8 +73,6 @@ public class UpscaleMessageConsumer {
 
             upscaleTaskRepository.save(upscaleTask);
             sseEmitterRepository.save(taskId, emitter);
-
-            pendingAcks.put(taskId, new AckInfo(channel, deliveryTag));
 
             log.info("업스케일 요청 처리 완료: {}", taskId);
         } catch (Exception e) {

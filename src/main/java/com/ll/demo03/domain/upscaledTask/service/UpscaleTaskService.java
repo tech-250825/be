@@ -103,7 +103,6 @@ public class UpscaleTaskService {
 
                     log.info("클라이언트에게 업스케일 이미지 URL 전송 완료: {}, memberId: {}", taskId, memberId);
 
-                    acknowledgeTask(taskId);
 
                     emitter.complete();
                     sseEmitterRepository.removeTaskMapping(taskId);
@@ -116,21 +115,6 @@ public class UpscaleTaskService {
             }
         } catch (Exception e) {
             log.error("업스케일 웹훅 이벤트 처리 중 오류 발생: {}", e.getMessage(), e);
-        }
-    }
-
-    public void acknowledgeTask(String taskId) {
-        AckInfo ackInfo = pendingAcks.remove(taskId);
-        if (ackInfo != null) {
-            try {
-                ackInfo.getChannel().basicAck(ackInfo.getDeliveryTag(), false);
-                log.info("Task acknowledged: {}", taskId);
-            } catch (IOException e) {
-                log.error("Failed to acknowledge task: {}", taskId, e);
-                pendingAcks.put(taskId, ackInfo);
-            }
-        } else {
-            log.warn("Attempted to acknowledge unknown task: {}", taskId);
         }
     }
 }

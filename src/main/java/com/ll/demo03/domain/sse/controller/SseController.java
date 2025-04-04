@@ -2,7 +2,6 @@ package com.ll.demo03.domain.sse.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ll.demo03.domain.sse.repository.SseEmitterRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,8 +19,6 @@ public class SseController {
     private final SseEmitterRepository sseEmitterRepository;
     private final ObjectMapper objectMapper;
 
-
-    @Autowired
     public SseController(SseEmitterRepository sseEmitterRepository, ObjectMapper objectMapper) {
         this.sseEmitterRepository = sseEmitterRepository;
         this.objectMapper = objectMapper;

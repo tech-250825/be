@@ -30,15 +30,12 @@ public class ImageMessageConsumer {
 
     private final TaskService taskService;
     private final SseEmitterRepository sseEmitterRepository;
-    private final Map<String, AckInfo> pendingAcks = new ConcurrentHashMap<>();
     private final TaskRepository taskRepository;
     private final MemberRepository memberRepository;
 
     @RabbitListener(queues = RabbitMQConfig.IMAGE_QUEUE)
     public void processImageCreation(
-            ImageRequestMessage message,
-            Channel channel,
-            @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag
+            ImageRequestMessage message
     ) {
         try {
             Long memberId = message.getMemberId();
@@ -74,12 +71,9 @@ public class ImageMessageConsumer {
                     .name("status")
                     .data(objectMapper.writeValueAsString(completeData)));
 
-            pendingAcks.put(taskId, new AckInfo(channel, deliveryTag));
-
             log.info("이미지 생성 요청 처리 완료: {}", taskId);
         } catch (Exception e) {
             log.error("이미지 생성 처리 중 오류 발생: {}", e.getMessage(), e);
         }
     }
-
 }
