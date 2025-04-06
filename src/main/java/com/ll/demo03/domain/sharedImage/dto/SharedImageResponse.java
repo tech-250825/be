@@ -1,0 +1,46 @@
+package com.ll.demo03.domain.sharedImage.dto;
+
+import com.ll.demo03.domain.image.entity.Image;
+import com.ll.demo03.domain.sharedImage.entity.SharedImage;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@AllArgsConstructor
+@Getter
+public class SharedImageResponse {
+    private String nickname;
+    private Long id;
+    private String url;
+    private String prompt;
+    private String ratio;
+    private int likeCount;
+    private Boolean isLiked;
+    private String createdAt;
+
+    public static SharedImageResponse of(SharedImage sharedImage) {
+        return of(sharedImage, null);
+    }
+
+    public static SharedImageResponse of(SharedImage sharedImage, Boolean isLiked) {
+        Image image = sharedImage.getImage();
+
+        String rawPrompt = null;
+        String ratio = null;
+
+        if (image.getTask() != null) {
+            rawPrompt = image.getTask().getRawPrompt();
+            ratio = image.getTask().getRatio();
+        }
+
+        return new SharedImageResponse(
+                image.getMember().getNickname(),
+                sharedImage.getId(),
+                image.getUrl(),
+                rawPrompt,
+                ratio,
+                image.getLikeCount(),
+                isLiked,
+                image.getCreatedAt().toString()
+        );
+    }
+}

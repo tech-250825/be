@@ -30,6 +30,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
         String accessToken = tokenProvider.generateAccessToken(authentication);
+        log.info("Access Token: {}", accessToken);
         String refreshToken = tokenProvider.generateRefreshToken(authentication, accessToken);
 
         String targetUrl = defaultRedirectUrl;
@@ -43,7 +44,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                 session.removeAttribute("OAUTH2_REDIRECT_URL");
             }
         }
-        // AccessToken 쿠키 생성 및 응답에 추가
+
         ResponseCookie accessTokenCookie = ResponseCookie.from("_hoauth", accessToken)
                 .httpOnly(true)
                 .secure(true)
@@ -54,7 +55,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
 
-// RefreshToken 쿠키 생성 및 응답에 추가
         ResponseCookie refreshTokenCookie = ResponseCookie.from("_hrauth", refreshToken)
                 .httpOnly(true)
                 .secure(true)

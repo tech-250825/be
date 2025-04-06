@@ -8,22 +8,30 @@ import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @Getter
-public class ImageResponseDto {
+public class ImageResponse {
     private Long id;
     private String url;
     private String prompt;
     private String ratio;
-    private Boolean isBookmarked;
+    private int likeCount;
+    private boolean isLiked;
     private LocalDateTime createdAt;
 
-    public static ImageResponseDto of(Image image) {
-        return new ImageResponseDto(
+    // 좋아요 상태를 직접 받는 팩토리 메서드
+    public static ImageResponse of(Image image, boolean isLiked) {
+        return new ImageResponse(
                 image.getId(),
                 image.getUrl(),
                 image.getTask().getRawPrompt(),
                 image.getTask().getRatio(),
-                image.getIsBookmarked(),
+                image.getLikeCount(),
+                isLiked,
                 image.getCreatedAt()
         );
+    }
+
+    // 기본 팩토리 메서드 (isLiked = false)
+    public static ImageResponse of(Image image) {
+        return of(image, false);
     }
 }

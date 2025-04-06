@@ -1,7 +1,7 @@
 package com.ll.demo03.domain.mypage.folder.dto;
 
 import com.ll.demo03.domain.mypage.folder.entity.Folder;
-import com.ll.demo03.domain.image.dto.ImageResponseDto;
+import com.ll.demo03.domain.image.dto.ImageResponse;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -9,17 +9,17 @@ import java.util.Optional;
 
 @Getter
 @Builder
-public class FolderResponseDto {
+public class FolderResponse {
     private String name;
-    private ImageResponseDto coverImage;
+    private ImageResponse coverImage;
 
-    public static FolderResponseDto of(Folder folder) {
-        return FolderResponseDto.builder()
+    public static FolderResponse of(Folder folder) {
+        return FolderResponse.builder()
                 .name(folder.getName())
                 .coverImage(
                         Optional.ofNullable(folder.getImages())
                                 .filter(images -> !images.isEmpty())
-                                .map(images -> ImageResponseDto.of(images.get(0)))
+                                .map(images -> ImageResponse.of(images.get(0)))
                                 .orElse(null)
                 )
                 .build();

@@ -1,7 +1,8 @@
 package com.ll.demo03.domain.mypage.folder.controller;
 
-import com.ll.demo03.domain.mypage.folder.dto.FolderRequestDto;
-import com.ll.demo03.domain.mypage.folder.dto.FolderResponseDto;
+import com.ll.demo03.domain.image.dto.ImageIdsRequest;
+import com.ll.demo03.domain.mypage.folder.dto.FolderRequest;
+import com.ll.demo03.domain.mypage.folder.dto.FolderResponse;
 import com.ll.demo03.domain.mypage.folder.service.FolderService;
 import com.ll.demo03.domain.oauth.entity.PrincipalDetails;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,7 +28,7 @@ public class FolderController {
     private final FolderService folderService;
 
     @GetMapping
-    public ResponseEntity<Page<FolderResponseDto>> getFolders(
+    public ResponseEntity<Page<FolderResponse>> getFolders(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @PageableDefault(page = 0, size = 10) Pageable pageable
     ) {
@@ -37,7 +38,7 @@ public class FolderController {
     @PostMapping
     public ResponseEntity<?> createFolder(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @RequestBody @Valid FolderRequestDto requestDto
+            @RequestBody @Valid FolderRequest requestDto
     ) {
         return ResponseEntity.ok(folderService.createFolder(principalDetails.user(), requestDto));
     }
@@ -55,29 +56,30 @@ public class FolderController {
     public ResponseEntity<?> modifyFolderName(
             @PathVariable Long folderId,
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @RequestBody @Valid FolderRequestDto requestDto
+            @RequestBody @Valid FolderRequest requestDto
     ) {
         return ResponseEntity.ok(folderService.modifyFolderName(principalDetails.user(), folderId, requestDto));
     }
 
-    @PostMapping("/{folderId}/images/{imageId}")
-    public ResponseEntity<?> addImageToFolder(
+    @PostMapping("/{folderId}/images")
+    public ResponseEntity<?> addImagesToFolder(
             @PathVariable Long folderId,
-            @PathVariable Long imageId,
+            @RequestBody ImageIdsRequest request,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
-        folderService.addImageToFolder(principalDetails.user(), folderId, imageId);
-        return ResponseEntity.ok().body(Map.of("message", "Image added to folder successfully"));
+        folderService.addImagesToFolder(principalDetails.user(), folderId, request.getImageIds());
+        return ResponseEntity.ok().body(Map.of("message", "Images added to folder successfully"));
     }
 
-    @DeleteMapping("/{folderId}/images/{imageId}")
-    public ResponseEntity<?> removeImageFromFolder(
+    // 여러 이미지 한 번에 삭제하는 새 엔드포인트
+    @DeleteMapping("/{folderId}/images")
+    public ResponseEntity<?> removeImagesFromFolder(
             @PathVariable Long folderId,
-            @PathVariable Long imageId,
+            @RequestBody ImageIdsRequest request,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
-        folderService.removeImageFromFolder(principalDetails.user(), folderId, imageId);
-        return ResponseEntity.ok().body(Map.of("message", "Image removed from folder successfully"));
+        folderService.removeImagesFromFolder(principalDetails.user(), folderId, request.getImageIds());
+        return ResponseEntity.ok().body(Map.of("message", "Images removed from folder successfully"));
     }
 
 }

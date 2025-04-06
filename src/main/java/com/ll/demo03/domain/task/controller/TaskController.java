@@ -5,13 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ll.demo03.domain.task.dto.ImageRequest;
 import com.ll.demo03.domain.task.dto.ImageRequestMessage;
 import com.ll.demo03.domain.task.dto.WebhookEvent;
-import com.ll.demo03.domain.task.service.ImageMessageConsumer;
 import com.ll.demo03.domain.task.service.ImageMessageProducer;
 import com.ll.demo03.domain.member.entity.Member;
 import com.ll.demo03.domain.member.repository.MemberRepository;
 import com.ll.demo03.domain.oauth.entity.PrincipalDetails;
-import com.ll.demo03.domain.referenceImage.service.ReferenceImageService;
-import com.ll.demo03.domain.task.service.TaskService;
+import com.ll.demo03.domain.webhook.GeneralImageWebhookProcessor;
 import com.ll.demo03.global.dto.GlobalResponse;
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
@@ -28,7 +26,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Transactional
@@ -45,10 +42,8 @@ public class TaskController {
 
     private final MemberRepository memberRepository;
     private final ImageMessageProducer imageMessageProducer;
-    private final ReferenceImageService referenceImageService;
-    private final ImageMessageConsumer imageMessageConsumer;
+    private final GeneralImageWebhookProcessor generalImageWebhookProcessor;
     private final RestTemplate restTemplate;
-    private final TaskService taskService;
 
     @PostMapping(value = "/create")
     @PreAuthorize("isAuthenticated()")
@@ -67,7 +62,6 @@ public class TaskController {
 
         String prompt = imageRequest.getPrompt();
         String ratio = imageRequest.getRatio();
-
         String cref = imageRequest.getCrefUrl();
         String sref = imageRequest.getSrefUrl();
 
@@ -110,7 +104,7 @@ public class TaskController {
 
         try {
             log.info("Received webhook event: {}", event);
-            taskService.processWebhookEvent(event);
+            generalImageWebhookProcessor.processWebhookEvent(event);
 
 
             return GlobalResponse.success();

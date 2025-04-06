@@ -2,8 +2,8 @@ package com.ll.demo03.domain.mypage.folder.service;
 
 import com.ll.demo03.domain.image.entity.Image;
 import com.ll.demo03.domain.member.entity.Member;
-import com.ll.demo03.domain.mypage.folder.dto.FolderRequestDto;
-import com.ll.demo03.domain.mypage.folder.dto.FolderResponseDto;
+import com.ll.demo03.domain.mypage.folder.dto.FolderRequest;
+import com.ll.demo03.domain.mypage.folder.dto.FolderResponse;
 import com.ll.demo03.domain.mypage.folder.entity.Folder;
 import com.ll.demo03.domain.mypage.folder.repository.FolderRepository;
 import com.ll.demo03.domain.image.repository.ImageRepository;
@@ -15,7 +15,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,13 +26,13 @@ public class FolderService {
     private final FolderRepository folderRepository;
     private final ImageRepository imageRepository;
 
-    public Page<FolderResponseDto> getFolders(Member member, Pageable pageable) {
+    public Page<FolderResponse> getFolders(Member member, Pageable pageable) {
         return folderRepository.findByMemberOrderByCreatedAtDesc(member, pageable)
-                .map(FolderResponseDto::of);
+                .map(FolderResponse::of);
     }
 
     @Transactional
-    public Map<String, Object> createFolder(Member member, FolderRequestDto requestDto) {
+    public Map<String, Object> createFolder(Member member, FolderRequest requestDto) {
         Folder folder = Folder.builder()
                 .name(requestDto.getName())
                 .member(member)
@@ -53,7 +55,7 @@ public class FolderService {
     }
 
     @Transactional
-    public Map<String, Object> modifyFolderName(Member member, Long folderId, FolderRequestDto requestDto) {
+    public Map<String, Object> modifyFolderName(Member member, Long folderId, FolderRequest requestDto) {
         Folder folder = folderRepository.findById(folderId)
                 .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
@@ -74,7 +76,7 @@ public class FolderService {
     }
 
     @Transactional
-    public void addImageToFolder(Member member, Long folderId, Long imageId) {
+    public void addImagesToFolder(Member member, Long folderId, List<Long> imageIds) {
         Folder folder = folderRepository.findById(folderId)
                 .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
@@ -82,19 +84,26 @@ public class FolderService {
             throw new CustomException(ErrorCode.ACCESS_DENIED);
         }
 
-        Image image = imageRepository.findById(imageId)
-                .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+        List<Image> images = imageRepository.findAllById(imageIds);
 
-        if (folder.getImages().contains(image)) {
+        if (images.size() != imageIds.size()) {
+            throw new CustomException(ErrorCode.ENTITY_NOT_FOUND);
+        }
+
+        List<Image> duplicateImages = images.stream()
+                .filter(image -> folder.getImages().contains(image))
+                .collect(Collectors.toList());
+
+        if (!duplicateImages.isEmpty()) {
             throw new CustomException(ErrorCode.DUPLICATED_METHOD);
         }
 
-        folder.getImages().add(image);
+        folder.getImages().addAll(images);
         folderRepository.save(folder);
     }
 
     @Transactional
-    public void removeImageFromFolder(Member member, Long folderId, Long imageId) {
+    public void removeImagesFromFolder(Member member, Long folderId, List<Long> imageIds) {
         Folder folder = folderRepository.findById(folderId)
                 .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
@@ -102,15 +111,21 @@ public class FolderService {
             throw new CustomException(ErrorCode.ACCESS_DENIED);
         }
 
-        Image image = imageRepository.findById(imageId)
-                .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+        List<Image> images = imageRepository.findAllById(imageIds);
 
-        if (!folder.getImages().contains(image)) {
+        if (images.size() != imageIds.size()) {
+            throw new CustomException(ErrorCode.ENTITY_NOT_FOUND);
+        }
+
+        List<Image> notFoundImages = images.stream()
+                .filter(image -> !folder.getImages().contains(image))
+                .collect(Collectors.toList());
+
+        if (!notFoundImages.isEmpty()) {
             throw new CustomException(ErrorCode.DUPLICATED_METHOD);
         }
 
-        folder.getImages().remove(image);
-
+        folder.getImages().removeAll(images);
         folderRepository.save(folder);
     }
 }

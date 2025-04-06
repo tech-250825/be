@@ -18,7 +18,8 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @SuperBuilder
 public class UpscaleTask extends BaseEntity {
-    private int imageIndex;
+
+    private String imageIndex;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "task_id")

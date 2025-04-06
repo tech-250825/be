@@ -11,5 +11,4 @@ import lombok.NoArgsConstructor;
 public class UpscaleTaskRequest {
     private String taskId;
     private String index;
-    private Long memberId;
 }

@@ -1,7 +1,7 @@
 package com.ll.demo03.domain.sharedImage.controller;
 import com.ll.demo03.domain.member.entity.Member;
 import com.ll.demo03.domain.oauth.entity.PrincipalDetails;
-import com.ll.demo03.domain.sharedImage.dto.SharedImageResponseDto;
+import com.ll.demo03.domain.sharedImage.dto.SharedImageResponse;
 import com.ll.demo03.domain.sharedImage.entity.SharedImage;
 import com.ll.demo03.domain.sharedImage.service.SharedImageService;
 import com.ll.demo03.global.exception.CustomException;
@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,7 +27,8 @@ public class SharedImageController {
     private final SharedImageService sharedImageService;
 
     @GetMapping("/shared-images")
-    public ResponseEntity<Page<SharedImageResponseDto>> getAllSharedImages(
+    public ResponseEntity<Page<SharedImageResponse>> getAllSharedImages(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestParam(defaultValue = "createdAt") String sortBy,
             @RequestParam(defaultValue = "DESC") String direction,
             @PageableDefault(size = 10) Pageable pageable
@@ -34,40 +36,37 @@ public class SharedImageController {
         Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
         Pageable pageableWithSort = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
 
-        Page<SharedImage> sharedImagesPage = sharedImageService.getAllSharedImages(pageableWithSort);
-        Page<SharedImageResponseDto> dtoPage = sharedImagesPage.map(SharedImageResponseDto::of);
+        Long currentMemberId = principalDetails != null ? principalDetails.user().getId() : null;
+
+        Page<SharedImageResponse> dtoPage = sharedImageService.getAllSharedImageResponses(currentMemberId, pageableWithSort);
         return ResponseEntity.ok(dtoPage);
     }
 
+
     @GetMapping("/mypage/shared-images")
-    public ResponseEntity<Page<SharedImageResponseDto>> getMySharedImages(
+    public ResponseEntity<Page<SharedImageResponse>> getMySharedImages(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         Member member = principalDetails.user();
-        Page<SharedImage> mySharedImagesPage = sharedImageService.getMySharedImages(member.getId(), pageable);
-        Page<SharedImageResponseDto> dtoPage = mySharedImagesPage.map(SharedImageResponseDto::of);
+        Page<SharedImageResponse> dtoPage = sharedImageService.getMySharedImages(member.getId(), pageable);
+
         return ResponseEntity.ok(dtoPage);
     }
 
-    @GetMapping("/shared-images/{imageId}")
-    public ResponseEntity<SharedImageResponseDto> getSharedImageById(@PathVariable Long imageId) {
-        return sharedImageService.getSharedImageById(imageId)
-                .map(sharedImage -> ResponseEntity.ok(SharedImageResponseDto.of(sharedImage)))
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-
     @PostMapping("/shared-images/{imageId}")
-    public ResponseEntity<SharedImageResponseDto> createSharedImage(@PathVariable Long imageId) {
+    public ResponseEntity<String> createSharedImage(
+            @PathVariable Long imageId,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    ) {
         try {
-            SharedImage createdSharedImage = sharedImageService.createSharedImage(imageId);
-            return ResponseEntity.ok(SharedImageResponseDto.of(createdSharedImage));
+            sharedImageService.createSharedImage(imageId);
+
+            return ResponseEntity.ok("이미지가 성공적으로 공유되었습니다.");
         } catch (CustomException e) {
             throw e;
         }
     }
-
 
     @DeleteMapping("/shared-images/{imageId}")
     public ResponseEntity<Void> deleteSharedImage(

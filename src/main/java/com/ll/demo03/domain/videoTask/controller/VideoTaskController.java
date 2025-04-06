@@ -10,6 +10,7 @@ import com.ll.demo03.domain.videoTask.dto.VideoTaskRequest;
 import com.ll.demo03.domain.videoTask.dto.VideoWebhookEvent;
 import com.ll.demo03.domain.videoTask.dto.VideoMessageRequest;
 import com.ll.demo03.domain.videoTask.service.VideoTaskService;
+import com.ll.demo03.domain.webhook.VideoWebhookProcessor;
 import com.ll.demo03.global.dto.GlobalResponse;
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
@@ -28,7 +29,7 @@ import org.springframework.web.bind.annotation.*;
 public class VideoTaskController {
 
     private final MemberRepository memberRepository;
-    private final VideoTaskService videoTaskService;
+    private final VideoWebhookProcessor videoWebhookProcessor;
     private final ImageMessageProducer imageMessageProducer;
 
     @PostMapping(value = "/create")
@@ -73,7 +74,7 @@ public class VideoTaskController {
 
         try {
             log.info("Received webhook event: {}", event);
-            videoTaskService.processWebhookEvent(event);
+            videoWebhookProcessor.processWebhookEvent(event);
 
             return GlobalResponse.success();
         } catch (Exception e) {

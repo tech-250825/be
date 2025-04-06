@@ -1,6 +1,6 @@
 package com.ll.demo03.domain.like.controller;
 
-import com.ll.demo03.domain.image.dto.ImageResponseDto;
+import com.ll.demo03.domain.image.dto.ImageResponse;
 import com.ll.demo03.domain.like.service.LikeService;
 import com.ll.demo03.domain.member.entity.Member;
 import com.ll.demo03.domain.oauth.entity.PrincipalDetails;
@@ -49,9 +49,9 @@ public class LikeController {
     }
 
     @GetMapping("/mypage/like")
-    public ResponseEntity<List<ImageResponseDto>> getMyLikes(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+    public ResponseEntity<List<ImageResponse>> getMyLikes(@AuthenticationPrincipal PrincipalDetails principalDetails) {
         Member member = principalDetails.user();
-        List<ImageResponseDto> bookmarks = likeService.getMyLikes(member);
-        return ResponseEntity.ok(bookmarks);
+        List<ImageResponse> likes = likeService.getMyLikes(member);
+        return ResponseEntity.ok(likes);
     }
 }

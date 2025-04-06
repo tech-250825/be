@@ -3,10 +3,13 @@ package com.ll.demo03.domain.upscaledTask.controller;
 import com.ll.demo03.domain.member.entity.Member;
 import com.ll.demo03.domain.member.repository.MemberRepository;
 import com.ll.demo03.domain.oauth.entity.PrincipalDetails;
+import com.ll.demo03.domain.task.service.ImageMessageProducer;
 import com.ll.demo03.domain.upscaledTask.dto.UpscaleTaskRequest;
 import com.ll.demo03.config.RabbitMQConfig;
+import com.ll.demo03.domain.upscaledTask.dto.UpscaleTaskRequestMessage;
 import com.ll.demo03.domain.upscaledTask.dto.UpscaleWebhookEvent;
 import com.ll.demo03.domain.upscaledTask.service.UpscaleTaskService;
+import com.ll.demo03.domain.webhook.UpscaleWebhookProcessor;
 import com.ll.demo03.global.dto.GlobalResponse;
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
@@ -31,9 +34,9 @@ public class UpscaledTaskController {
     @Value("${custom.webhook-url}")
     private String webhookUrl;
 
-    private final RabbitTemplate rabbitTemplate;
     private final MemberRepository memberRepository;
-    private final UpscaleTaskService upscaleTaskService;
+    private final ImageMessageProducer imageMessageProducer;
+    private final UpscaleWebhookProcessor upscaleWebhookProcessor;
 
     @PostMapping(value = "/create")
     @PreAuthorize("isAuthenticated()")
@@ -42,6 +45,7 @@ public class UpscaledTaskController {
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
         Member member = principalDetails.user();
+        Long memberId=member.getId();
         int credit = member.getCredit();
         if (credit <= 0) {
             throw new CustomException(ErrorCode.NO_CREDIT);
@@ -50,12 +54,13 @@ public class UpscaledTaskController {
         member.setCredit(credit);
         memberRepository.save(member);
 
+        UpscaleTaskRequestMessage upscaleTaskRequestMessage= UpscaleTaskRequestMessage.builder()
+                .memberId(memberId)
+                .taskId(upscaleTaskRequest.getTaskId())
+                .index(upscaleTaskRequest.getIndex()).build();
+
         try {
-            rabbitTemplate.convertAndSend(
-                    RabbitMQConfig.UPSCALE_EXCHANGE,
-                    RabbitMQConfig.UPSCALE_ROUTING_KEY,
-                    upscaleTaskRequest
-            );
+            imageMessageProducer.sendImageUpscaleMessage(upscaleTaskRequestMessage);
 
             log.info("업스케일 요청을 메시지 큐에 전송했습니다. MemberId: {}", member.getId());
             return GlobalResponse.success();
@@ -76,7 +81,7 @@ public class UpscaledTaskController {
 
         try {
             log.info("Received webhook event: {}", event);
-            upscaleTaskService.processWebhookEvent(event);
+            upscaleWebhookProcessor.processWebhookEvent(event);
 
             return GlobalResponse.success();
         } catch (Exception e) {

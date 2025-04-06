@@ -3,6 +3,7 @@ package com.ll.demo03.domain.task.service;
 import com.ll.demo03.domain.task.dto.ImageRequestMessage;
 import com.ll.demo03.domain.task.dto.WebhookEvent;
 import com.ll.demo03.config.RabbitMQConfig;
+import com.ll.demo03.domain.upscaledTask.dto.UpscaleTaskRequestMessage;
 import com.ll.demo03.domain.videoTask.dto.VideoMessageRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +25,7 @@ public class ImageMessageProducer {
         );
     }
 
-    public void sendImageUpscaleMessage(ImageRequestMessage message) {
+    public void sendImageUpscaleMessage(UpscaleTaskRequestMessage message) {
         rabbitTemplate.convertAndSend(
                 RabbitMQConfig.UPSCALE_EXCHANGE,
                 RabbitMQConfig.UPSCALE_ROUTING_KEY,

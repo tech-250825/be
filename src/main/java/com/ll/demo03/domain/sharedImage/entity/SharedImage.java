@@ -14,8 +14,6 @@ import lombok.Setter;
 @Entity
 public class SharedImage extends BaseEntity {
 
-    private int likeCount;
-
     @ManyToOne(fetch= FetchType.LAZY)
     @JoinColumn(name = "image_id")
     private Image image;

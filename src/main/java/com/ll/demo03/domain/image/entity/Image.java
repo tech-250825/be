@@ -18,9 +18,6 @@ import lombok.experimental.SuperBuilder;
 @Table(name="image")
 public class Image extends BaseEntity {
 
-    @Builder.Default
-    private Boolean isBookmarked = false;
-
     private String url;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -39,6 +36,8 @@ public class Image extends BaseEntity {
     @JoinColumn(name = "upscaleTask_id")
     private UpscaleTask upscaleTask;
 
+    private int likeCount;
+
     @Nullable
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "videoTask_id")
@@ -52,9 +51,10 @@ public class Image extends BaseEntity {
                 .build();
     }
 
-    public static Image ofUpscale(String url, UpscaleTask upscaleTask) {
+    public static Image ofUpscale(String url, Task task, UpscaleTask upscaleTask) {
         return Image.builder()
                 .url(url)
+                .task(task)
                 .upscaleTask(upscaleTask)
                 .member(upscaleTask.getMember())
                 .build();
@@ -66,14 +66,6 @@ public class Image extends BaseEntity {
                 .videoTask(videoTask)
                 .member(videoTask.getMember())
                 .build();
-    }
-
-    public boolean isBookmarked() {
-        return Boolean.TRUE.equals(isBookmarked);
-    }
-
-    public void toggleBookmark() {
-        this.isBookmarked = !this.isBookmarked();
     }
 
 }
