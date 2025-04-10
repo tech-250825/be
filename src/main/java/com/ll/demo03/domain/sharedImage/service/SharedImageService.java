@@ -1,4 +1,5 @@
 package com.ll.demo03.domain.sharedImage.service;
+
 import com.ll.demo03.domain.image.entity.Image;
 import com.ll.demo03.domain.image.repository.ImageRepository;
 import com.ll.demo03.domain.like.repository.LikeRepository;

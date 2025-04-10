@@ -5,12 +5,15 @@ import com.ll.demo03.domain.like.service.LikeService;
 import com.ll.demo03.domain.member.entity.Member;
 import com.ll.demo03.domain.oauth.entity.PrincipalDetails;
 import com.ll.demo03.global.exception.CustomException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -49,9 +52,12 @@ public class LikeController {
     }
 
     @GetMapping("/mypage/like")
-    public ResponseEntity<List<ImageResponse>> getMyLikes(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+    public ResponseEntity<Page<ImageResponse>> getMyLikes(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+
         Member member = principalDetails.user();
-        List<ImageResponse> likes = likeService.getMyLikes(member);
+        Page<ImageResponse> likes = likeService.getMyLikes(member, pageable);
         return ResponseEntity.ok(likes);
     }
 }

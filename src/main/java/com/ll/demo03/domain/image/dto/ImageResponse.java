@@ -14,7 +14,7 @@ public class ImageResponse {
     private String prompt;
     private String ratio;
     private int likeCount;
-    private boolean isLiked;
+    private Boolean isLiked;
     private LocalDateTime createdAt;
 
     // 좋아요 상태를 직접 받는 팩토리 메서드

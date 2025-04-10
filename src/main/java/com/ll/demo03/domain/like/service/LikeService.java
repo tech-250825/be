@@ -10,6 +10,8 @@ import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -58,13 +60,9 @@ public class LikeService {
     }
 
     @Transactional
-    public List<ImageResponse> getMyLikes(Member member) {
-        List<Like> likes = likeRepository.findByMember(member);
+    public Page<ImageResponse> getMyLikes(Member member, Pageable pageable) {
+        Page<Like> likes = likeRepository.findByMember(member, pageable);
 
-        List<ImageResponse> responses = likes.stream()
-                .map(like -> ImageResponse.of(like.getImage(), true))
-                .collect(Collectors.toList());
-
-        return responses;
+        return likes.map(like -> ImageResponse.of(like.getImage(), true));
     }
 }
