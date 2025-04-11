@@ -22,7 +22,7 @@ public enum ErrorCode {
     REFRESH_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "리프레시 토큰이 만료되었습니다."),
 
     //크레딧
-    NO_CREDIT(HttpStatus.BAD_REQUEST, "크레딧이 부족합니다."),
+    NO_CREDIT(HttpStatus.PAYMENT_REQUIRED, "크레딧이 부족합니다."),
 
     // 이미지 없음
     IMAGE_NOT_FOUND(HttpStatus.BAD_REQUEST, "해당 이미지가 존재하지 않습니다."),
