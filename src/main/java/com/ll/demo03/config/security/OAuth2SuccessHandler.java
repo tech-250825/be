@@ -31,19 +31,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                                         Authentication authentication) throws IOException {
         String accessToken = tokenProvider.generateAccessToken(authentication);
         log.info("Access Token: {}", accessToken);
-        String refreshToken = tokenProvider.generateRefreshToken(authentication, accessToken);
+        String refreshToken = tokenProvider.generateRefreshToken(authentication);
 
-        String targetUrl = defaultRedirectUrl;
-
-        HttpSession session = request.getSession(false);
-
-        if (session != null) {
-            String redirectUrl = (String) session.getAttribute("OAUTH2_REDIRECT_URL");
-            if (redirectUrl != null && isValidRedirectUrl(redirectUrl)) {
-                targetUrl = redirectUrl;
-                session.removeAttribute("OAUTH2_REDIRECT_URL");
-            }
-        }
 
         ResponseCookie accessTokenCookie = ResponseCookie.from("_hoauth", accessToken)
                 .httpOnly(true)
@@ -59,17 +48,13 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
-                .maxAge(3600)
+                .maxAge(604800)
                 .sameSite("None")
                 .domain(".hoit.my")
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
 
-        response.sendRedirect(targetUrl);
+        response.sendRedirect(defaultRedirectUrl);
     }
 
-    private boolean isValidRedirectUrl(String url) {
-        return url != null && !url.isEmpty() &&
-                (url.startsWith("http://") || url.startsWith("https://"));
-    }
 }

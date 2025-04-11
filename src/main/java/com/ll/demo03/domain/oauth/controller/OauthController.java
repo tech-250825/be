@@ -55,7 +55,7 @@ public class OauthController {
         }
 
         String accessToken = tokenProvider.generateAccessToken(authentication);
-        String refreshToken = tokenProvider.generateRefreshToken(authentication, accessToken);
+        String refreshToken = tokenProvider.generateRefreshToken(authentication);
 
         String accessCookieStr = "_hoauth=" + accessToken + "; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=3600";
         String refreshCookieStr = "_hrauth=" + refreshToken + "; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=3600";

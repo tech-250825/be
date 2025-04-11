@@ -10,7 +10,7 @@ import lombok.Setter;
 public class Token {
     private String accessToken;
     private String refreshToken;
-    private String username;
+    private String memberId;
 
     public Token(String accessToken, String refreshToken) {
         this.accessToken = accessToken;

@@ -2041,3 +2041,642 @@
 2025-04-10 06:51:17.865078+00:00 [info] <0.676.0> connection 172.21.0.1:44778 -> 172.21.0.2:5672 has a client-provided name: rabbitConnectionFactory#38a0aa54:0
 2025-04-10 06:51:17.871505+00:00 [info] <0.676.0> connection 172.21.0.1:44778 -> 172.21.0.2:5672 - rabbitConnectionFactory#38a0aa54:0: user 'admin' authenticated and granted access to vhost '/'
 2025-04-10 06:54:34.127962+00:00 [info] <0.676.0> closing AMQP connection (172.21.0.1:44778 -> 172.21.0.2:5672 - rabbitConnectionFactory#38a0aa54:0, vhost: '/', user: 'admin', duration: '3M, 16s')
+2025-04-11 16:42:42.936180+00:00 [notice] <0.216.0> Logging: configured log handlers are now ACTIVE
+2025-04-11 16:42:42.944617+00:00 [info] <0.216.0> ra: starting system quorum_queues
+2025-04-11 16:42:42.944783+00:00 [info] <0.216.0> starting Ra system: quorum_queues in directory: /var/lib/rabbitmq/mnesia/rabbit@1161c5ae6e6d/quorum/rabbit@1161c5ae6e6d
+2025-04-11 16:42:43.021177+00:00 [info] <0.230.0> ra system 'quorum_queues' running pre init for 0 registered servers
+2025-04-11 16:42:43.034835+00:00 [info] <0.231.0> ra: meta data store initialised for system quorum_queues. 0 record(s) recovered
+2025-04-11 16:42:43.047674+00:00 [notice] <0.236.0> WAL: ra_log_wal init, open tbls: ra_log_open_mem_tables, closed tbls: ra_log_closed_mem_tables
+2025-04-11 16:42:43.080304+00:00 [info] <0.238.0> ra_system_recover: ra system 'quorum_queues' server recovery strategy rabbit_quorum_queue:system_recover
+2025-04-11 16:42:43.080389+00:00 [info] <0.238.0> [rabbit_quorum_queue:system_recover/1] rabbit not booted, skipping queue recovery
+2025-04-11 16:42:43.080535+00:00 [info] <0.216.0> ra: starting system coordination
+2025-04-11 16:42:43.080595+00:00 [info] <0.216.0> starting Ra system: coordination in directory: /var/lib/rabbitmq/mnesia/rabbit@1161c5ae6e6d/coordination/rabbit@1161c5ae6e6d
+2025-04-11 16:42:43.098385+00:00 [info] <0.244.0> ra system 'coordination' running pre init for 1 registered servers
+2025-04-11 16:42:43.137568+00:00 [info] <0.245.0> ra: meta data store initialised for system coordination. 1 record(s) recovered
+2025-04-11 16:42:43.137793+00:00 [notice] <0.250.0> WAL: ra_coordination_log_wal init, open tbls: ra_coordination_log_open_mem_tables, closed tbls: ra_coordination_log_closed_mem_tables
+2025-04-11 16:42:43.154493+00:00 [info] <0.216.0> ra: starting system coordination
+2025-04-11 16:42:43.154584+00:00 [info] <0.216.0> starting Ra system: coordination in directory: /var/lib/rabbitmq/mnesia/rabbit@1161c5ae6e6d/coordination/rabbit@1161c5ae6e6d
+2025-04-11 16:42:43.737397+00:00 [notice] <0.255.0> RabbitMQ metadata store: candidate -> leader in term: 13 machine version: 1
+2025-04-11 16:42:43.991564+00:00 [info] <0.216.0> 
+2025-04-11 16:42:43.991564+00:00 [info] <0.216.0>  Starting RabbitMQ 4.0.7 on Erlang 27.3 [jit]
+2025-04-11 16:42:43.991564+00:00 [info] <0.216.0>  Copyright (c) 2007-2024 Broadcom Inc and/or its subsidiaries
+2025-04-11 16:42:43.991564+00:00 [info] <0.216.0>  Licensed under the MPL 2.0. Website: https://rabbitmq.com
+2025-04-11 16:42:43.997624+00:00 [info] <0.216.0> 
+2025-04-11 16:42:43.997624+00:00 [info] <0.216.0>  node           : rabbit@1161c5ae6e6d
+2025-04-11 16:42:43.997624+00:00 [info] <0.216.0>  home dir       : /var/lib/rabbitmq
+2025-04-11 16:42:43.997624+00:00 [info] <0.216.0>  config file(s) : /etc/rabbitmq/rabbitmq.conf
+2025-04-11 16:42:43.997624+00:00 [info] <0.216.0>  cookie hash    : pxp1VrTqYaANd+ndUvOkwQ==
+2025-04-11 16:42:43.997624+00:00 [info] <0.216.0>  log(s)         : /var/log/rabbitmq/rabbit@1161c5ae6e6d.log
+2025-04-11 16:42:43.997624+00:00 [info] <0.216.0>                 : <stdout>
+2025-04-11 16:42:43.997624+00:00 [info] <0.216.0>  data dir       : /var/lib/rabbitmq/mnesia/rabbit@1161c5ae6e6d
+2025-04-11 16:42:44.321865+00:00 [info] <0.216.0> Running boot step pre_boot defined by app rabbit
+2025-04-11 16:42:44.321921+00:00 [info] <0.216.0> Running boot step rabbit_global_counters defined by app rabbit
+2025-04-11 16:42:44.322346+00:00 [info] <0.216.0> Running boot step rabbit_osiris_metrics defined by app rabbit
+2025-04-11 16:42:44.322445+00:00 [info] <0.216.0> Running boot step rabbit_core_metrics defined by app rabbit
+2025-04-11 16:42:44.323687+00:00 [info] <0.216.0> Running boot step rabbit_alarm defined by app rabbit
+2025-04-11 16:42:44.332751+00:00 [info] <0.348.0> Memory high watermark set to 4567 MiB (4789837824 bytes) of 7613 MiB (7983063040 bytes) total
+2025-04-11 16:42:44.335961+00:00 [info] <0.350.0> Enabling free disk space monitoring (disk free space: 22709465088, total memory: 7983063040)
+2025-04-11 16:42:44.336009+00:00 [info] <0.350.0> Disk free limit set to 50MB
+2025-04-11 16:42:44.338093+00:00 [info] <0.216.0> Running boot step code_server_cache defined by app rabbit
+2025-04-11 16:42:44.338163+00:00 [info] <0.216.0> Running boot step file_handle_cache defined by app rabbit
+2025-04-11 16:42:44.343727+00:00 [info] <0.353.0> Limiting to approx 1048479 file handles (943629 sockets)
+2025-04-11 16:42:44.343958+00:00 [info] <0.354.0> FHC read buffering: OFF
+2025-04-11 16:42:44.344013+00:00 [info] <0.354.0> FHC write buffering: ON
+2025-04-11 16:42:44.344742+00:00 [info] <0.216.0> Running boot step worker_pool defined by app rabbit
+2025-04-11 16:42:44.344795+00:00 [info] <0.292.0> Will use 12 processes for default worker pool
+2025-04-11 16:42:44.344838+00:00 [info] <0.292.0> Starting worker pool 'worker_pool' with 12 processes in it
+2025-04-11 16:42:44.345397+00:00 [info] <0.216.0> Running boot step rabbit_registry defined by app rabbit
+2025-04-11 16:42:44.345483+00:00 [info] <0.216.0> Running boot step database defined by app rabbit
+2025-04-11 16:42:44.346574+00:00 [info] <0.216.0> Peer discovery: configured backend: rabbit_peer_discovery_classic_config
+2025-04-11 16:42:44.352326+00:00 [info] <0.216.0> Waiting for Mnesia tables for 30000 ms, 9 retries left
+2025-04-11 16:42:44.353940+00:00 [info] <0.216.0> Successfully synced tables from a peer
+2025-04-11 16:42:44.367257+00:00 [info] <0.216.0> Waiting for Mnesia tables for 30000 ms, 9 retries left
+2025-04-11 16:42:44.367476+00:00 [info] <0.216.0> Successfully synced tables from a peer
+2025-04-11 16:42:44.367692+00:00 [info] <0.216.0> Running boot step tracking_metadata_store defined by app rabbit
+2025-04-11 16:42:44.367772+00:00 [info] <0.377.0> Setting up a table for connection tracking on this node: tracked_connection
+2025-04-11 16:42:44.367815+00:00 [info] <0.377.0> Setting up a table for per-vhost connection counting on this node: tracked_connection_per_vhost
+2025-04-11 16:42:44.367897+00:00 [info] <0.377.0> Setting up a table for per-user connection counting on this node: tracked_connection_per_user
+2025-04-11 16:42:44.367962+00:00 [info] <0.377.0> Setting up a table for channel tracking on this node: tracked_channel
+2025-04-11 16:42:44.368008+00:00 [info] <0.377.0> Setting up a table for channel tracking on this node: tracked_channel_per_user
+2025-04-11 16:42:44.368098+00:00 [info] <0.216.0> Running boot step networking_metadata_store defined by app rabbit
+2025-04-11 16:42:44.368199+00:00 [info] <0.216.0> Running boot step feature_flags defined by app rabbit
+2025-04-11 16:42:44.369407+00:00 [info] <0.216.0> Running boot step codec_correctness_check defined by app rabbit
+2025-04-11 16:42:44.369450+00:00 [info] <0.216.0> Running boot step external_infrastructure defined by app rabbit
+2025-04-11 16:42:44.369486+00:00 [info] <0.216.0> Running boot step rabbit_event defined by app rabbit
+2025-04-11 16:42:44.369593+00:00 [info] <0.216.0> Running boot step rabbit_auth_mechanism_amqplain defined by app rabbit
+2025-04-11 16:42:44.369663+00:00 [info] <0.216.0> Running boot step rabbit_auth_mechanism_anonymous defined by app rabbit
+2025-04-11 16:42:44.369713+00:00 [info] <0.216.0> Running boot step rabbit_auth_mechanism_cr_demo defined by app rabbit
+2025-04-11 16:42:44.369762+00:00 [info] <0.216.0> Running boot step rabbit_auth_mechanism_plain defined by app rabbit
+2025-04-11 16:42:44.369828+00:00 [info] <0.216.0> Running boot step rabbit_exchange_type_direct defined by app rabbit
+2025-04-11 16:42:44.369912+00:00 [info] <0.216.0> Running boot step rabbit_exchange_type_fanout defined by app rabbit
+2025-04-11 16:42:44.369968+00:00 [info] <0.216.0> Running boot step rabbit_exchange_type_headers defined by app rabbit
+2025-04-11 16:42:44.370054+00:00 [info] <0.216.0> Running boot step rabbit_exchange_type_local_random defined by app rabbit
+2025-04-11 16:42:44.370120+00:00 [info] <0.216.0> Running boot step rabbit_exchange_type_topic defined by app rabbit
+2025-04-11 16:42:44.370192+00:00 [info] <0.216.0> Running boot step rabbit_priority_queue defined by app rabbit
+2025-04-11 16:42:44.370215+00:00 [info] <0.216.0> Priority queues enabled, real BQ is rabbit_variable_queue
+2025-04-11 16:42:44.370327+00:00 [info] <0.216.0> Running boot step kernel_ready defined by app rabbit
+2025-04-11 16:42:44.370375+00:00 [info] <0.216.0> Running boot step pg_local_amqp_connection defined by app rabbit
+2025-04-11 16:42:44.376897+00:00 [info] <0.216.0> Running boot step pg_local_amqp_session defined by app rabbit
+2025-04-11 16:42:44.377034+00:00 [info] <0.216.0> Running boot step rabbit_sysmon_minder defined by app rabbit
+2025-04-11 16:42:44.377139+00:00 [info] <0.216.0> Running boot step rabbit_epmd_monitor defined by app rabbit
+2025-04-11 16:42:44.377848+00:00 [info] <0.386.0> epmd monitor knows us, inter-node communication (distribution) port: 25672
+2025-04-11 16:42:44.377922+00:00 [info] <0.216.0> Running boot step guid_generator defined by app rabbit
+2025-04-11 16:42:44.384383+00:00 [info] <0.216.0> Running boot step rabbit_node_monitor defined by app rabbit
+2025-04-11 16:42:44.384585+00:00 [info] <0.390.0> Starting rabbit_node_monitor (in ignore mode)
+2025-04-11 16:42:44.384638+00:00 [info] <0.216.0> Running boot step delegate_sup defined by app rabbit
+2025-04-11 16:42:44.385248+00:00 [info] <0.216.0> Running boot step rabbit_fifo_dlx_sup defined by app rabbit
+2025-04-11 16:42:44.385318+00:00 [info] <0.216.0> Running boot step core_initialized defined by app rabbit
+2025-04-11 16:42:44.385358+00:00 [info] <0.216.0> Running boot step rabbit_channel_tracking_handler defined by app rabbit
+2025-04-11 16:42:44.385471+00:00 [info] <0.216.0> Running boot step rabbit_classic_queue defined by app rabbit
+2025-04-11 16:42:44.385582+00:00 [info] <0.216.0> Running boot step rabbit_connection_tracking_handler defined by app rabbit
+2025-04-11 16:42:44.385642+00:00 [info] <0.216.0> Running boot step rabbit_definitions_hashing defined by app rabbit
+2025-04-11 16:42:44.385732+00:00 [info] <0.216.0> Running boot step rabbit_exchange_parameters defined by app rabbit
+2025-04-11 16:42:44.395736+00:00 [info] <0.216.0> Running boot step rabbit_policies defined by app rabbit
+2025-04-11 16:42:44.396244+00:00 [info] <0.216.0> Running boot step rabbit_policy defined by app rabbit
+2025-04-11 16:42:44.396319+00:00 [info] <0.216.0> Running boot step rabbit_quorum_memory_manager defined by app rabbit
+2025-04-11 16:42:44.396392+00:00 [info] <0.216.0> Running boot step rabbit_quorum_queue defined by app rabbit
+2025-04-11 16:42:44.396522+00:00 [info] <0.216.0> Running boot step rabbit_stream_coordinator defined by app rabbit
+2025-04-11 16:42:44.396841+00:00 [info] <0.216.0> Running boot step rabbit_vhost_limit defined by app rabbit
+2025-04-11 16:42:44.396943+00:00 [info] <0.216.0> Running boot step rabbit_mgmt_reset_handler defined by app rabbitmq_management
+2025-04-11 16:42:44.397031+00:00 [info] <0.216.0> Running boot step rabbit_mgmt_db_handler defined by app rabbitmq_management_agent
+2025-04-11 16:42:44.397092+00:00 [info] <0.216.0> Management plugin: using rates mode 'basic'
+2025-04-11 16:42:44.397513+00:00 [info] <0.216.0> Running boot step recovery defined by app rabbit
+2025-04-11 16:42:44.415966+00:00 [info] <0.422.0> Making sure data directory '/var/lib/rabbitmq/mnesia/rabbit@1161c5ae6e6d/msg_stores/vhosts/628WB79CIFDYO9LJI6DKMI09L' for vhost '/' exists
+2025-04-11 16:42:44.454392+00:00 [info] <0.422.0> Starting message stores for vhost '/'
+2025-04-11 16:42:44.465383+00:00 [info] <0.422.0> Started message store of type transient for vhost '/'
+2025-04-11 16:42:44.467069+00:00 [warning] <0.436.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
+2025-04-11 16:42:44.475703+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
+2025-04-11 16:42:44.483411+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-11 16:42:44.483520+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-11 16:42:44.483866+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-11 16:42:44.484004+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 58ms
+2025-04-11 16:42:44.484061+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
+2025-04-11 16:42:44.484124+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_stream_queue took 0ms
+2025-04-11 16:42:44.487416+00:00 [info] <0.216.0> Running boot step empty_db_check defined by app rabbit
+2025-04-11 16:42:44.487507+00:00 [info] <0.216.0> Will not seed default virtual host and user: have definitions to load...
+2025-04-11 16:42:44.487532+00:00 [info] <0.216.0> Running boot step rabbit_observer_cli defined by app rabbit
+2025-04-11 16:42:44.487600+00:00 [info] <0.216.0> Running boot step rabbit_core_metrics_gc defined by app rabbit
+2025-04-11 16:42:44.487765+00:00 [info] <0.216.0> Running boot step background_gc defined by app rabbit
+2025-04-11 16:42:44.487890+00:00 [info] <0.216.0> Running boot step routing_ready defined by app rabbit
+2025-04-11 16:42:44.487913+00:00 [info] <0.216.0> Running boot step pre_flight defined by app rabbit
+2025-04-11 16:42:44.487960+00:00 [info] <0.216.0> Running boot step notify_cluster defined by app rabbit
+2025-04-11 16:42:44.488036+00:00 [info] <0.216.0> Running boot step networking defined by app rabbit
+2025-04-11 16:42:44.488087+00:00 [info] <0.216.0> Running boot step rabbit_quorum_queue_periodic_membership_reconciliation defined by app rabbit
+2025-04-11 16:42:44.488176+00:00 [info] <0.216.0> Running boot step definition_import_worker_pool defined by app rabbit
+2025-04-11 16:42:44.488233+00:00 [info] <0.292.0> Starting worker pool 'definition_import_pool' with 12 processes in it
+2025-04-11 16:42:44.488545+00:00 [info] <0.216.0> Running boot step cluster_name defined by app rabbit
+2025-04-11 16:42:44.488587+00:00 [info] <0.216.0> Running boot step virtual_host_reconciliation defined by app rabbit
+2025-04-11 16:42:44.488735+00:00 [info] <0.216.0> Running boot step direct_client defined by app rabbit
+2025-04-11 16:42:44.488814+00:00 [info] <0.216.0> Running boot step cluster_tags defined by app rabbit
+2025-04-11 16:42:44.490030+00:00 [info] <0.216.0> Running boot step rabbit_management_load_definitions defined by app rabbitmq_management
+2025-04-11 16:42:44.490127+00:00 [info] <0.501.0> Resetting node maintenance status
+2025-04-11 16:42:44.637289+00:00 [warning] <0.523.0> Deprecated features: `management_metrics_collection`: Feature `management_metrics_collection` is deprecated.
+2025-04-11 16:42:44.637289+00:00 [warning] <0.523.0> By default, this feature can still be used for now.
+2025-04-11 16:42:44.637289+00:00 [warning] <0.523.0> Its use will not be permitted by default in a future minor RabbitMQ version and the feature will be removed from a future major RabbitMQ version; actual versions to be determined.
+2025-04-11 16:42:44.637289+00:00 [warning] <0.523.0> To continue using this feature when it is not permitted by default, set the following parameter in your configuration:
+2025-04-11 16:42:44.637289+00:00 [warning] <0.523.0>     "deprecated_features.permit.management_metrics_collection = true"
+2025-04-11 16:42:44.637289+00:00 [warning] <0.523.0> To test RabbitMQ as if the feature was removed, set this in your configuration:
+2025-04-11 16:42:44.637289+00:00 [warning] <0.523.0>     "deprecated_features.permit.management_metrics_collection = false"
+2025-04-11 16:42:44.675152+00:00 [info] <0.559.0> Management plugin: HTTP (non-TLS) listener started on port 15672
+2025-04-11 16:42:44.675355+00:00 [info] <0.587.0> Statistics database started.
+2025-04-11 16:42:44.675428+00:00 [info] <0.586.0> Starting worker pool 'management_worker_pool' with 3 processes in it
+2025-04-11 16:42:44.675807+00:00 [info] <0.595.0> rabbit_stomp: default user 'guest' enabled
+2025-04-11 16:42:44.676428+00:00 [info] <0.614.0> started STOMP TCP listener on [::]:61613
+2025-04-11 16:42:44.677437+00:00 [info] <0.620.0> Starting MQTT retained message store rabbit_mqtt_retained_msg_store_dets for vhost '/'
+2025-04-11 16:42:44.687105+00:00 [info] <0.620.0> Recovered MQTT retained message store rabbit_mqtt_retained_msg_store_dets for vhost '/'
+2025-04-11 16:42:44.687751+00:00 [info] <0.640.0> started MQTT TCP listener on [::]:1883
+2025-04-11 16:42:44.688213+00:00 [info] <0.501.0> Ready to start client connection listeners
+2025-04-11 16:42:44.689638+00:00 [info] <0.658.0> started TCP listener on [::]:5672
+2025-04-11 16:42:44.752273+00:00 [info] <0.501.0> Server startup complete; 5 plugins started.
+2025-04-11 16:42:44.752273+00:00 [info] <0.501.0>  * rabbitmq_mqtt
+2025-04-11 16:42:44.752273+00:00 [info] <0.501.0>  * rabbitmq_stomp
+2025-04-11 16:42:44.752273+00:00 [info] <0.501.0>  * rabbitmq_management
+2025-04-11 16:42:44.752273+00:00 [info] <0.501.0>  * rabbitmq_management_agent
+2025-04-11 16:42:44.752273+00:00 [info] <0.501.0>  * rabbitmq_web_dispatch
+2025-04-11 16:42:44.891573+00:00 [info] <0.10.0> Time to start RabbitMQ: 4144 ms
+2025-04-11 16:44:00.696905+00:00 [notice] <0.216.0> Logging: configured log handlers are now ACTIVE
+2025-04-11 16:44:00.704669+00:00 [info] <0.216.0> ra: starting system quorum_queues
+2025-04-11 16:44:00.704848+00:00 [info] <0.216.0> starting Ra system: quorum_queues in directory: /var/lib/rabbitmq/mnesia/rabbit@1161c5ae6e6d/quorum/rabbit@1161c5ae6e6d
+2025-04-11 16:44:00.773487+00:00 [info] <0.230.0> ra system 'quorum_queues' running pre init for 0 registered servers
+2025-04-11 16:44:00.787574+00:00 [info] <0.231.0> ra: meta data store initialised for system quorum_queues. 0 record(s) recovered
+2025-04-11 16:44:00.804165+00:00 [notice] <0.236.0> WAL: ra_log_wal init, open tbls: ra_log_open_mem_tables, closed tbls: ra_log_closed_mem_tables
+2025-04-11 16:44:00.831916+00:00 [info] <0.238.0> ra_system_recover: ra system 'quorum_queues' server recovery strategy rabbit_quorum_queue:system_recover
+2025-04-11 16:44:00.832040+00:00 [info] <0.238.0> [rabbit_quorum_queue:system_recover/1] rabbit not booted, skipping queue recovery
+2025-04-11 16:44:00.832142+00:00 [info] <0.216.0> ra: starting system coordination
+2025-04-11 16:44:00.832185+00:00 [info] <0.216.0> starting Ra system: coordination in directory: /var/lib/rabbitmq/mnesia/rabbit@1161c5ae6e6d/coordination/rabbit@1161c5ae6e6d
+2025-04-11 16:44:00.844306+00:00 [info] <0.244.0> ra system 'coordination' running pre init for 1 registered servers
+2025-04-11 16:44:00.876602+00:00 [info] <0.245.0> ra: meta data store initialised for system coordination. 1 record(s) recovered
+2025-04-11 16:44:00.876936+00:00 [notice] <0.250.0> WAL: ra_coordination_log_wal init, open tbls: ra_coordination_log_open_mem_tables, closed tbls: ra_coordination_log_closed_mem_tables
+2025-04-11 16:44:00.901535+00:00 [info] <0.216.0> ra: starting system coordination
+2025-04-11 16:44:00.901616+00:00 [info] <0.216.0> starting Ra system: coordination in directory: /var/lib/rabbitmq/mnesia/rabbit@1161c5ae6e6d/coordination/rabbit@1161c5ae6e6d
+2025-04-11 16:44:01.466252+00:00 [notice] <0.255.0> RabbitMQ metadata store: candidate -> leader in term: 14 machine version: 1
+2025-04-11 16:44:01.739907+00:00 [info] <0.216.0> 
+2025-04-11 16:44:01.739907+00:00 [info] <0.216.0>  Starting RabbitMQ 4.0.7 on Erlang 27.3 [jit]
+2025-04-11 16:44:01.739907+00:00 [info] <0.216.0>  Copyright (c) 2007-2024 Broadcom Inc and/or its subsidiaries
+2025-04-11 16:44:01.739907+00:00 [info] <0.216.0>  Licensed under the MPL 2.0. Website: https://rabbitmq.com
+2025-04-11 16:44:01.746631+00:00 [info] <0.216.0> 
+2025-04-11 16:44:01.746631+00:00 [info] <0.216.0>  node           : rabbit@1161c5ae6e6d
+2025-04-11 16:44:01.746631+00:00 [info] <0.216.0>  home dir       : /var/lib/rabbitmq
+2025-04-11 16:44:01.746631+00:00 [info] <0.216.0>  config file(s) : /etc/rabbitmq/rabbitmq.conf
+2025-04-11 16:44:01.746631+00:00 [info] <0.216.0>  cookie hash    : pxp1VrTqYaANd+ndUvOkwQ==
+2025-04-11 16:44:01.746631+00:00 [info] <0.216.0>  log(s)         : /var/log/rabbitmq/rabbit@1161c5ae6e6d.log
+2025-04-11 16:44:01.746631+00:00 [info] <0.216.0>                 : <stdout>
+2025-04-11 16:44:01.746631+00:00 [info] <0.216.0>  data dir       : /var/lib/rabbitmq/mnesia/rabbit@1161c5ae6e6d
+2025-04-11 16:44:02.080873+00:00 [info] <0.216.0> Running boot step pre_boot defined by app rabbit
+2025-04-11 16:44:02.080950+00:00 [info] <0.216.0> Running boot step rabbit_global_counters defined by app rabbit
+2025-04-11 16:44:02.081656+00:00 [info] <0.216.0> Running boot step rabbit_osiris_metrics defined by app rabbit
+2025-04-11 16:44:02.081798+00:00 [info] <0.216.0> Running boot step rabbit_core_metrics defined by app rabbit
+2025-04-11 16:44:02.082725+00:00 [info] <0.216.0> Running boot step rabbit_alarm defined by app rabbit
+2025-04-11 16:44:02.092678+00:00 [info] <0.352.0> Memory high watermark set to 4567 MiB (4789837824 bytes) of 7613 MiB (7983063040 bytes) total
+2025-04-11 16:44:02.096732+00:00 [info] <0.354.0> Enabling free disk space monitoring (disk free space: 22680788992, total memory: 7983063040)
+2025-04-11 16:44:02.096781+00:00 [info] <0.354.0> Disk free limit set to 50MB
+2025-04-11 16:44:02.099339+00:00 [info] <0.216.0> Running boot step code_server_cache defined by app rabbit
+2025-04-11 16:44:02.099438+00:00 [info] <0.216.0> Running boot step file_handle_cache defined by app rabbit
+2025-04-11 16:44:02.105129+00:00 [info] <0.357.0> Limiting to approx 1048479 file handles (943629 sockets)
+2025-04-11 16:44:02.105283+00:00 [info] <0.358.0> FHC read buffering: OFF
+2025-04-11 16:44:02.105318+00:00 [info] <0.358.0> FHC write buffering: ON
+2025-04-11 16:44:02.105819+00:00 [info] <0.216.0> Running boot step worker_pool defined by app rabbit
+2025-04-11 16:44:02.105944+00:00 [info] <0.296.0> Will use 12 processes for default worker pool
+2025-04-11 16:44:02.105989+00:00 [info] <0.296.0> Starting worker pool 'worker_pool' with 12 processes in it
+2025-04-11 16:44:02.106497+00:00 [info] <0.216.0> Running boot step rabbit_registry defined by app rabbit
+2025-04-11 16:44:02.106642+00:00 [info] <0.216.0> Running boot step database defined by app rabbit
+2025-04-11 16:44:02.108242+00:00 [info] <0.216.0> Peer discovery: configured backend: rabbit_peer_discovery_classic_config
+2025-04-11 16:44:02.116024+00:00 [info] <0.216.0> Waiting for Mnesia tables for 30000 ms, 9 retries left
+2025-04-11 16:44:02.117469+00:00 [info] <0.216.0> Successfully synced tables from a peer
+2025-04-11 16:44:02.141584+00:00 [info] <0.216.0> Waiting for Mnesia tables for 30000 ms, 9 retries left
+2025-04-11 16:44:02.142007+00:00 [info] <0.216.0> Successfully synced tables from a peer
+2025-04-11 16:44:02.142295+00:00 [info] <0.216.0> Running boot step tracking_metadata_store defined by app rabbit
+2025-04-11 16:44:02.142430+00:00 [info] <0.381.0> Setting up a table for connection tracking on this node: tracked_connection
+2025-04-11 16:44:02.142544+00:00 [info] <0.381.0> Setting up a table for per-vhost connection counting on this node: tracked_connection_per_vhost
+2025-04-11 16:44:02.142690+00:00 [info] <0.381.0> Setting up a table for per-user connection counting on this node: tracked_connection_per_user
+2025-04-11 16:44:02.142788+00:00 [info] <0.381.0> Setting up a table for channel tracking on this node: tracked_channel
+2025-04-11 16:44:02.142900+00:00 [info] <0.381.0> Setting up a table for channel tracking on this node: tracked_channel_per_user
+2025-04-11 16:44:02.143031+00:00 [info] <0.216.0> Running boot step networking_metadata_store defined by app rabbit
+2025-04-11 16:44:02.143195+00:00 [info] <0.216.0> Running boot step feature_flags defined by app rabbit
+2025-04-11 16:44:02.145546+00:00 [info] <0.216.0> Running boot step codec_correctness_check defined by app rabbit
+2025-04-11 16:44:02.145631+00:00 [info] <0.216.0> Running boot step external_infrastructure defined by app rabbit
+2025-04-11 16:44:02.145695+00:00 [info] <0.216.0> Running boot step rabbit_event defined by app rabbit
+2025-04-11 16:44:02.145844+00:00 [info] <0.216.0> Running boot step rabbit_auth_mechanism_amqplain defined by app rabbit
+2025-04-11 16:44:02.145993+00:00 [info] <0.216.0> Running boot step rabbit_auth_mechanism_anonymous defined by app rabbit
+2025-04-11 16:44:02.146093+00:00 [info] <0.216.0> Running boot step rabbit_auth_mechanism_cr_demo defined by app rabbit
+2025-04-11 16:44:02.146198+00:00 [info] <0.216.0> Running boot step rabbit_auth_mechanism_plain defined by app rabbit
+2025-04-11 16:44:02.146357+00:00 [info] <0.216.0> Running boot step rabbit_exchange_type_direct defined by app rabbit
+2025-04-11 16:44:02.146505+00:00 [info] <0.216.0> Running boot step rabbit_exchange_type_fanout defined by app rabbit
+2025-04-11 16:44:02.146649+00:00 [info] <0.216.0> Running boot step rabbit_exchange_type_headers defined by app rabbit
+2025-04-11 16:44:02.146803+00:00 [info] <0.216.0> Running boot step rabbit_exchange_type_local_random defined by app rabbit
+2025-04-11 16:44:02.146960+00:00 [info] <0.216.0> Running boot step rabbit_exchange_type_topic defined by app rabbit
+2025-04-11 16:44:02.147068+00:00 [info] <0.216.0> Running boot step rabbit_priority_queue defined by app rabbit
+2025-04-11 16:44:02.147123+00:00 [info] <0.216.0> Priority queues enabled, real BQ is rabbit_variable_queue
+2025-04-11 16:44:02.147344+00:00 [info] <0.216.0> Running boot step kernel_ready defined by app rabbit
+2025-04-11 16:44:02.147394+00:00 [info] <0.216.0> Running boot step pg_local_amqp_connection defined by app rabbit
+2025-04-11 16:44:02.161523+00:00 [info] <0.216.0> Running boot step pg_local_amqp_session defined by app rabbit
+2025-04-11 16:44:02.161972+00:00 [info] <0.216.0> Running boot step rabbit_sysmon_minder defined by app rabbit
+2025-04-11 16:44:02.162350+00:00 [info] <0.216.0> Running boot step rabbit_epmd_monitor defined by app rabbit
+2025-04-11 16:44:02.163815+00:00 [info] <0.390.0> epmd monitor knows us, inter-node communication (distribution) port: 25672
+2025-04-11 16:44:02.164003+00:00 [info] <0.216.0> Running boot step guid_generator defined by app rabbit
+2025-04-11 16:44:02.180611+00:00 [info] <0.216.0> Running boot step rabbit_node_monitor defined by app rabbit
+2025-04-11 16:44:02.181231+00:00 [info] <0.394.0> Starting rabbit_node_monitor (in ignore mode)
+2025-04-11 16:44:02.181385+00:00 [info] <0.216.0> Running boot step delegate_sup defined by app rabbit
+2025-04-11 16:44:02.182610+00:00 [info] <0.216.0> Running boot step rabbit_fifo_dlx_sup defined by app rabbit
+2025-04-11 16:44:02.182743+00:00 [info] <0.216.0> Running boot step core_initialized defined by app rabbit
+2025-04-11 16:44:02.182828+00:00 [info] <0.216.0> Running boot step rabbit_channel_tracking_handler defined by app rabbit
+2025-04-11 16:44:02.182891+00:00 [info] <0.216.0> Running boot step rabbit_classic_queue defined by app rabbit
+2025-04-11 16:44:02.183071+00:00 [info] <0.216.0> Running boot step rabbit_connection_tracking_handler defined by app rabbit
+2025-04-11 16:44:02.183175+00:00 [info] <0.216.0> Running boot step rabbit_definitions_hashing defined by app rabbit
+2025-04-11 16:44:02.183288+00:00 [info] <0.216.0> Running boot step rabbit_exchange_parameters defined by app rabbit
+2025-04-11 16:44:02.204062+00:00 [info] <0.216.0> Running boot step rabbit_policies defined by app rabbit
+2025-04-11 16:44:02.204938+00:00 [info] <0.216.0> Running boot step rabbit_policy defined by app rabbit
+2025-04-11 16:44:02.205040+00:00 [info] <0.216.0> Running boot step rabbit_quorum_memory_manager defined by app rabbit
+2025-04-11 16:44:02.205124+00:00 [info] <0.216.0> Running boot step rabbit_quorum_queue defined by app rabbit
+2025-04-11 16:44:02.205328+00:00 [info] <0.216.0> Running boot step rabbit_stream_coordinator defined by app rabbit
+2025-04-11 16:44:02.205819+00:00 [info] <0.216.0> Running boot step rabbit_vhost_limit defined by app rabbit
+2025-04-11 16:44:02.205920+00:00 [info] <0.216.0> Running boot step rabbit_mgmt_reset_handler defined by app rabbitmq_management
+2025-04-11 16:44:02.206274+00:00 [info] <0.216.0> Running boot step rabbit_mgmt_db_handler defined by app rabbitmq_management_agent
+2025-04-11 16:44:02.206363+00:00 [info] <0.216.0> Management plugin: using rates mode 'basic'
+2025-04-11 16:44:02.207156+00:00 [info] <0.216.0> Running boot step recovery defined by app rabbit
+2025-04-11 16:44:02.238533+00:00 [info] <0.426.0> Making sure data directory '/var/lib/rabbitmq/mnesia/rabbit@1161c5ae6e6d/msg_stores/vhosts/628WB79CIFDYO9LJI6DKMI09L' for vhost '/' exists
+2025-04-11 16:44:02.296932+00:00 [info] <0.426.0> Starting message stores for vhost '/'
+2025-04-11 16:44:02.318799+00:00 [info] <0.426.0> Started message store of type transient for vhost '/'
+2025-04-11 16:44:02.321883+00:00 [warning] <0.440.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
+2025-04-11 16:44:02.337256+00:00 [info] <0.426.0> Started message store of type persistent for vhost '/'
+2025-04-11 16:44:02.350528+00:00 [warning] <0.453.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-11 16:44:02.351135+00:00 [warning] <0.450.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-11 16:44:02.351355+00:00 [warning] <0.456.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-11 16:44:02.351535+00:00 [info] <0.426.0> Recovering 3 queues of type rabbit_classic_queue took 97ms
+2025-04-11 16:44:02.351596+00:00 [info] <0.426.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
+2025-04-11 16:44:02.351768+00:00 [info] <0.426.0> Recovering 0 queues of type rabbit_stream_queue took 0ms
+2025-04-11 16:44:02.357247+00:00 [info] <0.216.0> Running boot step empty_db_check defined by app rabbit
+2025-04-11 16:44:02.357383+00:00 [info] <0.216.0> Will not seed default virtual host and user: have definitions to load...
+2025-04-11 16:44:02.357575+00:00 [info] <0.216.0> Running boot step rabbit_observer_cli defined by app rabbit
+2025-04-11 16:44:02.357823+00:00 [info] <0.216.0> Running boot step rabbit_core_metrics_gc defined by app rabbit
+2025-04-11 16:44:02.358231+00:00 [info] <0.216.0> Running boot step background_gc defined by app rabbit
+2025-04-11 16:44:02.358489+00:00 [info] <0.216.0> Running boot step routing_ready defined by app rabbit
+2025-04-11 16:44:02.358615+00:00 [info] <0.216.0> Running boot step pre_flight defined by app rabbit
+2025-04-11 16:44:02.358710+00:00 [info] <0.216.0> Running boot step notify_cluster defined by app rabbit
+2025-04-11 16:44:02.358748+00:00 [info] <0.216.0> Running boot step networking defined by app rabbit
+2025-04-11 16:44:02.358965+00:00 [info] <0.216.0> Running boot step rabbit_quorum_queue_periodic_membership_reconciliation defined by app rabbit
+2025-04-11 16:44:02.359408+00:00 [info] <0.216.0> Running boot step definition_import_worker_pool defined by app rabbit
+2025-04-11 16:44:02.359591+00:00 [info] <0.296.0> Starting worker pool 'definition_import_pool' with 12 processes in it
+2025-04-11 16:44:02.360836+00:00 [info] <0.216.0> Running boot step cluster_name defined by app rabbit
+2025-04-11 16:44:02.360935+00:00 [info] <0.216.0> Running boot step virtual_host_reconciliation defined by app rabbit
+2025-04-11 16:44:02.361671+00:00 [info] <0.216.0> Running boot step direct_client defined by app rabbit
+2025-04-11 16:44:02.362049+00:00 [info] <0.216.0> Running boot step cluster_tags defined by app rabbit
+2025-04-11 16:44:02.363888+00:00 [info] <0.216.0> Running boot step rabbit_management_load_definitions defined by app rabbitmq_management
+2025-04-11 16:44:02.364123+00:00 [info] <0.505.0> Resetting node maintenance status
+2025-04-11 16:44:02.592467+00:00 [warning] <0.527.0> Deprecated features: `management_metrics_collection`: Feature `management_metrics_collection` is deprecated.
+2025-04-11 16:44:02.592467+00:00 [warning] <0.527.0> By default, this feature can still be used for now.
+2025-04-11 16:44:02.592467+00:00 [warning] <0.527.0> Its use will not be permitted by default in a future minor RabbitMQ version and the feature will be removed from a future major RabbitMQ version; actual versions to be determined.
+2025-04-11 16:44:02.592467+00:00 [warning] <0.527.0> To continue using this feature when it is not permitted by default, set the following parameter in your configuration:
+2025-04-11 16:44:02.592467+00:00 [warning] <0.527.0>     "deprecated_features.permit.management_metrics_collection = true"
+2025-04-11 16:44:02.592467+00:00 [warning] <0.527.0> To test RabbitMQ as if the feature was removed, set this in your configuration:
+2025-04-11 16:44:02.592467+00:00 [warning] <0.527.0>     "deprecated_features.permit.management_metrics_collection = false"
+2025-04-11 16:44:02.676785+00:00 [info] <0.563.0> Management plugin: HTTP (non-TLS) listener started on port 15672
+2025-04-11 16:44:02.677114+00:00 [info] <0.591.0> Statistics database started.
+2025-04-11 16:44:02.677252+00:00 [info] <0.590.0> Starting worker pool 'management_worker_pool' with 3 processes in it
+2025-04-11 16:44:02.678121+00:00 [info] <0.599.0> rabbit_stomp: default user 'guest' enabled
+2025-04-11 16:44:02.679251+00:00 [info] <0.618.0> started STOMP TCP listener on [::]:61613
+2025-04-11 16:44:02.680667+00:00 [info] <0.624.0> Starting MQTT retained message store rabbit_mqtt_retained_msg_store_dets for vhost '/'
+2025-04-11 16:44:02.685034+00:00 [info] <0.624.0> Recovered MQTT retained message store rabbit_mqtt_retained_msg_store_dets for vhost '/'
+2025-04-11 16:44:02.685837+00:00 [info] <0.644.0> started MQTT TCP listener on [::]:1883
+2025-04-11 16:44:02.686444+00:00 [info] <0.505.0> Ready to start client connection listeners
+2025-04-11 16:44:02.688307+00:00 [info] <0.662.0> started TCP listener on [::]:5672
+2025-04-11 16:44:02.805712+00:00 [info] <0.505.0> Server startup complete; 5 plugins started.
+2025-04-11 16:44:02.805712+00:00 [info] <0.505.0>  * rabbitmq_mqtt
+2025-04-11 16:44:02.805712+00:00 [info] <0.505.0>  * rabbitmq_stomp
+2025-04-11 16:44:02.805712+00:00 [info] <0.505.0>  * rabbitmq_management
+2025-04-11 16:44:02.805712+00:00 [info] <0.505.0>  * rabbitmq_management_agent
+2025-04-11 16:44:02.805712+00:00 [info] <0.505.0>  * rabbitmq_web_dispatch
+2025-04-11 16:44:02.966485+00:00 [info] <0.10.0> Time to start RabbitMQ: 4534 ms
+2025-04-11 16:44:17.656920+00:00 [info] <0.676.0> accepting AMQP connection 172.21.0.1:48996 -> 172.21.0.2:5672
+2025-04-11 16:44:17.720206+00:00 [info] <0.676.0> connection 172.21.0.1:48996 -> 172.21.0.2:5672 has a client-provided name: rabbitConnectionFactory#4056a2e5:0
+2025-04-11 16:44:17.725821+00:00 [info] <0.676.0> connection 172.21.0.1:48996 -> 172.21.0.2:5672 - rabbitConnectionFactory#4056a2e5:0: user 'admin' authenticated and granted access to vhost '/'
+2025-04-11 16:54:56.696930+00:00 [info] <0.676.0> closing AMQP connection (172.21.0.1:48996 -> 172.21.0.2:5672 - rabbitConnectionFactory#4056a2e5:0, vhost: '/', user: 'admin', duration: '10M, 39s')
+2025-04-11 16:55:13.010904+00:00 [notice] <0.216.0> Logging: configured log handlers are now ACTIVE
+2025-04-11 16:55:13.023373+00:00 [info] <0.216.0> ra: starting system quorum_queues
+2025-04-11 16:55:13.023636+00:00 [info] <0.216.0> starting Ra system: quorum_queues in directory: /var/lib/rabbitmq/mnesia/rabbit@1161c5ae6e6d/quorum/rabbit@1161c5ae6e6d
+2025-04-11 16:55:13.098002+00:00 [info] <0.230.0> ra system 'quorum_queues' running pre init for 0 registered servers
+2025-04-11 16:55:13.110745+00:00 [info] <0.231.0> ra: meta data store initialised for system quorum_queues. 0 record(s) recovered
+2025-04-11 16:55:13.123699+00:00 [notice] <0.236.0> WAL: ra_log_wal init, open tbls: ra_log_open_mem_tables, closed tbls: ra_log_closed_mem_tables
+2025-04-11 16:55:13.145166+00:00 [info] <0.238.0> ra_system_recover: ra system 'quorum_queues' server recovery strategy rabbit_quorum_queue:system_recover
+2025-04-11 16:55:13.145262+00:00 [info] <0.238.0> [rabbit_quorum_queue:system_recover/1] rabbit not booted, skipping queue recovery
+2025-04-11 16:55:13.145440+00:00 [info] <0.216.0> ra: starting system coordination
+2025-04-11 16:55:13.145493+00:00 [info] <0.216.0> starting Ra system: coordination in directory: /var/lib/rabbitmq/mnesia/rabbit@1161c5ae6e6d/coordination/rabbit@1161c5ae6e6d
+2025-04-11 16:55:13.155348+00:00 [info] <0.244.0> ra system 'coordination' running pre init for 1 registered servers
+2025-04-11 16:55:13.183641+00:00 [info] <0.245.0> ra: meta data store initialised for system coordination. 1 record(s) recovered
+2025-04-11 16:55:13.183938+00:00 [notice] <0.250.0> WAL: ra_coordination_log_wal init, open tbls: ra_coordination_log_open_mem_tables, closed tbls: ra_coordination_log_closed_mem_tables
+2025-04-11 16:55:13.203315+00:00 [info] <0.216.0> ra: starting system coordination
+2025-04-11 16:55:13.203440+00:00 [info] <0.216.0> starting Ra system: coordination in directory: /var/lib/rabbitmq/mnesia/rabbit@1161c5ae6e6d/coordination/rabbit@1161c5ae6e6d
+2025-04-11 16:55:13.833777+00:00 [notice] <0.255.0> RabbitMQ metadata store: candidate -> leader in term: 15 machine version: 1
+2025-04-11 16:55:14.059649+00:00 [info] <0.216.0> 
+2025-04-11 16:55:14.059649+00:00 [info] <0.216.0>  Starting RabbitMQ 4.0.7 on Erlang 27.3 [jit]
+2025-04-11 16:55:14.059649+00:00 [info] <0.216.0>  Copyright (c) 2007-2024 Broadcom Inc and/or its subsidiaries
+2025-04-11 16:55:14.059649+00:00 [info] <0.216.0>  Licensed under the MPL 2.0. Website: https://rabbitmq.com
+2025-04-11 16:55:14.065849+00:00 [info] <0.216.0> 
+2025-04-11 16:55:14.065849+00:00 [info] <0.216.0>  node           : rabbit@1161c5ae6e6d
+2025-04-11 16:55:14.065849+00:00 [info] <0.216.0>  home dir       : /var/lib/rabbitmq
+2025-04-11 16:55:14.065849+00:00 [info] <0.216.0>  config file(s) : /etc/rabbitmq/rabbitmq.conf
+2025-04-11 16:55:14.065849+00:00 [info] <0.216.0>  cookie hash    : pxp1VrTqYaANd+ndUvOkwQ==
+2025-04-11 16:55:14.065849+00:00 [info] <0.216.0>  log(s)         : /var/log/rabbitmq/rabbit@1161c5ae6e6d.log
+2025-04-11 16:55:14.065849+00:00 [info] <0.216.0>                 : <stdout>
+2025-04-11 16:55:14.065849+00:00 [info] <0.216.0>  data dir       : /var/lib/rabbitmq/mnesia/rabbit@1161c5ae6e6d
+2025-04-11 16:55:14.367188+00:00 [info] <0.216.0> Running boot step pre_boot defined by app rabbit
+2025-04-11 16:55:14.367260+00:00 [info] <0.216.0> Running boot step rabbit_global_counters defined by app rabbit
+2025-04-11 16:55:14.367602+00:00 [info] <0.216.0> Running boot step rabbit_osiris_metrics defined by app rabbit
+2025-04-11 16:55:14.367677+00:00 [info] <0.216.0> Running boot step rabbit_core_metrics defined by app rabbit
+2025-04-11 16:55:14.368370+00:00 [info] <0.216.0> Running boot step rabbit_alarm defined by app rabbit
+2025-04-11 16:55:14.377660+00:00 [info] <0.348.0> Memory high watermark set to 4567 MiB (4789837824 bytes) of 7613 MiB (7983063040 bytes) total
+2025-04-11 16:55:14.380650+00:00 [info] <0.350.0> Enabling free disk space monitoring (disk free space: 22645874688, total memory: 7983063040)
+2025-04-11 16:55:14.380709+00:00 [info] <0.350.0> Disk free limit set to 50MB
+2025-04-11 16:55:14.382868+00:00 [info] <0.216.0> Running boot step code_server_cache defined by app rabbit
+2025-04-11 16:55:14.382977+00:00 [info] <0.216.0> Running boot step file_handle_cache defined by app rabbit
+2025-04-11 16:55:14.389442+00:00 [info] <0.353.0> Limiting to approx 1048479 file handles (943629 sockets)
+2025-04-11 16:55:14.389649+00:00 [info] <0.354.0> FHC read buffering: OFF
+2025-04-11 16:55:14.389682+00:00 [info] <0.354.0> FHC write buffering: ON
+2025-04-11 16:55:14.390054+00:00 [info] <0.216.0> Running boot step worker_pool defined by app rabbit
+2025-04-11 16:55:14.390249+00:00 [info] <0.292.0> Will use 12 processes for default worker pool
+2025-04-11 16:55:14.390285+00:00 [info] <0.292.0> Starting worker pool 'worker_pool' with 12 processes in it
+2025-04-11 16:55:14.390683+00:00 [info] <0.216.0> Running boot step rabbit_registry defined by app rabbit
+2025-04-11 16:55:14.390777+00:00 [info] <0.216.0> Running boot step database defined by app rabbit
+2025-04-11 16:55:14.392042+00:00 [info] <0.216.0> Peer discovery: configured backend: rabbit_peer_discovery_classic_config
+2025-04-11 16:55:14.398332+00:00 [info] <0.216.0> Waiting for Mnesia tables for 30000 ms, 9 retries left
+2025-04-11 16:55:14.409024+00:00 [info] <0.216.0> Successfully synced tables from a peer
+2025-04-11 16:55:14.423998+00:00 [info] <0.216.0> Waiting for Mnesia tables for 30000 ms, 9 retries left
+2025-04-11 16:55:14.424200+00:00 [info] <0.216.0> Successfully synced tables from a peer
+2025-04-11 16:55:14.424403+00:00 [info] <0.216.0> Running boot step tracking_metadata_store defined by app rabbit
+2025-04-11 16:55:14.424521+00:00 [info] <0.377.0> Setting up a table for connection tracking on this node: tracked_connection
+2025-04-11 16:55:14.424564+00:00 [info] <0.377.0> Setting up a table for per-vhost connection counting on this node: tracked_connection_per_vhost
+2025-04-11 16:55:14.424651+00:00 [info] <0.377.0> Setting up a table for per-user connection counting on this node: tracked_connection_per_user
+2025-04-11 16:55:14.424699+00:00 [info] <0.377.0> Setting up a table for channel tracking on this node: tracked_channel
+2025-04-11 16:55:14.424763+00:00 [info] <0.377.0> Setting up a table for channel tracking on this node: tracked_channel_per_user
+2025-04-11 16:55:14.424826+00:00 [info] <0.216.0> Running boot step networking_metadata_store defined by app rabbit
+2025-04-11 16:55:14.424925+00:00 [info] <0.216.0> Running boot step feature_flags defined by app rabbit
+2025-04-11 16:55:14.426214+00:00 [info] <0.216.0> Running boot step codec_correctness_check defined by app rabbit
+2025-04-11 16:55:14.426243+00:00 [info] <0.216.0> Running boot step external_infrastructure defined by app rabbit
+2025-04-11 16:55:14.426292+00:00 [info] <0.216.0> Running boot step rabbit_event defined by app rabbit
+2025-04-11 16:55:14.426369+00:00 [info] <0.216.0> Running boot step rabbit_auth_mechanism_amqplain defined by app rabbit
+2025-04-11 16:55:14.426464+00:00 [info] <0.216.0> Running boot step rabbit_auth_mechanism_anonymous defined by app rabbit
+2025-04-11 16:55:14.426509+00:00 [info] <0.216.0> Running boot step rabbit_auth_mechanism_cr_demo defined by app rabbit
+2025-04-11 16:55:14.426545+00:00 [info] <0.216.0> Running boot step rabbit_auth_mechanism_plain defined by app rabbit
+2025-04-11 16:55:14.426601+00:00 [info] <0.216.0> Running boot step rabbit_exchange_type_direct defined by app rabbit
+2025-04-11 16:55:14.426643+00:00 [info] <0.216.0> Running boot step rabbit_exchange_type_fanout defined by app rabbit
+2025-04-11 16:55:14.426672+00:00 [info] <0.216.0> Running boot step rabbit_exchange_type_headers defined by app rabbit
+2025-04-11 16:55:14.426728+00:00 [info] <0.216.0> Running boot step rabbit_exchange_type_local_random defined by app rabbit
+2025-04-11 16:55:14.426817+00:00 [info] <0.216.0> Running boot step rabbit_exchange_type_topic defined by app rabbit
+2025-04-11 16:55:14.426852+00:00 [info] <0.216.0> Running boot step rabbit_priority_queue defined by app rabbit
+2025-04-11 16:55:14.426874+00:00 [info] <0.216.0> Priority queues enabled, real BQ is rabbit_variable_queue
+2025-04-11 16:55:14.426955+00:00 [info] <0.216.0> Running boot step kernel_ready defined by app rabbit
+2025-04-11 16:55:14.427014+00:00 [info] <0.216.0> Running boot step pg_local_amqp_connection defined by app rabbit
+2025-04-11 16:55:14.433387+00:00 [info] <0.216.0> Running boot step pg_local_amqp_session defined by app rabbit
+2025-04-11 16:55:14.433533+00:00 [info] <0.216.0> Running boot step rabbit_sysmon_minder defined by app rabbit
+2025-04-11 16:55:14.433786+00:00 [info] <0.216.0> Running boot step rabbit_epmd_monitor defined by app rabbit
+2025-04-11 16:55:14.434540+00:00 [info] <0.386.0> epmd monitor knows us, inter-node communication (distribution) port: 25672
+2025-04-11 16:55:14.434624+00:00 [info] <0.216.0> Running boot step guid_generator defined by app rabbit
+2025-04-11 16:55:14.441172+00:00 [info] <0.216.0> Running boot step rabbit_node_monitor defined by app rabbit
+2025-04-11 16:55:14.441464+00:00 [info] <0.390.0> Starting rabbit_node_monitor (in ignore mode)
+2025-04-11 16:55:14.441587+00:00 [info] <0.216.0> Running boot step delegate_sup defined by app rabbit
+2025-04-11 16:55:14.442151+00:00 [info] <0.216.0> Running boot step rabbit_fifo_dlx_sup defined by app rabbit
+2025-04-11 16:55:14.442238+00:00 [info] <0.216.0> Running boot step core_initialized defined by app rabbit
+2025-04-11 16:55:14.442275+00:00 [info] <0.216.0> Running boot step rabbit_channel_tracking_handler defined by app rabbit
+2025-04-11 16:55:14.442385+00:00 [info] <0.216.0> Running boot step rabbit_classic_queue defined by app rabbit
+2025-04-11 16:55:14.442504+00:00 [info] <0.216.0> Running boot step rabbit_connection_tracking_handler defined by app rabbit
+2025-04-11 16:55:14.442609+00:00 [info] <0.216.0> Running boot step rabbit_definitions_hashing defined by app rabbit
+2025-04-11 16:55:14.442680+00:00 [info] <0.216.0> Running boot step rabbit_exchange_parameters defined by app rabbit
+2025-04-11 16:55:14.452746+00:00 [info] <0.216.0> Running boot step rabbit_policies defined by app rabbit
+2025-04-11 16:55:14.453133+00:00 [info] <0.216.0> Running boot step rabbit_policy defined by app rabbit
+2025-04-11 16:55:14.453251+00:00 [info] <0.216.0> Running boot step rabbit_quorum_memory_manager defined by app rabbit
+2025-04-11 16:55:14.453338+00:00 [info] <0.216.0> Running boot step rabbit_quorum_queue defined by app rabbit
+2025-04-11 16:55:14.453478+00:00 [info] <0.216.0> Running boot step rabbit_stream_coordinator defined by app rabbit
+2025-04-11 16:55:14.453827+00:00 [info] <0.216.0> Running boot step rabbit_vhost_limit defined by app rabbit
+2025-04-11 16:55:14.453924+00:00 [info] <0.216.0> Running boot step rabbit_mgmt_reset_handler defined by app rabbitmq_management
+2025-04-11 16:55:14.454120+00:00 [info] <0.216.0> Running boot step rabbit_mgmt_db_handler defined by app rabbitmq_management_agent
+2025-04-11 16:55:14.454161+00:00 [info] <0.216.0> Management plugin: using rates mode 'basic'
+2025-04-11 16:55:14.454646+00:00 [info] <0.216.0> Running boot step recovery defined by app rabbit
+2025-04-11 16:55:14.474486+00:00 [info] <0.422.0> Making sure data directory '/var/lib/rabbitmq/mnesia/rabbit@1161c5ae6e6d/msg_stores/vhosts/628WB79CIFDYO9LJI6DKMI09L' for vhost '/' exists
+2025-04-11 16:55:14.511446+00:00 [info] <0.422.0> Starting message stores for vhost '/'
+2025-04-11 16:55:14.523323+00:00 [info] <0.422.0> Started message store of type transient for vhost '/'
+2025-04-11 16:55:14.525393+00:00 [warning] <0.436.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
+2025-04-11 16:55:14.534738+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
+2025-04-11 16:55:14.543639+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-11 16:55:14.543853+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-11 16:55:14.543861+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-11 16:55:14.544184+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 59ms
+2025-04-11 16:55:14.544217+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
+2025-04-11 16:55:14.544317+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_stream_queue took 0ms
+2025-04-11 16:55:14.547831+00:00 [info] <0.216.0> Running boot step empty_db_check defined by app rabbit
+2025-04-11 16:55:14.547899+00:00 [info] <0.216.0> Will not seed default virtual host and user: have definitions to load...
+2025-04-11 16:55:14.547921+00:00 [info] <0.216.0> Running boot step rabbit_observer_cli defined by app rabbit
+2025-04-11 16:55:14.547984+00:00 [info] <0.216.0> Running boot step rabbit_core_metrics_gc defined by app rabbit
+2025-04-11 16:55:14.548122+00:00 [info] <0.216.0> Running boot step background_gc defined by app rabbit
+2025-04-11 16:55:14.548348+00:00 [info] <0.216.0> Running boot step routing_ready defined by app rabbit
+2025-04-11 16:55:14.548393+00:00 [info] <0.216.0> Running boot step pre_flight defined by app rabbit
+2025-04-11 16:55:14.548453+00:00 [info] <0.216.0> Running boot step notify_cluster defined by app rabbit
+2025-04-11 16:55:14.548500+00:00 [info] <0.216.0> Running boot step networking defined by app rabbit
+2025-04-11 16:55:14.548543+00:00 [info] <0.216.0> Running boot step rabbit_quorum_queue_periodic_membership_reconciliation defined by app rabbit
+2025-04-11 16:55:14.548634+00:00 [info] <0.216.0> Running boot step definition_import_worker_pool defined by app rabbit
+2025-04-11 16:55:14.548665+00:00 [info] <0.292.0> Starting worker pool 'definition_import_pool' with 12 processes in it
+2025-04-11 16:55:14.549335+00:00 [info] <0.216.0> Running boot step cluster_name defined by app rabbit
+2025-04-11 16:55:14.549381+00:00 [info] <0.216.0> Running boot step virtual_host_reconciliation defined by app rabbit
+2025-04-11 16:55:14.549610+00:00 [info] <0.216.0> Running boot step direct_client defined by app rabbit
+2025-04-11 16:55:14.549671+00:00 [info] <0.216.0> Running boot step cluster_tags defined by app rabbit
+2025-04-11 16:55:14.551055+00:00 [info] <0.216.0> Running boot step rabbit_management_load_definitions defined by app rabbitmq_management
+2025-04-11 16:55:14.551273+00:00 [info] <0.501.0> Resetting node maintenance status
+2025-04-11 16:55:14.705392+00:00 [warning] <0.523.0> Deprecated features: `management_metrics_collection`: Feature `management_metrics_collection` is deprecated.
+2025-04-11 16:55:14.705392+00:00 [warning] <0.523.0> By default, this feature can still be used for now.
+2025-04-11 16:55:14.705392+00:00 [warning] <0.523.0> Its use will not be permitted by default in a future minor RabbitMQ version and the feature will be removed from a future major RabbitMQ version; actual versions to be determined.
+2025-04-11 16:55:14.705392+00:00 [warning] <0.523.0> To continue using this feature when it is not permitted by default, set the following parameter in your configuration:
+2025-04-11 16:55:14.705392+00:00 [warning] <0.523.0>     "deprecated_features.permit.management_metrics_collection = true"
+2025-04-11 16:55:14.705392+00:00 [warning] <0.523.0> To test RabbitMQ as if the feature was removed, set this in your configuration:
+2025-04-11 16:55:14.705392+00:00 [warning] <0.523.0>     "deprecated_features.permit.management_metrics_collection = false"
+2025-04-11 16:55:14.740378+00:00 [info] <0.559.0> Management plugin: HTTP (non-TLS) listener started on port 15672
+2025-04-11 16:55:14.740553+00:00 [info] <0.587.0> Statistics database started.
+2025-04-11 16:55:14.740639+00:00 [info] <0.586.0> Starting worker pool 'management_worker_pool' with 3 processes in it
+2025-04-11 16:55:14.741204+00:00 [info] <0.595.0> rabbit_stomp: default user 'guest' enabled
+2025-04-11 16:55:14.741868+00:00 [info] <0.614.0> started STOMP TCP listener on [::]:61613
+2025-04-11 16:55:14.742728+00:00 [info] <0.620.0> Starting MQTT retained message store rabbit_mqtt_retained_msg_store_dets for vhost '/'
+2025-04-11 16:55:14.745520+00:00 [info] <0.620.0> Recovered MQTT retained message store rabbit_mqtt_retained_msg_store_dets for vhost '/'
+2025-04-11 16:55:14.745978+00:00 [info] <0.640.0> started MQTT TCP listener on [::]:1883
+2025-04-11 16:55:14.746325+00:00 [info] <0.501.0> Ready to start client connection listeners
+2025-04-11 16:55:14.747423+00:00 [info] <0.658.0> started TCP listener on [::]:5672
+2025-04-11 16:55:14.816273+00:00 [info] <0.501.0> Server startup complete; 5 plugins started.
+2025-04-11 16:55:14.816273+00:00 [info] <0.501.0>  * rabbitmq_mqtt
+2025-04-11 16:55:14.816273+00:00 [info] <0.501.0>  * rabbitmq_stomp
+2025-04-11 16:55:14.816273+00:00 [info] <0.501.0>  * rabbitmq_management
+2025-04-11 16:55:14.816273+00:00 [info] <0.501.0>  * rabbitmq_management_agent
+2025-04-11 16:55:14.816273+00:00 [info] <0.501.0>  * rabbitmq_web_dispatch
+2025-04-11 16:55:14.953344+00:00 [info] <0.10.0> Time to start RabbitMQ: 3735 ms
+2025-04-11 16:55:29.142879+00:00 [info] <0.672.0> accepting AMQP connection 172.21.0.1:52266 -> 172.21.0.2:5672
+2025-04-11 16:55:29.187233+00:00 [info] <0.672.0> connection 172.21.0.1:52266 -> 172.21.0.2:5672 has a client-provided name: rabbitConnectionFactory#2b51b273:0
+2025-04-11 16:55:29.192113+00:00 [info] <0.672.0> connection 172.21.0.1:52266 -> 172.21.0.2:5672 - rabbitConnectionFactory#2b51b273:0: user 'admin' authenticated and granted access to vhost '/'
+2025-04-11 17:02:36.696374+00:00 [info] <0.672.0> closing AMQP connection (172.21.0.1:52266 -> 172.21.0.2:5672 - rabbitConnectionFactory#2b51b273:0, vhost: '/', user: 'admin', duration: '7M, 7s')
+2025-04-11 17:08:17.124899+00:00 [notice] <0.216.0> Logging: configured log handlers are now ACTIVE
+2025-04-11 17:08:17.140729+00:00 [info] <0.216.0> ra: starting system quorum_queues
+2025-04-11 17:08:17.140934+00:00 [info] <0.216.0> starting Ra system: quorum_queues in directory: /var/lib/rabbitmq/mnesia/rabbit@1161c5ae6e6d/quorum/rabbit@1161c5ae6e6d
+2025-04-11 17:08:17.288299+00:00 [info] <0.230.0> ra system 'quorum_queues' running pre init for 0 registered servers
+2025-04-11 17:08:17.316581+00:00 [info] <0.231.0> ra: meta data store initialised for system quorum_queues. 0 record(s) recovered
+2025-04-11 17:08:17.338715+00:00 [notice] <0.236.0> WAL: ra_log_wal init, open tbls: ra_log_open_mem_tables, closed tbls: ra_log_closed_mem_tables
+2025-04-11 17:08:17.384046+00:00 [info] <0.238.0> ra_system_recover: ra system 'quorum_queues' server recovery strategy rabbit_quorum_queue:system_recover
+2025-04-11 17:08:17.384194+00:00 [info] <0.238.0> [rabbit_quorum_queue:system_recover/1] rabbit not booted, skipping queue recovery
+2025-04-11 17:08:17.384417+00:00 [info] <0.216.0> ra: starting system coordination
+2025-04-11 17:08:17.384474+00:00 [info] <0.216.0> starting Ra system: coordination in directory: /var/lib/rabbitmq/mnesia/rabbit@1161c5ae6e6d/coordination/rabbit@1161c5ae6e6d
+2025-04-11 17:08:17.418456+00:00 [info] <0.244.0> ra system 'coordination' running pre init for 1 registered servers
+2025-04-11 17:08:17.475957+00:00 [info] <0.245.0> ra: meta data store initialised for system coordination. 1 record(s) recovered
+2025-04-11 17:08:17.476257+00:00 [notice] <0.250.0> WAL: ra_coordination_log_wal init, open tbls: ra_coordination_log_open_mem_tables, closed tbls: ra_coordination_log_closed_mem_tables
+2025-04-11 17:08:17.519654+00:00 [info] <0.216.0> ra: starting system coordination
+2025-04-11 17:08:17.519810+00:00 [info] <0.216.0> starting Ra system: coordination in directory: /var/lib/rabbitmq/mnesia/rabbit@1161c5ae6e6d/coordination/rabbit@1161c5ae6e6d
+2025-04-11 17:08:17.977240+00:00 [notice] <0.255.0> RabbitMQ metadata store: candidate -> leader in term: 16 machine version: 1
+2025-04-11 17:08:18.477433+00:00 [info] <0.216.0> 
+2025-04-11 17:08:18.477433+00:00 [info] <0.216.0>  Starting RabbitMQ 4.0.7 on Erlang 27.3 [jit]
+2025-04-11 17:08:18.477433+00:00 [info] <0.216.0>  Copyright (c) 2007-2024 Broadcom Inc and/or its subsidiaries
+2025-04-11 17:08:18.477433+00:00 [info] <0.216.0>  Licensed under the MPL 2.0. Website: https://rabbitmq.com
+2025-04-11 17:08:18.502391+00:00 [info] <0.216.0> 
+2025-04-11 17:08:18.502391+00:00 [info] <0.216.0>  node           : rabbit@1161c5ae6e6d
+2025-04-11 17:08:18.502391+00:00 [info] <0.216.0>  home dir       : /var/lib/rabbitmq
+2025-04-11 17:08:18.502391+00:00 [info] <0.216.0>  config file(s) : /etc/rabbitmq/rabbitmq.conf
+2025-04-11 17:08:18.502391+00:00 [info] <0.216.0>  cookie hash    : pxp1VrTqYaANd+ndUvOkwQ==
+2025-04-11 17:08:18.502391+00:00 [info] <0.216.0>  log(s)         : /var/log/rabbitmq/rabbit@1161c5ae6e6d.log
+2025-04-11 17:08:18.502391+00:00 [info] <0.216.0>                 : <stdout>
+2025-04-11 17:08:18.502391+00:00 [info] <0.216.0>  data dir       : /var/lib/rabbitmq/mnesia/rabbit@1161c5ae6e6d
+2025-04-11 17:08:19.215278+00:00 [info] <0.216.0> Running boot step pre_boot defined by app rabbit
+2025-04-11 17:08:19.215424+00:00 [info] <0.216.0> Running boot step rabbit_global_counters defined by app rabbit
+2025-04-11 17:08:19.216654+00:00 [info] <0.216.0> Running boot step rabbit_osiris_metrics defined by app rabbit
+2025-04-11 17:08:19.216890+00:00 [info] <0.216.0> Running boot step rabbit_core_metrics defined by app rabbit
+2025-04-11 17:08:19.221509+00:00 [info] <0.216.0> Running boot step rabbit_alarm defined by app rabbit
+2025-04-11 17:08:19.240849+00:00 [info] <0.348.0> Memory high watermark set to 4567 MiB (4789837824 bytes) of 7613 MiB (7983063040 bytes) total
+2025-04-11 17:08:19.249079+00:00 [info] <0.350.0> Enabling free disk space monitoring (disk free space: 22594711552, total memory: 7983063040)
+2025-04-11 17:08:19.249193+00:00 [info] <0.350.0> Disk free limit set to 50MB
+2025-04-11 17:08:19.254268+00:00 [info] <0.216.0> Running boot step code_server_cache defined by app rabbit
+2025-04-11 17:08:19.254562+00:00 [info] <0.216.0> Running boot step file_handle_cache defined by app rabbit
+2025-04-11 17:08:19.267255+00:00 [info] <0.353.0> Limiting to approx 1048479 file handles (943629 sockets)
+2025-04-11 17:08:19.267605+00:00 [info] <0.354.0> FHC read buffering: OFF
+2025-04-11 17:08:19.267685+00:00 [info] <0.354.0> FHC write buffering: ON
+2025-04-11 17:08:19.268344+00:00 [info] <0.216.0> Running boot step worker_pool defined by app rabbit
+2025-04-11 17:08:19.268482+00:00 [info] <0.292.0> Will use 12 processes for default worker pool
+2025-04-11 17:08:19.268599+00:00 [info] <0.292.0> Starting worker pool 'worker_pool' with 12 processes in it
+2025-04-11 17:08:19.269806+00:00 [info] <0.216.0> Running boot step rabbit_registry defined by app rabbit
+2025-04-11 17:08:19.269998+00:00 [info] <0.216.0> Running boot step database defined by app rabbit
+2025-04-11 17:08:19.274428+00:00 [info] <0.216.0> Peer discovery: configured backend: rabbit_peer_discovery_classic_config
+2025-04-11 17:08:19.291047+00:00 [info] <0.216.0> Waiting for Mnesia tables for 30000 ms, 9 retries left
+2025-04-11 17:08:19.293269+00:00 [info] <0.216.0> Successfully synced tables from a peer
+2025-04-11 17:08:19.321969+00:00 [info] <0.216.0> Waiting for Mnesia tables for 30000 ms, 9 retries left
+2025-04-11 17:08:19.322220+00:00 [info] <0.216.0> Successfully synced tables from a peer
+2025-04-11 17:08:19.322519+00:00 [info] <0.216.0> Running boot step tracking_metadata_store defined by app rabbit
+2025-04-11 17:08:19.322648+00:00 [info] <0.377.0> Setting up a table for connection tracking on this node: tracked_connection
+2025-04-11 17:08:19.322804+00:00 [info] <0.377.0> Setting up a table for per-vhost connection counting on this node: tracked_connection_per_vhost
+2025-04-11 17:08:19.322912+00:00 [info] <0.377.0> Setting up a table for per-user connection counting on this node: tracked_connection_per_user
+2025-04-11 17:08:19.322967+00:00 [info] <0.377.0> Setting up a table for channel tracking on this node: tracked_channel
+2025-04-11 17:08:19.323092+00:00 [info] <0.377.0> Setting up a table for channel tracking on this node: tracked_channel_per_user
+2025-04-11 17:08:19.323212+00:00 [info] <0.216.0> Running boot step networking_metadata_store defined by app rabbit
+2025-04-11 17:08:19.323365+00:00 [info] <0.216.0> Running boot step feature_flags defined by app rabbit
+2025-04-11 17:08:19.326006+00:00 [info] <0.216.0> Running boot step codec_correctness_check defined by app rabbit
+2025-04-11 17:08:19.326142+00:00 [info] <0.216.0> Running boot step external_infrastructure defined by app rabbit
+2025-04-11 17:08:19.326230+00:00 [info] <0.216.0> Running boot step rabbit_event defined by app rabbit
+2025-04-11 17:08:19.326594+00:00 [info] <0.216.0> Running boot step rabbit_auth_mechanism_amqplain defined by app rabbit
+2025-04-11 17:08:19.326745+00:00 [info] <0.216.0> Running boot step rabbit_auth_mechanism_anonymous defined by app rabbit
+2025-04-11 17:08:19.326855+00:00 [info] <0.216.0> Running boot step rabbit_auth_mechanism_cr_demo defined by app rabbit
+2025-04-11 17:08:19.327090+00:00 [info] <0.216.0> Running boot step rabbit_auth_mechanism_plain defined by app rabbit
+2025-04-11 17:08:19.327188+00:00 [info] <0.216.0> Running boot step rabbit_exchange_type_direct defined by app rabbit
+2025-04-11 17:08:19.327266+00:00 [info] <0.216.0> Running boot step rabbit_exchange_type_fanout defined by app rabbit
+2025-04-11 17:08:19.327357+00:00 [info] <0.216.0> Running boot step rabbit_exchange_type_headers defined by app rabbit
+2025-04-11 17:08:19.327466+00:00 [info] <0.216.0> Running boot step rabbit_exchange_type_local_random defined by app rabbit
+2025-04-11 17:08:19.327582+00:00 [info] <0.216.0> Running boot step rabbit_exchange_type_topic defined by app rabbit
+2025-04-11 17:08:19.327677+00:00 [info] <0.216.0> Running boot step rabbit_priority_queue defined by app rabbit
+2025-04-11 17:08:19.327761+00:00 [info] <0.216.0> Priority queues enabled, real BQ is rabbit_variable_queue
+2025-04-11 17:08:19.327950+00:00 [info] <0.216.0> Running boot step kernel_ready defined by app rabbit
+2025-04-11 17:08:19.328061+00:00 [info] <0.216.0> Running boot step pg_local_amqp_connection defined by app rabbit
+2025-04-11 17:08:19.339802+00:00 [info] <0.216.0> Running boot step pg_local_amqp_session defined by app rabbit
+2025-04-11 17:08:19.340078+00:00 [info] <0.216.0> Running boot step rabbit_sysmon_minder defined by app rabbit
+2025-04-11 17:08:19.340482+00:00 [info] <0.216.0> Running boot step rabbit_epmd_monitor defined by app rabbit
+2025-04-11 17:08:19.342105+00:00 [info] <0.386.0> epmd monitor knows us, inter-node communication (distribution) port: 25672
+2025-04-11 17:08:19.342269+00:00 [info] <0.216.0> Running boot step guid_generator defined by app rabbit
+2025-04-11 17:08:19.356518+00:00 [info] <0.216.0> Running boot step rabbit_node_monitor defined by app rabbit
+2025-04-11 17:08:19.357086+00:00 [info] <0.390.0> Starting rabbit_node_monitor (in ignore mode)
+2025-04-11 17:08:19.357241+00:00 [info] <0.216.0> Running boot step delegate_sup defined by app rabbit
+2025-04-11 17:08:19.358075+00:00 [info] <0.216.0> Running boot step rabbit_fifo_dlx_sup defined by app rabbit
+2025-04-11 17:08:19.358212+00:00 [info] <0.216.0> Running boot step core_initialized defined by app rabbit
+2025-04-11 17:08:19.358293+00:00 [info] <0.216.0> Running boot step rabbit_channel_tracking_handler defined by app rabbit
+2025-04-11 17:08:19.358450+00:00 [info] <0.216.0> Running boot step rabbit_classic_queue defined by app rabbit
+2025-04-11 17:08:19.358744+00:00 [info] <0.216.0> Running boot step rabbit_connection_tracking_handler defined by app rabbit
+2025-04-11 17:08:19.358916+00:00 [info] <0.216.0> Running boot step rabbit_definitions_hashing defined by app rabbit
+2025-04-11 17:08:19.359134+00:00 [info] <0.216.0> Running boot step rabbit_exchange_parameters defined by app rabbit
+2025-04-11 17:08:19.377884+00:00 [info] <0.216.0> Running boot step rabbit_policies defined by app rabbit
+2025-04-11 17:08:19.378404+00:00 [info] <0.216.0> Running boot step rabbit_policy defined by app rabbit
+2025-04-11 17:08:19.378521+00:00 [info] <0.216.0> Running boot step rabbit_quorum_memory_manager defined by app rabbit
+2025-04-11 17:08:19.378623+00:00 [info] <0.216.0> Running boot step rabbit_quorum_queue defined by app rabbit
+2025-04-11 17:08:19.378879+00:00 [info] <0.216.0> Running boot step rabbit_stream_coordinator defined by app rabbit
+2025-04-11 17:08:19.379326+00:00 [info] <0.216.0> Running boot step rabbit_vhost_limit defined by app rabbit
+2025-04-11 17:08:19.379473+00:00 [info] <0.216.0> Running boot step rabbit_mgmt_reset_handler defined by app rabbitmq_management
+2025-04-11 17:08:19.379579+00:00 [info] <0.216.0> Running boot step rabbit_mgmt_db_handler defined by app rabbitmq_management_agent
+2025-04-11 17:08:19.379675+00:00 [info] <0.216.0> Management plugin: using rates mode 'basic'
+2025-04-11 17:08:19.380036+00:00 [info] <0.216.0> Running boot step recovery defined by app rabbit
+2025-04-11 17:08:19.419680+00:00 [info] <0.422.0> Making sure data directory '/var/lib/rabbitmq/mnesia/rabbit@1161c5ae6e6d/msg_stores/vhosts/628WB79CIFDYO9LJI6DKMI09L' for vhost '/' exists
+2025-04-11 17:08:19.504618+00:00 [info] <0.422.0> Starting message stores for vhost '/'
+2025-04-11 17:08:19.536683+00:00 [info] <0.422.0> Started message store of type transient for vhost '/'
+2025-04-11 17:08:19.541525+00:00 [warning] <0.436.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
+2025-04-11 17:08:19.561649+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
+2025-04-11 17:08:19.577974+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-11 17:08:19.577974+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-11 17:08:19.578302+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-11 17:08:19.578595+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 137ms
+2025-04-11 17:08:19.578672+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
+2025-04-11 17:08:19.578842+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_stream_queue took 0ms
+2025-04-11 17:08:19.585052+00:00 [info] <0.216.0> Running boot step empty_db_check defined by app rabbit
+2025-04-11 17:08:19.585214+00:00 [info] <0.216.0> Will not seed default virtual host and user: have definitions to load...
+2025-04-11 17:08:19.585279+00:00 [info] <0.216.0> Running boot step rabbit_observer_cli defined by app rabbit
+2025-04-11 17:08:19.585433+00:00 [info] <0.216.0> Running boot step rabbit_core_metrics_gc defined by app rabbit
+2025-04-11 17:08:19.585710+00:00 [info] <0.216.0> Running boot step background_gc defined by app rabbit
+2025-04-11 17:08:19.585955+00:00 [info] <0.216.0> Running boot step routing_ready defined by app rabbit
+2025-04-11 17:08:19.586110+00:00 [info] <0.216.0> Running boot step pre_flight defined by app rabbit
+2025-04-11 17:08:19.586171+00:00 [info] <0.216.0> Running boot step notify_cluster defined by app rabbit
+2025-04-11 17:08:19.586236+00:00 [info] <0.216.0> Running boot step networking defined by app rabbit
+2025-04-11 17:08:19.586475+00:00 [info] <0.216.0> Running boot step rabbit_quorum_queue_periodic_membership_reconciliation defined by app rabbit
+2025-04-11 17:08:19.586708+00:00 [info] <0.216.0> Running boot step definition_import_worker_pool defined by app rabbit
+2025-04-11 17:08:19.586792+00:00 [info] <0.292.0> Starting worker pool 'definition_import_pool' with 12 processes in it
+2025-04-11 17:08:19.587762+00:00 [info] <0.216.0> Running boot step cluster_name defined by app rabbit
+2025-04-11 17:08:19.587902+00:00 [info] <0.216.0> Running boot step virtual_host_reconciliation defined by app rabbit
+2025-04-11 17:08:19.588408+00:00 [info] <0.216.0> Running boot step direct_client defined by app rabbit
+2025-04-11 17:08:19.588620+00:00 [info] <0.216.0> Running boot step cluster_tags defined by app rabbit
+2025-04-11 17:08:19.590423+00:00 [info] <0.216.0> Running boot step rabbit_management_load_definitions defined by app rabbitmq_management
+2025-04-11 17:08:19.590660+00:00 [info] <0.501.0> Resetting node maintenance status
+2025-04-11 17:08:19.934208+00:00 [warning] <0.523.0> Deprecated features: `management_metrics_collection`: Feature `management_metrics_collection` is deprecated.
+2025-04-11 17:08:19.934208+00:00 [warning] <0.523.0> By default, this feature can still be used for now.
+2025-04-11 17:08:19.934208+00:00 [warning] <0.523.0> Its use will not be permitted by default in a future minor RabbitMQ version and the feature will be removed from a future major RabbitMQ version; actual versions to be determined.
+2025-04-11 17:08:19.934208+00:00 [warning] <0.523.0> To continue using this feature when it is not permitted by default, set the following parameter in your configuration:
+2025-04-11 17:08:19.934208+00:00 [warning] <0.523.0>     "deprecated_features.permit.management_metrics_collection = true"
+2025-04-11 17:08:19.934208+00:00 [warning] <0.523.0> To test RabbitMQ as if the feature was removed, set this in your configuration:
+2025-04-11 17:08:19.934208+00:00 [warning] <0.523.0>     "deprecated_features.permit.management_metrics_collection = false"
+2025-04-11 17:08:20.015780+00:00 [info] <0.559.0> Management plugin: HTTP (non-TLS) listener started on port 15672
+2025-04-11 17:08:20.016244+00:00 [info] <0.587.0> Statistics database started.
+2025-04-11 17:08:20.016426+00:00 [info] <0.586.0> Starting worker pool 'management_worker_pool' with 3 processes in it
+2025-04-11 17:08:20.017142+00:00 [info] <0.595.0> rabbit_stomp: default user 'guest' enabled
+2025-04-11 17:08:20.018145+00:00 [info] <0.614.0> started STOMP TCP listener on [::]:61613
+2025-04-11 17:08:20.020140+00:00 [info] <0.620.0> Starting MQTT retained message store rabbit_mqtt_retained_msg_store_dets for vhost '/'
+2025-04-11 17:08:20.025529+00:00 [info] <0.620.0> Recovered MQTT retained message store rabbit_mqtt_retained_msg_store_dets for vhost '/'
+2025-04-11 17:08:20.026750+00:00 [info] <0.640.0> started MQTT TCP listener on [::]:1883
+2025-04-11 17:08:20.027599+00:00 [info] <0.501.0> Ready to start client connection listeners
+2025-04-11 17:08:20.030303+00:00 [info] <0.658.0> started TCP listener on [::]:5672
+2025-04-11 17:08:20.192755+00:00 [info] <0.501.0> Server startup complete; 5 plugins started.
+2025-04-11 17:08:20.192755+00:00 [info] <0.501.0>  * rabbitmq_mqtt
+2025-04-11 17:08:20.192755+00:00 [info] <0.501.0>  * rabbitmq_stomp
+2025-04-11 17:08:20.192755+00:00 [info] <0.501.0>  * rabbitmq_management
+2025-04-11 17:08:20.192755+00:00 [info] <0.501.0>  * rabbitmq_management_agent
+2025-04-11 17:08:20.192755+00:00 [info] <0.501.0>  * rabbitmq_web_dispatch
+2025-04-11 17:08:20.193207+00:00 [info] <0.10.0> Time to start RabbitMQ: 6711 ms
+2025-04-11 17:08:21.406160+00:00 [info] <0.664.0> accepting AMQP connection 172.21.0.1:37424 -> 172.21.0.2:5672
+2025-04-11 17:08:21.536076+00:00 [info] <0.664.0> connection 172.21.0.1:37424 -> 172.21.0.2:5672 has a client-provided name: rabbitConnectionFactory#17a26372:381
+2025-04-11 17:08:21.547432+00:00 [info] <0.664.0> connection 172.21.0.1:37424 -> 172.21.0.2:5672 - rabbitConnectionFactory#17a26372:381: user 'admin' authenticated and granted access to vhost '/'
+2025-04-11 17:12:50.512536+00:00 [info] <0.664.0> closing AMQP connection (172.21.0.1:37424 -> 172.21.0.2:5672 - rabbitConnectionFactory#17a26372:381, vhost: '/', user: 'admin', duration: '4M, 29s')
+2025-04-11 17:13:20.531739+00:00 [info] <0.730.0> accepting AMQP connection 172.21.0.1:50646 -> 172.21.0.2:5672
+2025-04-11 17:13:20.594848+00:00 [info] <0.730.0> connection 172.21.0.1:50646 -> 172.21.0.2:5672 has a client-provided name: rabbitConnectionFactory#7f3a3333:0
+2025-04-11 17:13:20.601518+00:00 [info] <0.730.0> connection 172.21.0.1:50646 -> 172.21.0.2:5672 - rabbitConnectionFactory#7f3a3333:0: user 'admin' authenticated and granted access to vhost '/'
+2025-04-11 17:16:52.036135+00:00 [info] <0.730.0> closing AMQP connection (172.21.0.1:50646 -> 172.21.0.2:5672 - rabbitConnectionFactory#7f3a3333:0, vhost: '/', user: 'admin', duration: '3M, 31s')
+2025-04-11 17:17:16.275902+00:00 [info] <0.777.0> accepting AMQP connection 172.21.0.1:44924 -> 172.21.0.2:5672
+2025-04-11 17:17:16.347587+00:00 [info] <0.777.0> connection 172.21.0.1:44924 -> 172.21.0.2:5672 has a client-provided name: rabbitConnectionFactory#377d8e39:0
+2025-04-11 17:17:16.355635+00:00 [info] <0.777.0> connection 172.21.0.1:44924 -> 172.21.0.2:5672 - rabbitConnectionFactory#377d8e39:0: user 'admin' authenticated and granted access to vhost '/'
+2025-04-11 18:06:51.307079+00:00 [info] <0.777.0> closing AMQP connection (172.21.0.1:44924 -> 172.21.0.2:5672 - rabbitConnectionFactory#377d8e39:0, vhost: '/', user: 'admin', duration: '49M, 35s')
+2025-04-11 18:07:29.649293+00:00 [info] <0.971.0> accepting AMQP connection 172.21.0.1:46774 -> 172.21.0.2:5672
+2025-04-11 18:07:29.750140+00:00 [info] <0.971.0> connection 172.21.0.1:46774 -> 172.21.0.2:5672 has a client-provided name: rabbitConnectionFactory#7ed19d50:0
+2025-04-11 18:07:29.762802+00:00 [info] <0.971.0> connection 172.21.0.1:46774 -> 172.21.0.2:5672 - rabbitConnectionFactory#7ed19d50:0: user 'admin' authenticated and granted access to vhost '/'
+2025-04-11 18:07:31.090183+00:00 [info] <0.971.0> closing AMQP connection (172.21.0.1:46774 -> 172.21.0.2:5672 - rabbitConnectionFactory#7ed19d50:0, vhost: '/', user: 'admin', duration: '1s')
+2025-04-11 18:08:01.887003+00:00 [info] <0.1006.0> accepting AMQP connection 172.21.0.1:58698 -> 172.21.0.2:5672
+2025-04-11 18:08:01.974773+00:00 [info] <0.1006.0> connection 172.21.0.1:58698 -> 172.21.0.2:5672 has a client-provided name: rabbitConnectionFactory#4a36edde:0
+2025-04-11 18:08:01.984197+00:00 [info] <0.1006.0> connection 172.21.0.1:58698 -> 172.21.0.2:5672 - rabbitConnectionFactory#4a36edde:0: user 'admin' authenticated and granted access to vhost '/'
