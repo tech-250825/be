@@ -40,7 +40,10 @@ public enum ErrorCode {
 
     DUPLICATED_NICKNAME(HttpStatus.BAD_REQUEST, "이미 존재하는 닉네임입니다."),
 
-    INAPPROPRIATE_CONTENT(HttpStatus.BAD_REQUEST, "부적절한 프롬프트입니다.");
+    INAPPROPRIATE_CONTENT(HttpStatus.BAD_REQUEST, "부적절한 프롬프트입니다."),
+
+    //결제 실패
+    PAYMENT_CONFIRMATION_FAILED(HttpStatus.BAD_REQUEST, "결제에 실패했습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;

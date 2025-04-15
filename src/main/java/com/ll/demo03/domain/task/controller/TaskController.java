@@ -73,6 +73,7 @@ public class TaskController {
 
         String newPrompt = modifyPrompt(prompt);
 
+
         try {
             ImageRequestMessage requestMessage = new ImageRequestMessage(
                     newPrompt,

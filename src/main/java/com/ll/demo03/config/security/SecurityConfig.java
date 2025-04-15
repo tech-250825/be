@@ -1,6 +1,7 @@
 package com.ll.demo03.config.security;
 
 
+import com.ll.demo03.domain.oauth.HttpCookieOAuth2AuthorizationRequestRepository;
 import lombok.RequiredArgsConstructor;
 import com.ll.demo03.domain.oauth.service.CustomOAuth2UserService;
 import com.ll.demo03.domain.oauth.token.TokenAuthenticationFilter;
@@ -14,6 +15,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
+import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -28,6 +31,11 @@ public class SecurityConfig {
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final TokenAuthenticationFilter tokenAuthenticationFilter;
     private final CorsConfigurationSource corsConfigurationSource;
+
+    @Bean
+    public AuthorizationRequestRepository<OAuth2AuthorizationRequest> cookieAuthorizationRequestRepository() {
+        return new HttpCookieOAuth2AuthorizationRequestRepository();
+    }
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() { // security를 적용하지 않을 리소스
@@ -75,11 +83,19 @@ public class SecurityConfig {
                 )
 
                 // oauth2 설정
-                .oauth2Login(oauth -> // OAuth2 로그인 기능에 대한 여러 설정의 진입점
-                oauth.userInfoEndpoint(c -> c.userService(oAuth2UserService)) //userInfoEndpoint: OAuth2 로그인 성공 후 사용자 정보를 가져오는 설정. oAuth2UserService를 통해 사용자 정보를 처리합니다.
-                        .successHandler(oAuth2SuccessHandler) //로그인 설정 후 핸들러, oAuth2SuccessHandler에서 후속 작업을 처리
-                        .redirectionEndpoint(endpoint ->
-                                endpoint.baseUri("/auth/google/redirect"))
+                .oauth2Login(oauth ->
+                        oauth
+                                .authorizationEndpoint(authorization ->
+                                        authorization
+                                                .authorizationRequestRepository(cookieAuthorizationRequestRepository())
+                                )
+                                .redirectionEndpoint(endpoint ->
+                                        endpoint.baseUri("/auth/google/redirect")
+                                )
+                                .userInfoEndpoint(c ->
+                                        c.userService(oAuth2UserService)
+                                )
+                                .successHandler(oAuth2SuccessHandler)
                 )
 
                 // jwt 관련 설정

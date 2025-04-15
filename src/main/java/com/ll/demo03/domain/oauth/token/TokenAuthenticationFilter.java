@@ -20,7 +20,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @RequiredArgsConstructor
 @Component
@@ -78,7 +77,5 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             e.printStackTrace();
         }
     }
-
-
 
 }
