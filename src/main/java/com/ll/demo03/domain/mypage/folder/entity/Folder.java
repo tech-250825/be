@@ -21,7 +21,7 @@ import java.util.List;
 public class Folder extends BaseEntity {
     private String name;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "folder", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private List<Image> images;
 
     @ManyToOne(fetch = FetchType.LAZY)

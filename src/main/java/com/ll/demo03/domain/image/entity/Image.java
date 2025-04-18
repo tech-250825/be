@@ -1,5 +1,6 @@
 package com.ll.demo03.domain.image.entity;
 import com.ll.demo03.domain.member.entity.Member;
+import com.ll.demo03.domain.mypage.folder.entity.Folder;
 import com.ll.demo03.domain.task.entity.Task;
 import com.ll.demo03.domain.upscaledTask.entity.UpscaleTask;
 import com.ll.demo03.domain.videoTask.entity.VideoTask;
@@ -42,6 +43,11 @@ public class Image extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "videoTask_id")
     private VideoTask videoTask;
+
+    @Nullable
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "folder_id")
+    private Folder folder;
 
     public static Image of(String url, Task task) {
         return Image.builder()

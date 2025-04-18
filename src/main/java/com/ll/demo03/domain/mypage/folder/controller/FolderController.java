@@ -71,7 +71,6 @@ public class FolderController {
         return ResponseEntity.ok().body(Map.of("message", "Images added to folder successfully"));
     }
 
-    // 여러 이미지 한 번에 삭제하는 새 엔드포인트
     @DeleteMapping("/{folderId}/images")
     public ResponseEntity<?> removeImagesFromFolder(
             @PathVariable Long folderId,
@@ -80,6 +79,15 @@ public class FolderController {
     ) {
         folderService.removeImagesFromFolder(principalDetails.user(), folderId, request.getImageIds());
         return ResponseEntity.ok().body(Map.of("message", "Images removed from folder successfully"));
+    }
+
+    @GetMapping("/{folderId}/images")
+    public ResponseEntity<?> getImagesInFolder(
+            @PathVariable Long folderId,
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @PageableDefault(page = 0, size = 20) Pageable pageable
+    ) {
+        return ResponseEntity.ok(folderService.getImagesInFolder(principalDetails.user(), folderId, pageable));
     }
 
 }

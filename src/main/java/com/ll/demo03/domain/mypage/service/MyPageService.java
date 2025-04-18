@@ -5,6 +5,8 @@ import com.ll.demo03.domain.image.entity.Image;
 import com.ll.demo03.domain.image.repository.ImageRepository;
 import com.ll.demo03.domain.like.repository.LikeRepository;
 import com.ll.demo03.domain.member.entity.Member;
+import com.ll.demo03.domain.mypage.folder.entity.Folder;
+import com.ll.demo03.domain.mypage.folder.repository.FolderRepository;
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
