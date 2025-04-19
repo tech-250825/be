@@ -1,83 +1,27 @@
 package com.ll.demo03.domain.oauth.controller;
 
-import com.ll.demo03.domain.oauth.token.TokenProvider;
-import jakarta.servlet.http.Cookie;
+import com.ll.demo03.global.util.CookieUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
-
+@Slf4j
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class OauthController {
 
-    private final TokenProvider tokenProvider;
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
 
-    @GetMapping("/login/google")
-    public ResponseEntity<Map<String, String>> getLoginUrl(
-            @RequestParam(required = false) String redirectUrl,
-            HttpSession session
-    ) {
-        if (redirectUrl != null && !redirectUrl.isEmpty()) {
-            session.setAttribute("OAUTH2_REDIRECT_URL", redirectUrl);
-        }
+        CookieUtils.deleteCookie(request, response, "_hoauth");
+        CookieUtils.deleteCookie(request, response, "_hrauth");
 
-        String loginUrl = "/oauth2/authorization/google";
-
-        Map<String, String> response = new HashMap<>();
-        response.put("url", loginUrl);
-
-        return ResponseEntity.ok(response);
-    }
-
-    @PostMapping("/login/process")
-    public ResponseEntity<Map<String, Object>> processLogin(
-            @RequestParam String redirectUrl,
-            HttpServletResponse response
-    ) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication == null || !authentication.isAuthenticated() ||
-                "anonymousUser".equals(authentication.getPrincipal())) {
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("error", "Not authenticated");
-            return ResponseEntity.status(401).body(errorResponse);
-        }
-
-        String accessToken = tokenProvider.generateAccessToken(authentication);
-        String refreshToken = tokenProvider.generateRefreshToken(authentication);
-
-        String accessCookieStr = "_hoauth=" + accessToken + "; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=3600";
-        String refreshCookieStr = "_hrauth=" + refreshToken + "; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=3600";
-
-        response.addHeader("Set-Cookie", accessCookieStr);
-        response.addHeader("Set-Cookie", refreshCookieStr);
-
-        Map<String, Object> responseData = new HashMap<>();
-        responseData.put("success", true);
-        responseData.put("redirectUrl", redirectUrl);
-
-        return ResponseEntity.ok(responseData);
-    }
-
-    @GetMapping("/login/status")
-    public ResponseEntity<Map<String, Object>> checkLoginStatus(
-            @CookieValue(name = "_hoauth", required = false) String accessToken
-    ) {
-        Map<String, Object> response = new HashMap<>();
-        boolean isLoggedIn = accessToken != null;
-        response.put("isLoggedIn", isLoggedIn);
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok().body("로그아웃 되었습니다.");
     }
 }
