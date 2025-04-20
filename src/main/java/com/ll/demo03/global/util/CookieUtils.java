@@ -25,6 +25,7 @@ public class CookieUtils {
         cookie.setPath("/");
         cookie.setHttpOnly(true);
         cookie.setMaxAge(maxAge);
+        cookie.setDomain(".hoit.my");
         response.addCookie(cookie);
     }
 
@@ -37,6 +38,7 @@ public class CookieUtils {
                 cookie.setValue("");
                 cookie.setPath("/");
                 cookie.setMaxAge(0);
+                cookie.setDomain(".hoit.my");
                 response.addCookie(cookie);
             }
         }

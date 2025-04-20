@@ -5945,3 +5945,5 @@
 2025-04-19 03:18:03.166338+00:00 [info] <0.676.0> accepting AMQP connection 172.21.0.1:59216 -> 172.21.0.2:5672
 2025-04-19 03:18:03.221590+00:00 [info] <0.676.0> connection 172.21.0.1:59216 -> 172.21.0.2:5672 has a client-provided name: rabbitConnectionFactory#433fd0cf:0
 2025-04-19 03:18:03.226357+00:00 [info] <0.676.0> connection 172.21.0.1:59216 -> 172.21.0.2:5672 - rabbitConnectionFactory#433fd0cf:0: user 'admin' authenticated and granted access to vhost '/'
+2025-04-19 03:29:17.931480+00:00 [warning] <0.676.0> closing AMQP connection <0.676.0> (172.21.0.1:59216 -> 172.21.0.2:5672 - rabbitConnectionFactory#433fd0cf:0, vhost: '/', user: 'admin', duration: '11M, 14s'):
+2025-04-19 03:29:17.931480+00:00 [warning] <0.676.0> client unexpectedly closed TCP connection
