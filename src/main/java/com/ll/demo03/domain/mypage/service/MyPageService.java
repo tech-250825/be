@@ -1,5 +1,6 @@
 package com.ll.demo03.domain.mypage.service;
 
+import com.ll.demo03.domain.image.dto.ImageIdsRequest;
 import com.ll.demo03.domain.image.dto.ImageResponse;
 import com.ll.demo03.domain.image.entity.Image;
 import com.ll.demo03.domain.image.repository.ImageRepository;
@@ -55,19 +56,21 @@ public class MyPageService {
     }
 
     @Transactional
-    public void deleteMyImage(Long imageId, Member member) {
-        Image image = imageRepository.findById(imageId)
-                .orElseThrow(() -> new CustomException(ErrorCode.IMAGE_NOT_FOUND));
+    public void deleteMyImages(ImageIdsRequest imageIds, Member member) {
+        for (Long imageId : imageIds.getImageIds()) {
+            Image image = imageRepository.findById(imageId)
+                    .orElseThrow(() -> new CustomException(ErrorCode.IMAGE_NOT_FOUND));
 
-        if (!image.getMember().getId().equals(member.getId())) {
-            throw new CustomException(ErrorCode.ACCESS_DENIED);
-        }
+            if (!image.getMember().getId().equals(member.getId())) {
+                throw new CustomException(ErrorCode.ACCESS_DENIED);
+            }
 
-        try {
-            imageRepository.delete(image);
-        } catch (Exception e) {
-            log.error("Error deleting image: ", e);
-            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
+            try {
+                imageRepository.delete(image);
+            } catch (Exception e) {
+                log.error("Error deleting image: ", e);
+                throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
+            }
         }
     }
 
