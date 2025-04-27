@@ -1,24 +1,26 @@
 package com.ll.demo03.domain.member.dto;
 
+
 import com.ll.demo03.domain.member.entity.Member;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MemberDto {
+public class PublicMemberDto {
     private long id;
     private String nickname;
     private String profileImage;
-    private int credit;
 
-    public static MemberDto of(Member member) {
-        return MemberDto.builder()
+    public static PublicMemberDto of(Member member) {
+        return PublicMemberDto.builder()
                 .id(member.getId())
                 .nickname(member.getNickname())
                 .profileImage(member.getProfile())
-                .credit(member.getCredit())
                 .build();
     }
 }

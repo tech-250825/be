@@ -1,4 +1,4 @@
-package com.ll.demo03.domain.mypage.folder.dto;
+package com.ll.demo03.domain.folder.dto;
 
 import lombok.Getter;
 

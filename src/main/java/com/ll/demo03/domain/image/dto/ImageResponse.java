@@ -15,6 +15,7 @@ public class ImageResponse {
     private String ratio;
     private int likeCount;
     private Boolean isLiked;
+    private Boolean isShared;
     private LocalDateTime createdAt;
 
     // 좋아요 상태를 직접 받는 팩토리 메서드
@@ -26,6 +27,7 @@ public class ImageResponse {
                 image.getTask().getRatio(),
                 image.getLikeCount(),
                 isLiked,
+                image.getIsShared(),
                 image.getCreatedAt()
         );
     }

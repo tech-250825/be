@@ -6,21 +6,21 @@ import com.ll.demo03.domain.image.entity.Image;
 import com.ll.demo03.domain.image.repository.ImageRepository;
 import com.ll.demo03.domain.like.repository.LikeRepository;
 import com.ll.demo03.domain.member.entity.Member;
-import com.ll.demo03.domain.mypage.folder.entity.Folder;
-import com.ll.demo03.domain.mypage.folder.repository.FolderRepository;
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
+import com.ll.demo03.global.util.CursorBasedPageable;
+import com.ll.demo03.global.util.PageResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import static org.springframework.data.domain.PageRequest.ofSize;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,29 +31,48 @@ public class MyPageService {
     private final LikeRepository likeRepository;
 
     @Transactional(readOnly = true)
-    public Page<ImageResponse> getMyImages(Member member, Pageable pageable) {
-        Page<Image> images = imageRepository.findByMemberIdOrderByCreatedAtDesc(member.getId(), pageable);
+    public PageResponse<List<ImageResponse>> getMyImages(Member member, CursorBasedPageable pageable) {
+        Slice<Image> imageSlice = imageRepository.findByMemberIdOrderByCreatedAtDesc(member.getId(),ofSize(pageable.getSize()));
 
-        List<Long> imageIds = images.getContent().stream()
+        if (!imageSlice.hasContent()) {
+            return new PageResponse<>(Collections.emptyList(), null, null);
+        }
+
+        List<Image> images = imageSlice.getContent();
+        List<Long> imageIds = images.stream()
                 .map(Image::getId)
-                .collect(Collectors.toList());
+                .toList();
 
         Set<Long> likedImageIds = imageIds.isEmpty() ?
                 Collections.emptySet() :
                 likeRepository.findImageIdsByImageIdInAndMemberId(imageIds, member.getId());
 
-        return images.map(image ->
-                new ImageResponse(
+        List<ImageResponse> imageResponses = images.stream()
+                .map(image -> new ImageResponse(
                         image.getId(),
                         image.getUrl(),
                         image.getTask().getRawPrompt(),
                         image.getTask().getRatio(),
                         image.getLikeCount(),
                         likedImageIds.contains(image.getId()),
+                        image.getIsShared(),
                         image.getCreatedAt()
+                ))
+                .toList();
+
+        return new PageResponse<>(
+                imageResponses,
+                pageable.getEncodedCursor(
+                        String.valueOf(images.get(0).getId()),
+                        imageRepository.existsByIdLessThan(images.get(0).getId())
+                ),
+                pageable.getEncodedCursor(
+                        String.valueOf(images.get(images.size() - 1).getId()),
+                        imageSlice.hasNext()
                 )
         );
     }
+
 
     @Transactional
     public void deleteMyImages(ImageIdsRequest imageIds, Member member) {

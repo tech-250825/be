@@ -5,6 +5,10 @@ import com.ll.demo03.domain.image.dto.ImageResponse;
 import com.ll.demo03.domain.member.entity.Member;
 import com.ll.demo03.domain.mypage.service.MyPageService;
 import com.ll.demo03.domain.oauth.entity.PrincipalDetails;
+import com.ll.demo03.domain.sharedImage.entity.SharedImage;
+import com.ll.demo03.global.util.CursorBasedPageable;
+import com.ll.demo03.global.util.PageResponse;
+import com.ll.demo03.global.util.PageSpecification;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -14,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @Tag(name = " 회원 API", description = "User")
@@ -24,12 +29,14 @@ public class MyPageController {
     private final MyPageService myPageService;
 
     @GetMapping("/mypage")
-    public Page<ImageResponse> getMyImages(
+    public ResponseEntity<PageResponse<List<ImageResponse>>> getMyImages(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @PageableDefault(page = 0, size = 10) Pageable pageable
+            CursorBasedPageable cursorBasedPageable
     ) {
         Member member = principalDetails.user();
-        return myPageService.getMyImages(member, pageable);
+
+        PageResponse<List<ImageResponse>> mypage=myPageService.getMyImages(member, cursorBasedPageable);
+        return ResponseEntity.ok( mypage);
     }
 
     @DeleteMapping("/mypage")

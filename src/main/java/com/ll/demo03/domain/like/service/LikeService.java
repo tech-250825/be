@@ -8,14 +8,20 @@ import com.ll.demo03.domain.like.repository.LikeRepository;
 import com.ll.demo03.domain.member.entity.Member;
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
-import jakarta.transaction.Transactional;
+import com.ll.demo03.global.util.CursorBasedPageable;
+import com.ll.demo03.global.util.PageResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import java.util.Collections;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.springframework.data.domain.PageRequest.ofSize;
+
 
 @Service
 @RequiredArgsConstructor
@@ -59,10 +65,37 @@ public class LikeService {
         imageRepository.save(image);
     }
 
-    @Transactional
-    public Page<ImageResponse> getMyLikes(Member member, Pageable pageable) {
-        Page<Like> likes = likeRepository.findByMember(member, pageable);
+    @Transactional(readOnly = true)
+    public PageResponse<List<ImageResponse>> getMyLikes(Member member, CursorBasedPageable pageable) {
+        Slice<Like> likeSlice = likeRepository.findAll(
+                (root, query, cb) -> cb.equal(root.get("member"), member),
+                ofSize(pageable.getSize())
+        );
 
-        return likes.map(like -> ImageResponse.of(like.getImage(), true));
+        if (!likeSlice.hasContent()) {
+            return new PageResponse<>(Collections.emptyList(), null, null);
+        }
+
+        List<Like> likes = likeSlice.getContent();
+        List<ImageResponse> imageResponses = likes.stream()
+                .map(like -> ImageResponse.of(like.getImage(), true))
+                .collect(Collectors.toList());
+
+        return new PageResponse<>(
+                imageResponses,
+                pageable.getEncodedCursor(
+                        String.valueOf(likes.get(0).getImage().getId()),
+                        likeRepository.existsByImageIdLessThanAndMemberId(
+                                likes.get(0).getImage().getId(),
+                                member.getId()
+                        )
+                ),
+                pageable.getEncodedCursor(
+                        String.valueOf(likes.get(likes.size() - 1).getImage().getId()),
+                        likeSlice.hasNext()
+                )
+        );
     }
+
+
 }

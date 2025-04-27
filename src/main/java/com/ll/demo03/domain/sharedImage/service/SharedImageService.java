@@ -8,14 +8,17 @@ import com.ll.demo03.domain.sharedImage.entity.SharedImage;
 import com.ll.demo03.domain.sharedImage.repository.SharedImageRepository;
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
+import com.ll.demo03.global.util.CursorBasedPageable;
+import com.ll.demo03.global.util.PageResponse;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import static org.springframework.data.domain.PageRequest.ofSize;
 
 import java.util.*;
-import java.util.stream.Collectors;
+
 
 @Service
 @AllArgsConstructor
@@ -26,42 +29,94 @@ public class SharedImageService {
     private final ImageRepository imageRepository;
     private final LikeRepository likeRepository;
 
-    public Page<SharedImageResponse> getAllSharedImageResponses(Long memberId, Pageable pageable) {
-        Page<SharedImage> sharedImagesPage = sharedImageRepository.findAll(pageable);
+    public PageResponse<List<SharedImageResponse>> getAllSharedImageResponses(Long memberId, Specification<SharedImage> specification, CursorBasedPageable pageable) {
+        Slice<SharedImage> sharedImagesPage = sharedImageRepository.findAll(specification, ofSize(pageable.getSize()));
 
-        List<Long> imageIds = sharedImagesPage.getContent().stream()
+        if (!sharedImagesPage.hasContent()) {
+            return new PageResponse<>(Collections.emptyList(), null, null);
+        }
+
+        List<SharedImage> sharedImages = sharedImagesPage.getContent();
+        List<Long> imageIds = sharedImages.stream()
                 .map(sharedImage -> sharedImage.getImage().getId())
-                .collect(Collectors.toList());
+                .toList();
 
         Set<Long> likedImageIds = memberId != null
                 ? new HashSet<>(likeRepository.findLikedImageIdsByMemberIdAndImageIds(memberId, imageIds))
                 : Collections.emptySet();
 
-        return sharedImagesPage.map(sharedImage -> {
-            Long imageId = sharedImage.getImage().getId();
-            Boolean isLiked = memberId != null
-                    ? likedImageIds.contains(imageId)
-                    : null;
-            return SharedImageResponse.of(sharedImage, isLiked);
-        });
+        List<SharedImageResponse> responseList = sharedImages.stream()
+                .map(sharedImage -> {
+                    Long imageId = sharedImage.getImage().getId();
+                    Boolean isLiked = memberId != null ? likedImageIds.contains(imageId) : null;
+                    return SharedImageResponse.of(sharedImage, isLiked);
+                })
+                .toList();
+
+        return new PageResponse<>(
+                responseList,
+                pageable.getEncodedCursor(
+                        String.valueOf(sharedImages.get(0).getId()),
+                        sharedImageRepository.existsByIdLessThan(sharedImages.get(0).getId())
+                ),
+                pageable.getEncodedCursor(
+                        String.valueOf(sharedImages.get(sharedImages.size() - 1).getId()),
+                        sharedImagesPage.hasNext()
+                )
+        );
     }
 
-    public Page<SharedImageResponse> getMySharedImages(Long memberId, Pageable pageable) {
-        Page<SharedImage> sharedImagesPage = sharedImageRepository.findAllByImage_Member_Id(memberId, pageable);
-        List<Long> imageIds = sharedImagesPage.getContent().stream()
+
+    public PageResponse<List<SharedImageResponse>> getMySharedImages(Long memberId, Specification<SharedImage> specification, CursorBasedPageable pageable) {
+        Slice<SharedImage> sharedImagesPage = sharedImageRepository.findAllByImage_Member_Id(memberId, specification, ofSize(pageable.getSize()));
+
+        if (!sharedImagesPage.hasContent()) {
+            return new PageResponse<>(Collections.emptyList(), null, null);
+        }
+
+        List<SharedImage> sharedImages = sharedImagesPage.getContent();
+        List<Long> imageIds = sharedImages.stream()
                 .map(sharedImage -> sharedImage.getImage().getId())
-                .collect(Collectors.toList());
+                .toList();
 
-        Set<Long> likedImageIds = memberId != null
-                ? new HashSet<>(likeRepository.findLikedImageIdsByMemberIdAndImageIds(memberId, imageIds))
-                : Collections.emptySet();
+        Set<Long> likedImageIds = new HashSet<>(likeRepository.findLikedImageIdsByMemberIdAndImageIds(memberId, imageIds));
 
-        return sharedImagesPage.map(sharedImage -> {
-            Long imageId = sharedImage.getImage().getId();
-            boolean isLiked = likedImageIds.contains(imageId);
-            return SharedImageResponse.of(sharedImage, isLiked);
-        });
+        List<SharedImageResponse> responseList = sharedImages.stream()
+                .map(sharedImage -> {
+                    Long imageId = sharedImage.getImage().getId();
+                    Boolean isLiked = likedImageIds.contains(imageId);
+                    return SharedImageResponse.of(sharedImage, isLiked);
+                })
+                .toList();
+
+        return new PageResponse<>(
+                responseList,
+                pageable.getEncodedCursor(
+                        String.valueOf(sharedImages.get(0).getId()),
+                        sharedImageRepository.existsByIdLessThan(sharedImages.get(0).getId())
+                ),
+                pageable.getEncodedCursor(
+                        String.valueOf(sharedImages.get(sharedImages.size() - 1).getId()),
+                        sharedImagesPage.hasNext()
+                )
+        );
     }
+
+
+
+    public SharedImageResponse getSharedImage(Long memberId, Long imageId) {
+        SharedImage sharedImage = sharedImageRepository.findById(imageId)
+                .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+
+        Boolean isLiked = null;
+        if (memberId != null) {
+            Set<Long> likedImageIds = new HashSet<>(likeRepository.findLikedImageIdsByMemberIdAndImageIds(memberId, List.of(imageId)));
+            isLiked = likedImageIds.contains(imageId);
+        }
+
+        return SharedImageResponse.of(sharedImage, isLiked);
+    }
+
 
     @Transactional
     public SharedImage createSharedImage(Long imageId) {
@@ -73,6 +128,8 @@ public class SharedImageService {
         if (existingShare != null) {
             throw new CustomException(ErrorCode.DUPLICATED_METHOD);
         }
+
+        image.setIsShared(true);
 
         SharedImage sharedImage = new SharedImage();
         sharedImage.setImage(image);

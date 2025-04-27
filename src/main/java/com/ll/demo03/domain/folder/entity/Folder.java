@@ -1,4 +1,4 @@
-package com.ll.demo03.domain.mypage.folder.entity;
+package com.ll.demo03.domain.folder.entity;
 
 import com.ll.demo03.domain.member.entity.Member;
 import com.ll.demo03.domain.image.entity.Image;

@@ -1,19 +1,24 @@
-package com.ll.demo03.domain.mypage.folder.service;
+package com.ll.demo03.domain.folder.service;
 
+import com.ll.demo03.domain.folder.dto.FolderImageResponse;
 import com.ll.demo03.domain.image.dto.ImageResponse;
 import com.ll.demo03.domain.image.entity.Image;
 import com.ll.demo03.domain.like.repository.LikeRepository;
 import com.ll.demo03.domain.member.entity.Member;
-import com.ll.demo03.domain.mypage.folder.dto.FolderRequest;
-import com.ll.demo03.domain.mypage.folder.dto.FolderResponse;
-import com.ll.demo03.domain.mypage.folder.entity.Folder;
-import com.ll.demo03.domain.mypage.folder.repository.FolderRepository;
+import com.ll.demo03.domain.folder.dto.FolderRequest;
+import com.ll.demo03.domain.folder.dto.FolderResponse;
+import com.ll.demo03.domain.folder.entity.Folder;
+import com.ll.demo03.domain.folder.repository.FolderRepository;
 import com.ll.demo03.domain.image.repository.ImageRepository;
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
+import com.ll.demo03.global.util.CursorBasedPageable;
+import com.ll.demo03.global.util.PageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static org.springframework.data.domain.PageRequest.ofSize;
 
 @Service
 @RequiredArgsConstructor
@@ -133,9 +140,8 @@ public class FolderService {
         images.forEach(image -> image.setFolder(null));
         imageRepository.saveAll(images);
     }
-
     @Transactional(readOnly = true)
-    public Page<ImageResponse> getImagesInFolder(Member member, Long folderId, Pageable pageable) {
+    public FolderImageResponse getImagesInFolder(Member member, Long folderId, CursorBasedPageable pageable) {
         Folder folder = folderRepository.findById(folderId)
                 .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
@@ -143,26 +149,55 @@ public class FolderService {
             throw new CustomException(ErrorCode.ACCESS_DENIED);
         }
 
-        Page<Image> images = imageRepository.findByFolderId(folderId, pageable);
+        Slice<Image> imageSlice = imageRepository.findByFolderId(folderId, ofSize(pageable.getSize()));
 
-        List<Long> imageIds = images.getContent().stream()
+        if (!imageSlice.hasContent()) {
+            return FolderImageResponse.builder()
+                    .id(folder.getId())
+                    .name(folder.getName())
+                    .images(new PageResponse<>(Collections.emptyList(), null, null))
+                    .build();
+        }
+
+        List<Image> images = imageSlice.getContent();
+        List<Long> imageIds = images.stream()
                 .map(Image::getId)
-                .collect(Collectors.toList());
+                .toList();
 
         Set<Long> likedImageIds = imageIds.isEmpty() ?
                 Collections.emptySet() :
                 likeRepository.findImageIdsByImageIdInAndMemberId(imageIds, member.getId());
 
-        return images.map(image ->
-                new ImageResponse(
+        List<ImageResponse> imageResponses = images.stream()
+                .map(image -> new ImageResponse(
                         image.getId(),
                         image.getUrl(),
                         image.getTask().getRawPrompt(),
                         image.getTask().getRatio(),
                         image.getLikeCount(),
                         likedImageIds.contains(image.getId()),
+                        image.getIsShared(),
                         image.getCreatedAt()
+                ))
+                .toList();
+
+        PageResponse<List<ImageResponse>> pageResponse = new PageResponse<>(
+                imageResponses,
+                pageable.getEncodedCursor(
+                        String.valueOf(images.get(0).getId()),
+                        imageRepository.existsByIdLessThan(images.get(0).getId())
+                ),
+                pageable.getEncodedCursor(
+                        String.valueOf(images.get(images.size() - 1).getId()),
+                        imageSlice.hasNext()
                 )
         );
+
+        return FolderImageResponse.builder()
+                .id(folder.getId())
+                .name(folder.getName())
+                .images(pageResponse)
+                .build();
     }
+
 }

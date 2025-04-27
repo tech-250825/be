@@ -1,7 +1,7 @@
-package com.ll.demo03.domain.mypage.folder.dto;
+package com.ll.demo03.domain.folder.dto;
 
 import com.ll.demo03.domain.image.entity.Image;
-import com.ll.demo03.domain.mypage.folder.entity.Folder;
+import com.ll.demo03.domain.folder.entity.Folder;
 import lombok.Builder;
 import lombok.Getter;
 

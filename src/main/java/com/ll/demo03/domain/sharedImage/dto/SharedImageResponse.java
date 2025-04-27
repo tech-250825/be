@@ -1,6 +1,7 @@
 package com.ll.demo03.domain.sharedImage.dto;
 
 import com.ll.demo03.domain.image.entity.Image;
+import com.ll.demo03.domain.member.dto.PublicMemberDto;
 import com.ll.demo03.domain.sharedImage.entity.SharedImage;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,7 +9,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class SharedImageResponse {
-    private String nickname;
+    private PublicMemberDto member;
     private Long id;
     private String url;
     private String prompt;
@@ -33,7 +34,7 @@ public class SharedImageResponse {
         }
 
         return new SharedImageResponse(
-                image.getMember().getNickname(),
+                PublicMemberDto.of(image.getMember()),
                 sharedImage.getId(),
                 image.getUrl(),
                 rawPrompt,

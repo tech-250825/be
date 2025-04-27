@@ -4,7 +4,11 @@ import com.ll.demo03.domain.image.dto.ImageResponse;
 import com.ll.demo03.domain.like.service.LikeService;
 import com.ll.demo03.domain.member.entity.Member;
 import com.ll.demo03.domain.oauth.entity.PrincipalDetails;
+import com.ll.demo03.domain.sharedImage.entity.SharedImage;
 import com.ll.demo03.global.exception.CustomException;
+import com.ll.demo03.global.util.CursorBasedPageable;
+import com.ll.demo03.global.util.PageResponse;
+import com.ll.demo03.global.util.PageSpecification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -14,6 +18,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -52,12 +57,13 @@ public class LikeController {
     }
 
     @GetMapping("/mypage/like")
-    public ResponseEntity<Page<ImageResponse>> getMyLikes(
+    public ResponseEntity<PageResponse<List<ImageResponse>>> getMyLikes(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+            CursorBasedPageable cursorBasedPageable) {
 
         Member member = principalDetails.user();
-        Page<ImageResponse> likes = likeService.getMyLikes(member, pageable);
+
+        PageResponse<List<ImageResponse>> likes = likeService.getMyLikes(member, cursorBasedPageable);
         return ResponseEntity.ok(likes);
     }
 }
