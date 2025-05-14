@@ -3,6 +3,7 @@ package com.ll.demo03.domain.webhook;
 import com.ll.demo03.domain.image.entity.Image;
 import com.ll.demo03.domain.image.repository.ImageRepository;
 import com.ll.demo03.domain.sse.repository.SseEmitterRepository;
+import com.ll.demo03.domain.task.dto.ProgressResponse;
 import com.ll.demo03.domain.task.entity.Task;
 import com.ll.demo03.domain.task.repository.TaskRepository;
 import com.ll.demo03.domain.upscaledTask.dto.UpscaleImageUrlResponse;
@@ -33,7 +34,7 @@ public class UpscaleWebhookProcessor {
         try {
             if (!isCompleted(event)) {
                 log.info("Task not yet completed, status: {}", getStatus(event));
-                notifyClient(taskId, getStatus(event));
+                notifyProcess(taskId, getStatus(event), getProgress(event));
                 return;
             }
 
@@ -61,6 +62,11 @@ public class UpscaleWebhookProcessor {
         return event.getData().getStatus();
     }
 
+    public String getProgress(UpscaleWebhookEvent event) {
+        Integer progress = event.getData().getOutput().getProgress();
+        return String.valueOf(progress);
+    }
+
     public Object getResourceData(UpscaleWebhookEvent event) {
         return event.getData().getOutput().getImage_url();
     }
@@ -73,6 +79,7 @@ public class UpscaleWebhookProcessor {
         String url = (String) resourceData;
         return url == null || url.isEmpty();
     }
+
 
     public void saveToDatabase(String taskId, String originTaskId, Object resourceData) {
         try {
@@ -92,6 +99,37 @@ public class UpscaleWebhookProcessor {
         } catch (Exception e) {
             log.error("DB 저장 중 오류 발생: {}", e.getMessage(), e);
             notifyClient(taskId, e.getMessage());
+        }
+    }
+
+    public void notifyProcess(String taskId, String status, String progress) {
+        try {
+
+            Task task = taskRepository.findByTaskId(taskId)
+                    .orElseThrow(() -> new EntityNotFoundException("Task not found"));
+
+            Long memberId = task.getMember().getId();
+            String memberIdStr = String.valueOf(memberId);
+
+            SseEmitter emitter = sseEmitterRepository.get(memberIdStr);
+
+            if (emitter != null) {
+                ProgressResponse response = new ProgressResponse(taskId, status, progress);
+
+                try {
+                    emitter.send(SseEmitter.event()
+                            .name("result")
+                            .data(response));
+
+                } catch (Exception e) {
+                    log.error("SSE 이벤트 전송 중 오류: {}", e.getMessage(), e);
+                    sseEmitterRepository.removeTaskMapping(taskId);
+                }
+            } else {
+                log.warn("❗ SSE 연결 없음: memberId={}, taskId={}", memberId, taskId);
+            }
+        } catch (Exception e) {
+            log.error("SSE 알림 전송 중 오류 발생: {}", e.getMessage(), e);
         }
     }
 

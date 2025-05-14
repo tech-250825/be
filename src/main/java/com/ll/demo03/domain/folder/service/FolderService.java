@@ -13,19 +13,16 @@ import com.ll.demo03.domain.image.repository.ImageRepository;
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
 import com.ll.demo03.global.util.CursorBasedPageable;
+import com.ll.demo03.global.util.CursorPagingUtils;
 import com.ll.demo03.global.util.PageResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.springframework.data.domain.PageRequest.ofSize;
@@ -142,6 +139,7 @@ public class FolderService {
     }
     @Transactional(readOnly = true)
     public FolderImageResponse getImagesInFolder(Member member, Long folderId, CursorBasedPageable pageable) {
+        // 1. 폴더 조회 및 권한 검증
         Folder folder = folderRepository.findById(folderId)
                 .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
@@ -149,8 +147,33 @@ public class FolderService {
             throw new CustomException(ErrorCode.ACCESS_DENIED);
         }
 
-        Slice<Image> imageSlice = imageRepository.findByFolderId(folderId, ofSize(pageable.getSize()));
+        // 2. 커서 방향에 따른 이미지 조회
+        Slice<Image> imageSlice;
 
+        if (!pageable.hasCursors()) {
+            // 첫 페이지 요청
+            imageSlice = imageRepository.findByFolderIdOrderByIdDesc(folderId, ofSize(pageable.getSize()));
+        } else if (pageable.hasPrevPageCursor()) {
+            // 이전 페이지로 이동 (위로 스크롤)
+            Long cursorId = Long.parseLong(pageable.getDecodedCursor(pageable.getPrevPageCursor()));
+
+            // ID 오름차순으로 조회 (더 큰 ID)
+            PageRequest pageRequest = PageRequest.of(0, pageable.getSize(), Sort.by(Sort.Direction.ASC, "id"));
+            imageSlice = imageRepository.findByFolderIdAndIdGreaterThanOrderByIdAsc(
+                    folderId, cursorId, pageRequest);
+
+            // 결과를 역순으로 바꿔서 일관된 내림차순 표시 유지
+            List<Image> content = new ArrayList<>(imageSlice.getContent());
+            Collections.reverse(content);
+            imageSlice = new SliceImpl<>(content, pageRequest, imageSlice.hasNext());
+        } else {
+            // 다음 페이지로 이동 (아래로 스크롤)
+            Long cursorId = Long.parseLong(pageable.getDecodedCursor(pageable.getNextPageCursor()));
+            imageSlice = imageRepository.findByFolderIdAndIdLessThanOrderByIdDesc(
+                    folderId, cursorId, ofSize(pageable.getSize()));
+        }
+
+        // 3. 결과가 없는 경우 빈 응답 반환
         if (!imageSlice.hasContent()) {
             return FolderImageResponse.builder()
                     .id(folder.getId())
@@ -159,7 +182,12 @@ public class FolderService {
                     .build();
         }
 
+        // 4. 이미지 정보 처리
         List<Image> images = imageSlice.getContent();
+        Image firstImage = images.get(0);
+        Image lastImage = images.get(images.size() - 1);
+
+        // 5. 좋아요 정보 조회
         List<Long> imageIds = images.stream()
                 .map(Image::getId)
                 .toList();
@@ -168,6 +196,7 @@ public class FolderService {
                 Collections.emptySet() :
                 likeRepository.findImageIdsByImageIdInAndMemberId(imageIds, member.getId());
 
+        // 6. 이미지 응답 생성
         List<ImageResponse> imageResponses = images.stream()
                 .map(image -> new ImageResponse(
                         image.getId(),
@@ -181,23 +210,27 @@ public class FolderService {
                 ))
                 .toList();
 
-        PageResponse<List<ImageResponse>> pageResponse = new PageResponse<>(
-                imageResponses,
-                pageable.getEncodedCursor(
-                        String.valueOf(images.get(0).getId()),
-                        imageRepository.existsByIdLessThan(images.get(0).getId())
-                ),
-                pageable.getEncodedCursor(
-                        String.valueOf(images.get(images.size() - 1).getId()),
-                        imageSlice.hasNext()
-                )
+        // 7. 이전/다음 페이지 커서 생성
+        String prevCursor = pageable.getEncodedCursor(
+                String.valueOf(firstImage.getId()),
+                imageRepository.existsByFolderIdAndIdGreaterThan(folderId, firstImage.getId())
         );
 
+        String nextCursor = pageable.getEncodedCursor(
+                String.valueOf(lastImage.getId()),
+                imageRepository.existsByFolderIdAndIdLessThan(folderId, lastImage.getId())
+        );
+
+        // 8. 페이지 응답 구성
+        PageResponse<List<ImageResponse>> pageResponse = new PageResponse<>(
+                imageResponses, prevCursor, nextCursor
+        );
+
+        // 9. 최종 응답 구성
         return FolderImageResponse.builder()
                 .id(folder.getId())
                 .name(folder.getName())
                 .images(pageResponse)
                 .build();
     }
-
 }

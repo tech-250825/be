@@ -19,9 +19,11 @@ public class Task extends BaseEntity {
     private String ratio;
 
     @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String rawPrompt;
 
     @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String gptPrompt;
 
     private String taskId;

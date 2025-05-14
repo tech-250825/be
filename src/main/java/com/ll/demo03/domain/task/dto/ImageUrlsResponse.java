@@ -8,7 +8,6 @@ import lombok.Setter;
 
 import java.util.List;
 
-// 이벤트 전송 객체
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,5 +15,7 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ImageUrlsResponse {
     private List<String> imageUrls;
+    private String prompt;
+    private String ratio;
     private String taskId;
 }

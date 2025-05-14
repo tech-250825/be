@@ -3,6 +3,7 @@ package com.ll.demo03.domain.videoTask.service;
 import com.ll.demo03.config.RabbitMQConfig;
 import com.ll.demo03.domain.taskProcessor.TaskProcessingService;
 import com.ll.demo03.domain.videoTask.dto.VideoMessageRequest;
+import com.ll.demo03.domain.videoTask.entity.VideoTask;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -36,9 +37,9 @@ public class VideoMessageConsumer {
 
             String taskId = taskProcessingService.extractTaskIdFromResponse(response);
 
-            videoTaskService.saveVideoTask(taskId, memberId);
+            VideoTask task=videoTaskService.saveVideoTask(taskId, memberId);
 
-            taskProcessingService.sendSseStatusEvent(memberId, taskId, "이미지 생성 요청 완료");
+            taskProcessingService.sendVideoSseEvent(memberId, task);
 
             log.info("영상 생성 요청 처리 완료: {}", taskId);
 

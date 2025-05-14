@@ -45,7 +45,7 @@ public class UpscaleMessageConsumer {
 
             saveUpscaleTask(taskId, message);
 
-            taskProcessingService.sendSseStatusEvent(memberId, taskId, "업스케일 생성 요청 완료");
+//            taskProcessingService.sendUpscaleSseEvent(memberId, taskId, "업스케일 생성 요청 완료");
 
         } catch (Exception e) {
             log.error("업스케일 처리 중 오류 발생: {}", e.getMessage(), e);

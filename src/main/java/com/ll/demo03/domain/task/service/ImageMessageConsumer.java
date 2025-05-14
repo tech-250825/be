@@ -35,9 +35,9 @@ public class ImageMessageConsumer {
 
             String taskId = taskProcessingService.extractTaskIdFromResponse(response);
 
-            saveImageTask(memberId, taskId, message);
+            Task task = saveImageTask(memberId, taskId, message);
 
-            taskProcessingService.sendSseStatusEvent(memberId, taskId, "이미지 생성 요청 완료");
+            taskProcessingService.sendImageSseEvent(memberId, task);
 
         } catch (Exception e) {
             log.error("이미지 생성 처리 중 오류 발생: {}", e.getMessage(), e);
@@ -45,7 +45,7 @@ public class ImageMessageConsumer {
     }
 
     @Transactional
-    private void saveImageTask(Long memberId, String taskId, ImageRequestMessage message) {
+    public Task saveImageTask(Long memberId, String taskId, ImageRequestMessage message) {
         try {
             Task task = new Task();
             task.setTaskId(taskId);
@@ -55,9 +55,12 @@ public class ImageMessageConsumer {
             task.setMember(taskProcessingService.getMember(memberId));
 
             taskRepository.save(task);
+
             log.info("이미지 작업 저장 완료: {}", taskId);
+            return task;
         } catch (Exception e) {
             log.error("이미지 작업 저장 중 오류 발생: {}", e.getMessage(), e);
+            throw e; // 반드시 다시 던져야 트랜잭션 롤백이 발생함
         }
     }
 }

@@ -44,6 +44,7 @@ public class TaskController {
     private final ImageMessageProducer imageMessageProducer;
     private final GeneralImageWebhookProcessor generalImageWebhookProcessor;
     private final RestTemplate restTemplate;
+    private final ObjectMapper objectMapper;
 
     @PostMapping(value = "/create")
     @PreAuthorize("isAuthenticated()")
@@ -142,7 +143,6 @@ public class TaskController {
             ResponseEntity<String> responseEntity = restTemplate.exchange(openAiUrl, HttpMethod.POST, requestEntity, String.class);
             String responseBody = responseEntity.getBody();
 
-            ObjectMapper objectMapper = new ObjectMapper();
             JsonNode rootNode = objectMapper.readTree(responseBody);
             String result = rootNode.path("choices").get(0).path("message").path("content").asText().trim(); // 응답 문자열 가져오기
 
@@ -189,7 +189,6 @@ public class TaskController {
             ResponseEntity<String> responseEntity = restTemplate.exchange(openAiUrl, HttpMethod.POST, requestEntity, String.class);
             String responseBody = responseEntity.getBody();
 
-            ObjectMapper objectMapper = new ObjectMapper();
             JsonNode rootNode = objectMapper.readTree(responseBody);
             String result = rootNode.path("choices").get(0).path("message").path("content").asText().trim(); // 응답 문자열 가져오기
 

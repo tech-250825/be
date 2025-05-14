@@ -8,5 +8,4 @@ public interface WebhookProcessor<T> {
     boolean isCompleted(T event);
     boolean isResourceDataEmpty(Object resourceData);
     void saveToDatabase(String taskId, Object resourceData);
-    void notifyClient(String taskId, Object resourceData);
 }
