@@ -17,12 +17,20 @@ import com.ll.demo03.domain.task.repository.TaskRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.S3Client;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+
+import java.io.InputStream;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -34,6 +42,10 @@ public class GeneralImageWebhookProcessor implements WebhookProcessor<WebhookEve
     private final ImageRepository imageRepository;
     private final NotificationRepository notificationRepository;
     private final ObjectMapper objectMapper;
+    private final S3Client s3Client;
+
+    @Value("${r2.bucket}")
+    private String bucket;
 
     @Override
     public void processWebhookEvent(WebhookEvent event) {
@@ -109,8 +121,8 @@ public class GeneralImageWebhookProcessor implements WebhookProcessor<WebhookEve
     public void saveToDatabase(String taskId, Object resourceData) {
         try {
             @SuppressWarnings("unchecked")
-            List<String> imageUrls = (List<String>) resourceData;
-
+//            List<String> imageUrls = (List<String>) resourceData;
+            List<String> imageUrls = downloadAndUploadToBucket((List<String>) resourceData);
             Task task = taskRepository.findByTaskId(taskId)
                     .orElseThrow(() -> new EntityNotFoundException("Task not found"));
 
@@ -293,4 +305,59 @@ public class GeneralImageWebhookProcessor implements WebhookProcessor<WebhookEve
             log.error("SSE 알림 전송 중 오류 발생: {}", e.getMessage(), e);
         }
     }
+
+    public List<String> downloadAndUploadToBucket(List<String> midjourneyUrls) {
+        List<String> bucketUrls = new ArrayList<>();
+        for (String url : midjourneyUrls) {
+            try {
+                byte[] imageBytes = downloadImage(url);
+
+                String fileName = UUID.randomUUID() + ".png";
+                String objectKey = "generated/" + fileName;
+
+                PutObjectRequest request = PutObjectRequest.builder()
+                        .bucket(bucket)
+                        .key(objectKey)
+                        .contentType("image/png")
+                        .build();
+
+                s3Client.putObject(request, RequestBody.fromBytes(imageBytes));
+
+                String bucketUrl = "https://image.hoit.my/" + objectKey;
+                bucketUrls.add(bucketUrl);
+
+            } catch (Exception e) {
+                log.error("이미지 다운로드 또는 업로드 실패: {}", url, e);
+            }
+        }
+        return bucketUrls;
+    }
+
+    private byte[] downloadImage(String imageUrl) throws IOException {
+        URL url = new URL(imageUrl);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+        connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
+        connection.setRequestProperty("Referer", "https://www.midjourney.com/");
+        connection.setRequestProperty("Accept", "image/avif,image/webp,image/apng,image/*,*/*;q=0.8");
+        connection.setRequestProperty("Accept-Language", "en-US,en;q=0.9");
+        connection.setRequestProperty("Accept-Encoding", "gzip, deflate, br");
+
+        connection.setInstanceFollowRedirects(true);
+        connection.connect();
+
+        int responseCode = connection.getResponseCode();
+        if (responseCode != HttpURLConnection.HTTP_OK) {
+            throw new IOException("이미지 다운로드 실패, 응답 코드: " + responseCode);
+        }
+
+        try (InputStream in = connection.getInputStream()) {
+            return in.readAllBytes();
+        } finally {
+            connection.disconnect();
+        }
+    }
+
+
+
 }

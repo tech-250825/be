@@ -1,6 +1,7 @@
 package com.ll.demo03.domain.image.dto;
 
 import com.ll.demo03.domain.image.entity.Image;
+import com.ll.demo03.domain.member.dto.PublicMemberDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Getter
 public class ImageResponse {
+    private PublicMemberDto member;
     private Long id;
     private String url;
     private String prompt;
@@ -21,6 +23,7 @@ public class ImageResponse {
     // 좋아요 상태를 직접 받는 팩토리 메서드
     public static ImageResponse of(Image image, boolean isLiked) {
         return new ImageResponse(
+                PublicMemberDto.of(image.getMember()),
                 image.getId(),
                 image.getUrl(),
                 image.getTask().getRawPrompt(),

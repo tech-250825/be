@@ -4,6 +4,7 @@ import com.ll.demo03.domain.folder.dto.FolderImageResponse;
 import com.ll.demo03.domain.image.dto.ImageResponse;
 import com.ll.demo03.domain.image.entity.Image;
 import com.ll.demo03.domain.like.repository.LikeRepository;
+import com.ll.demo03.domain.member.dto.PublicMemberDto;
 import com.ll.demo03.domain.member.entity.Member;
 import com.ll.demo03.domain.folder.dto.FolderRequest;
 import com.ll.demo03.domain.folder.dto.FolderResponse;
@@ -198,6 +199,7 @@ public class FolderService {
         // 6. 이미지 응답 생성
         List<ImageResponse> imageResponses = images.stream()
                 .map(image -> new ImageResponse(
+                        PublicMemberDto.of(image.getMember()),
                         image.getId(),
                         image.getUrl(),
                         image.getTask().getRawPrompt(),

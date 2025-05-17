@@ -177,7 +177,7 @@ public class TaskController {
                         "                that meets the user's demand. Don't over-imagine. Use specific wording (ex, light and shadow texture, flat colors, cell shading and ink lines). The style description needs to go first and last in the prompt (ex, retro anime, japanese illustration), or use the director or\\n" +
                         "                artist's name related to the style (ex, Ghibli Studio, Hayao Miyazaki, Jeremy Geddes, Junji Ito, Naoko Takeuchi, ...), or specific style (ex: retro anime -> vhs effect, grainy texture, 80s anime, motion blur, realistic -> 4k). If it's animation or character,\\n" +
                         "                write simply, in 1~2 sentences. If the user wants a pretty girl, add 'in the style of guweiz'. Don't use korean.\\n" +
-                        "                If it's realism, describe pose, layout, composition, add 4k. If the user seems to want retro anime, add --niji 5 at the end of the prompt.\"},\n" +
+                        "                If it's realism, describe pose, layout, composition, add 4k.\"},\n" +
                         "    {\"role\": \"user\", \"content\": \"" + prompt + "\"}\n" +
                         "  ],\n" +
                         "  \"temperature\": 0\n" +

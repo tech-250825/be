@@ -5,6 +5,7 @@ import com.ll.demo03.domain.image.dto.ImageResponse;
 import com.ll.demo03.domain.image.entity.Image;
 import com.ll.demo03.domain.image.repository.ImageRepository;
 import com.ll.demo03.domain.like.repository.LikeRepository;
+import com.ll.demo03.domain.member.dto.PublicMemberDto;
 import com.ll.demo03.domain.member.entity.Member;
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
@@ -108,6 +109,7 @@ public class MyPageService {
     private List<ImageResponse> convertToImageResponses(List<Image> images, Set<Long> likedImageIds) {
         return images.stream()
                 .map(image -> new ImageResponse(
+                        PublicMemberDto.of(image.getMember()),
                         image.getId(),
                         image.getUrl(),
                         image.getTask().getRawPrompt(),
