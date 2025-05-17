@@ -77,7 +77,9 @@ public class SecurityConfig {
                                                 "/swagger-resources/**",
                                                 "/admin/mypage/**",
                                                 "/home/**",
-                                                "/actuator/health"
+                                                "/actuator/health",
+                                        "/actuator/prometheus"
+
                                 ).permitAll() //
                 .anyRequest().authenticated() //나머지는 인증 필요
                 )

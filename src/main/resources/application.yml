@@ -3,6 +3,7 @@ app:
     url: https://front.hoit.my:3000
 server:
   port: 8090
+  address: 127.0.0.1
   shutdown: graceful
 spring:
   config:
@@ -43,13 +44,14 @@ management:
   endpoints:
     web:
       exposure:
-        include: "health"  # /actuator/health 활성화
-    jmx:
-      exposure:
-        include: "*" # JMX 활성화
+        include: "*"
   endpoint:
-    health:
-      show-details: always  # 상태 확인 시 상세 정보 제공
+    prometheus:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
 logging:
   level:
     com.ll.demo03: INFO
