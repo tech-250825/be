@@ -139,7 +139,6 @@ public class FolderService {
     }
     @Transactional(readOnly = true)
     public FolderImageResponse getImagesInFolder(Member member, Long folderId, CursorBasedPageable pageable) {
-        // 1. 폴더 조회 및 권한 검증
         Folder folder = folderRepository.findById(folderId)
                 .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
