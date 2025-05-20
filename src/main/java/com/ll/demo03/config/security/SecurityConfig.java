@@ -78,7 +78,8 @@ public class SecurityConfig {
                                                 "/admin/mypage/**",
                                                 "/home/**",
                                                 "/actuator/health",
-                                        "/actuator/prometheus"
+                                        "/actuator/prometheus",
+                                        "/sse/**"
 
                                 ).permitAll() //
                 .anyRequest().authenticated() //나머지는 인증 필요

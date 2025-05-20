@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  airdnb-prometheus:
+  prometheus:
     image: prom/prometheus
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml  # ./monitoring/prometheus.yml 은 prometheus.yml 파일의 경로 지정
