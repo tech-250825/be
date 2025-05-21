@@ -120,7 +120,7 @@ public class GeneralImageWebhookProcessor implements WebhookProcessor<WebhookEve
     public void saveToDatabase(String taskId, Object resourceData) {
         try {
             List<String> imageUrls = (List<String>) resourceData;
-            imageUrls = downloadAndUploadToBucket(imageUrls);
+//            imageUrls = downloadAndUploadToBucket(imageUrls);
 
             Task task = taskRepository.findByTaskId(taskId)
                     .orElseThrow(() -> new EntityNotFoundException("Task not found"));
@@ -239,10 +239,8 @@ public class GeneralImageWebhookProcessor implements WebhookProcessor<WebhookEve
 
                     log.info("✅ 클라이언트에게 이미지 URL 전송 완료: {}, memberId: {}", taskId, memberId);
 
-                    sseEmitterRepository.removeTaskMapping(memberIdStr);
                 } catch (Exception e) {
                     log.error("SSE 이벤트 전송 중 오류: {}", e.getMessage(), e);
-                    sseEmitterRepository.removeTaskMapping(memberIdStr);
                 }
             } else {
                 log.warn("❗ SSE 연결 없음: memberId={}, taskId={}", memberId, taskId);
@@ -291,11 +289,8 @@ public class GeneralImageWebhookProcessor implements WebhookProcessor<WebhookEve
                             .data(response));
 
                     log.info("✅ 클라이언트에게 에러 알람 전송 실패 : {}, memberId: {}", taskId, memberId);
-
-                    sseEmitterRepository.removeTaskMapping(memberIdStr);
                 } catch (Exception e) {
                     log.error("SSE 이벤트 전송 중 오류: {}", e.getMessage(), e);
-                    sseEmitterRepository.removeTaskMapping(memberIdStr);
                 }
             } else {
                 log.warn("❗ SSE 연결 없음: memberId={}, taskId={}", memberId, taskId);

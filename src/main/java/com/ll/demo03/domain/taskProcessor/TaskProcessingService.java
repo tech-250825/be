@@ -39,6 +39,7 @@ public class TaskProcessingService {
     public void sendImageSseEvent(Long memberId, Task task) {
         try {
             SseEmitter emitter = sseEmitterRepository.get(String.valueOf(memberId));
+
                 Notification notification = new Notification();
                 notification.setType(NotificationType.IMAGE); // 예시
                 notification.setMessage("이미지 생성 중입니다.");
@@ -62,7 +63,7 @@ public class TaskProcessingService {
                 emitter.send(SseEmitter.event()
                         .data(objectMapper.writeValueAsString(response)));
 
-                sseEmitterRepository.save(String.valueOf(memberId), emitter);
+//                sseEmitterRepository.save(String.valueOf(memberId), emitter);
 
                 log.info("SSE 상태 메시지 전송 완료: {}, memberId: {}", task.getTaskId(), memberId);
             } else {
@@ -98,7 +99,7 @@ public class TaskProcessingService {
                 emitter.send(SseEmitter.event()
                         .data(objectMapper.writeValueAsString(response)));
 
-                sseEmitterRepository.save(String.valueOf(memberId), emitter);
+//                sseEmitterRepository.save(String.valueOf(memberId), emitter);
 
                 log.info("SSE 상태 메시지 전송 완료: {}, memberId: {}", task.getTaskId(), memberId);
             } else {

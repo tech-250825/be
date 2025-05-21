@@ -61,6 +61,6 @@ logging:
     org.springframework.transaction.interceptor: INFO
     org.springframework.security: DEBUG
 custom:
-  webhook-url: https://api.hoit.my
+  webhook-url: https://9880-203-246-85-183.ngrok-free.app
   site:
     name: "My Site Prod"
