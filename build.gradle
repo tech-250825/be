@@ -75,7 +75,6 @@ dependencies {
 
 	implementation("io.micrometer:micrometer-registry-prometheus")
 
-	implementation ('org.seleniumhq.selenium:selenium-java:4.21.0')
 }
 
 tasks.named('test') {

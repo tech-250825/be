@@ -23,16 +23,12 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.S3Client;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 
-import java.net.URL;
-
+import java.io.IOException;
+import java.net.*;
 
 
 import java.io.InputStream;
-import java.net.URLConnection;
 import java.util.*;
 
 @Service
@@ -335,37 +331,32 @@ public class GeneralImageWebhookProcessor implements WebhookProcessor<WebhookEve
         }
         return bucketUrls;
     }
-    public static byte[] downloadImage(String imageUrl) throws Exception {
-        System.setProperty("webdriver.chrome.driver", "/usr/local/bin/chromedriver"); // 크롬드라이버 경로 설정
+    private byte[] downloadImage(String imageUrl) throws IOException {
+        URL url = new URL(imageUrl);
 
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless");  // 헤드리스 모드
-        options.addArguments("--disable-gpu");
-        options.addArguments("--no-sandbox"); // 리눅스 서버에서 필요할 수도 있음
+        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("5.161.103.41", 88));
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection(proxy);
 
-        WebDriver driver = new ChromeDriver(options);
+        // 2. 헤더 설정
+        connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
+        connection.setRequestProperty("Referer", "https://www.midjourney.com/");
+        connection.setRequestProperty("Accept", "image/avif,image/webp,image/apng,image/*,*/*;q=0.8");
+        connection.setRequestProperty("Accept-Language", "en-US,en;q=0.9");
+        connection.setRequestProperty("Accept-Encoding", "gzip, deflate, br");
 
-        try {
-            driver.get(imageUrl);
+        connection.setInstanceFollowRedirects(true);
+        connection.connect();
 
-            // 현재 URL을 다시 얻음 (리다이렉트 혹은 세션이 걸린 URL일 수 있어서)
-            String finalUrl = driver.getCurrentUrl();
+        int responseCode = connection.getResponseCode();
+        if (responseCode != HttpURLConnection.HTTP_OK) {
+            throw new IOException("이미지 다운로드 실패, 응답 코드: " + responseCode);
+        }
 
-            // URLConnection 열어서 이미지 스트림 읽기
-            URL url = new URL(finalUrl);
-            URLConnection urlConnection = url.openConnection();
-
-            // 헤더 설정 (필요하면)
-            urlConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
-            urlConnection.setRequestProperty("Referer", "https://www.midjourney.com/");
-
-            try (InputStream in = urlConnection.getInputStream()) {
-                return in.readAllBytes();
-            }
+        try (InputStream in = connection.getInputStream()) {
+            return in.readAllBytes();
         } finally {
-            driver.quit();
+            connection.disconnect();
         }
     }
-
 
 }
