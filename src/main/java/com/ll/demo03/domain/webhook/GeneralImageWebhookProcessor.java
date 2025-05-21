@@ -23,13 +23,16 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.S3Client;
-import java.io.IOException;
-import java.net.HttpURLConnection;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+
 import java.net.URL;
 
 
 
 import java.io.InputStream;
+import java.net.URLConnection;
 import java.util.*;
 
 @Service
@@ -120,9 +123,9 @@ public class GeneralImageWebhookProcessor implements WebhookProcessor<WebhookEve
     @Override
     public void saveToDatabase(String taskId, Object resourceData) {
         try {
-            @SuppressWarnings("unchecked")
-//            List<String> imageUrls = (List<String>) resourceData;
-            List<String> imageUrls = downloadAndUploadToBucket((List<String>) resourceData);
+            List<String> imageUrls = (List<String>) resourceData;
+            imageUrls = downloadAndUploadToBucket(imageUrls);
+
             Task task = taskRepository.findByTaskId(taskId)
                     .orElseThrow(() -> new EntityNotFoundException("Task not found"));
 
@@ -182,7 +185,7 @@ public class GeneralImageWebhookProcessor implements WebhookProcessor<WebhookEve
 
                 } catch (Exception e) {
                     log.error("SSE 이벤트 전송 중 오류: {}", e.getMessage(), e);
-                    sseEmitterRepository.removeTaskMapping(taskId);
+                    sseEmitterRepository.removeTaskMapping(memberIdStr);
                 }
             } else {
                 log.warn("❗ SSE 연결 없음: memberId={}, taskId={}", memberId, taskId);
@@ -240,10 +243,10 @@ public class GeneralImageWebhookProcessor implements WebhookProcessor<WebhookEve
 
                     log.info("✅ 클라이언트에게 이미지 URL 전송 완료: {}, memberId: {}", taskId, memberId);
 
-                    sseEmitterRepository.removeTaskMapping(taskId);
+                    sseEmitterRepository.removeTaskMapping(memberIdStr);
                 } catch (Exception e) {
                     log.error("SSE 이벤트 전송 중 오류: {}", e.getMessage(), e);
-                    sseEmitterRepository.removeTaskMapping(taskId);
+                    sseEmitterRepository.removeTaskMapping(memberIdStr);
                 }
             } else {
                 log.warn("❗ SSE 연결 없음: memberId={}, taskId={}", memberId, taskId);
@@ -293,10 +296,10 @@ public class GeneralImageWebhookProcessor implements WebhookProcessor<WebhookEve
 
                     log.info("✅ 클라이언트에게 에러 알람 전송 실패 : {}, memberId: {}", taskId, memberId);
 
-                    sseEmitterRepository.removeTaskMapping(taskId);
+                    sseEmitterRepository.removeTaskMapping(memberIdStr);
                 } catch (Exception e) {
                     log.error("SSE 이벤트 전송 중 오류: {}", e.getMessage(), e);
-                    sseEmitterRepository.removeTaskMapping(taskId);
+                    sseEmitterRepository.removeTaskMapping(memberIdStr);
                 }
             } else {
                 log.warn("❗ SSE 연결 없음: memberId={}, taskId={}", memberId, taskId);
@@ -332,32 +335,37 @@ public class GeneralImageWebhookProcessor implements WebhookProcessor<WebhookEve
         }
         return bucketUrls;
     }
+    public static byte[] downloadImage(String imageUrl) throws Exception {
+        System.setProperty("webdriver.chrome.driver", "/usr/local/bin/chromedriver"); // 크롬드라이버 경로 설정
 
-    private byte[] downloadImage(String imageUrl) throws IOException {
-        URL url = new URL(imageUrl);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--headless");  // 헤드리스 모드
+        options.addArguments("--disable-gpu");
+        options.addArguments("--no-sandbox"); // 리눅스 서버에서 필요할 수도 있음
 
-        connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
-        connection.setRequestProperty("Referer", "https://www.midjourney.com/");
-        connection.setRequestProperty("Accept", "image/avif,image/webp,image/apng,image/*,*/*;q=0.8");
-        connection.setRequestProperty("Accept-Language", "en-US,en;q=0.9");
-        connection.setRequestProperty("Accept-Encoding", "gzip, deflate, br");
+        WebDriver driver = new ChromeDriver(options);
 
-        connection.setInstanceFollowRedirects(true);
-        connection.connect();
+        try {
+            driver.get(imageUrl);
 
-        int responseCode = connection.getResponseCode();
-        if (responseCode != HttpURLConnection.HTTP_OK) {
-            throw new IOException("이미지 다운로드 실패, 응답 코드: " + responseCode);
-        }
+            // 현재 URL을 다시 얻음 (리다이렉트 혹은 세션이 걸린 URL일 수 있어서)
+            String finalUrl = driver.getCurrentUrl();
 
-        try (InputStream in = connection.getInputStream()) {
-            return in.readAllBytes();
+            // URLConnection 열어서 이미지 스트림 읽기
+            URL url = new URL(finalUrl);
+            URLConnection urlConnection = url.openConnection();
+
+            // 헤더 설정 (필요하면)
+            urlConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
+            urlConnection.setRequestProperty("Referer", "https://www.midjourney.com/");
+
+            try (InputStream in = urlConnection.getInputStream()) {
+                return in.readAllBytes();
+            }
         } finally {
-            connection.disconnect();
+            driver.quit();
         }
     }
-
 
 
 }

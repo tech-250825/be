@@ -207,6 +207,9 @@ public class FolderService {
                         image.getLikeCount(),
                         likedImageIds.contains(image.getId()),
                         image.getIsShared(),
+                        image.getUpscaleTask() != null,
+                        image.getTask().getTaskId(),
+                        image.getImgIndex(),
                         image.getCreatedAt()
                 ))
                 .toList();
