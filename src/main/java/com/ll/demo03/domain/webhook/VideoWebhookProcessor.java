@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ll.demo03.domain.image.entity.Image;
 import com.ll.demo03.domain.image.repository.ImageRepository;
+import com.ll.demo03.domain.member.entity.Member;
+import com.ll.demo03.domain.member.repository.MemberRepository;
 import com.ll.demo03.domain.notification.dto.NotificationMapper;
 import com.ll.demo03.domain.notification.dto.NotificationResponse;
 import com.ll.demo03.domain.notification.entity.Notification;
@@ -21,6 +23,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -39,9 +42,18 @@ public class VideoWebhookProcessor implements WebhookProcessor<VideoWebhookEvent
     private final TaskRepository taskRepository;
     private final ObjectMapper objectMapper;
     private final NotificationRepository notificationRepository;
+    private final MemberRepository memberRepository;
+    private final StringRedisTemplate redisTemplate;
 
     public void processWebhookEvent(VideoWebhookEvent event) {
         String taskId = getTaskId(event);
+        Member member = getMemberByTaskId(taskId);
+
+        int credit = member.getCredit();
+        credit -= 1;
+        member.setCredit(credit);
+        memberRepository.save(member);
+        redisTemplate.opsForList().rightPush("video:queue", taskId);
         String prompt = getPrompt(event);
         log.info("웹훅 이벤트 수신: {}", taskId);
 
@@ -143,6 +155,12 @@ public class VideoWebhookProcessor implements WebhookProcessor<VideoWebhookEvent
                 payloadMap.put("prompt", videoTask.getPrompt());
                 payloadMap.put("taskId", taskId);
 
+            String redisKey = "notification:video:" + memberIdStr;
+            String notificationJson = objectMapper.writeValueAsString(notification);
+            redisTemplate.opsForValue().set(redisKey, notificationJson);
+
+            redisTemplate.opsForList().remove("video:queue", 1, taskId);
+
 
                 try {
                     String payloadJson = objectMapper.writeValueAsString(payloadMap);
@@ -196,6 +214,10 @@ public class VideoWebhookProcessor implements WebhookProcessor<VideoWebhookEvent
                 payloadMap.put("taskId", taskId);
                 payloadMap.put("progress", progress);
 
+            String redisKey = "notification:video:" + memberIdStr;
+            String notificationJson = objectMapper.writeValueAsString(notification);
+            redisTemplate.opsForValue().set(redisKey, notificationJson);
+
                 try {
                     String payloadJson = objectMapper.writeValueAsString(payloadMap);
                     notification.setPayload(payloadJson);
@@ -248,7 +270,14 @@ public class VideoWebhookProcessor implements WebhookProcessor<VideoWebhookEvent
                 notification.setMessage("영상 생성 완료");
                 notification.setRead(false);
 
-                Map<String, Object> payloadMap = new HashMap<>();
+            String redisKey = "notification:video:" + memberIdStr;
+            String notificationJson = objectMapper.writeValueAsString(notification);
+            redisTemplate.opsForValue().set(redisKey, notificationJson);
+
+            redisTemplate.opsForList().remove("video:queue", 1, taskId);
+
+
+            Map<String, Object> payloadMap = new HashMap<>();
                 payloadMap.put("requestId", task.getId());
                 payloadMap.put("imageUrl", imageUrls);
                 payloadMap.put("prompt", prompt);
@@ -282,4 +311,10 @@ public class VideoWebhookProcessor implements WebhookProcessor<VideoWebhookEvent
         }
     }
 
+    public Member getMemberByTaskId(String taskId) {
+        VideoTask task = videoTaskRepository.findByTaskId(taskId)
+                .orElseThrow(() -> new EntityNotFoundException("Task not found with taskId: " + taskId));
+
+        return task.getMember();
+    }
 }

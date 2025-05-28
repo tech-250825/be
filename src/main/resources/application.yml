@@ -19,7 +19,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://127.0.0.1:3306/midai
     username: root
-    password: 1234
+    password: mato@1225
   security:
     oauth2:
       client:
@@ -60,7 +60,8 @@ logging:
     org.hibernate.orm.jdbc.extract: INFO
     org.springframework.transaction.interceptor: INFO
     org.springframework.security: DEBUG
+    org.springframework.core.env: DEBUG
 custom:
-  webhook-url: https://9880-203-246-85-183.ngrok-free.app
+  webhook-url: https://api.hoit.my
   site:
     name: "My Site Prod"

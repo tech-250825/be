@@ -17,6 +17,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -26,6 +27,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Transactional
@@ -45,6 +48,7 @@ public class TaskController {
     private final GeneralImageWebhookProcessor generalImageWebhookProcessor;
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
+    private final StringRedisTemplate redisTemplate;
 
     @PostMapping(value = "/create")
     @PreAuthorize("isAuthenticated()")
@@ -57,9 +61,6 @@ public class TaskController {
         if (credit <= 0) {
             throw new CustomException(ErrorCode.NO_CREDIT);
         }
-        credit -= 1;
-        member.setCredit(credit);
-        memberRepository.save(member);
 
         String prompt = imageRequest.getPrompt();
         String ratio = imageRequest.getRatio();
@@ -201,4 +202,11 @@ public class TaskController {
             return prompt;
         }
     }
+
+    @GetMapping("/queue/position")
+    public int getPosition(@RequestParam String taskId) {
+        List<String> taskIds = redisTemplate.opsForList().range("image:queue", 0, -1);
+        return taskIds.indexOf(taskId);
+    }
+
 }

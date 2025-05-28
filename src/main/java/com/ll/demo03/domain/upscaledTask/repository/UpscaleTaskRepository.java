@@ -9,4 +9,6 @@ import java.util.Optional;
 @Repository
 public interface UpscaleTaskRepository extends JpaRepository<UpscaleTask, Long> {
     Optional<UpscaleTask> findByNewTaskId(String taskId);
+
+    Optional<UpscaleTask> findByTaskId(String taskId);
 }

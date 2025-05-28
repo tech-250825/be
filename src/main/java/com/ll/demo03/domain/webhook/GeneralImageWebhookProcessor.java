@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ll.demo03.domain.image.entity.Image;
 import com.ll.demo03.domain.image.repository.ImageRepository;
+import com.ll.demo03.domain.member.entity.Member;
+import com.ll.demo03.domain.member.repository.MemberRepository;
 import com.ll.demo03.domain.notification.dto.NotificationMapper;
 import com.ll.demo03.domain.notification.dto.NotificationResponse;
 import com.ll.demo03.domain.notification.entity.Notification;
@@ -14,10 +16,13 @@ import com.ll.demo03.domain.sse.repository.SseEmitterRepository;
 import com.ll.demo03.domain.task.dto.WebhookEvent;
 import com.ll.demo03.domain.task.entity.Task;
 import com.ll.demo03.domain.task.repository.TaskRepository;
+import com.ll.demo03.global.error.ErrorCode;
+import com.ll.demo03.global.exception.CustomException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -40,8 +45,10 @@ public class GeneralImageWebhookProcessor implements WebhookProcessor<WebhookEve
     private final SseEmitterRepository sseEmitterRepository;
     private final ImageRepository imageRepository;
     private final NotificationRepository notificationRepository;
+    private final MemberRepository memberRepository;
     private final ObjectMapper objectMapper;
     private final S3Client s3Client;
+    private final StringRedisTemplate redisTemplate;
 
     @Value("${r2.bucket}")
     private String bucket;
@@ -49,8 +56,15 @@ public class GeneralImageWebhookProcessor implements WebhookProcessor<WebhookEve
     @Override
     public void processWebhookEvent(WebhookEvent event) {
         String taskId = getTaskId(event);
+        redisTemplate.opsForList().rightPush("image:queue", taskId);
+        Member member = getMemberByTaskId(taskId);
+
+        int credit = member.getCredit();
+        credit -= 1;
+        member.setCredit(credit);
+        memberRepository.save(member);
+
         log.info("웹훅 이벤트 수신: {}", taskId);
-        String prompt = getPrompt(event);
         String ratio = getRatio(event);
 
         try {
@@ -96,9 +110,6 @@ public class GeneralImageWebhookProcessor implements WebhookProcessor<WebhookEve
         return event.getData().getOutput().getImage_urls();
     }
 
-    public String getPrompt(WebhookEvent event) {
-        return event.getData().getInput().getPrompt();
-    }
 
     public String getRatio(WebhookEvent event) {
         return event.getData().getInput().getAspect_ratio();
@@ -165,7 +176,12 @@ public class GeneralImageWebhookProcessor implements WebhookProcessor<WebhookEve
                 payloadMap.put("taskId", taskId);
                 payloadMap.put("progress", progress);
 
-                try {
+            String redisKey = "notification:image:" + memberIdStr;
+            String notificationJson = objectMapper.writeValueAsString(notification);
+            redisTemplate.opsForValue().set(redisKey, notificationJson);
+
+
+            try {
                     String payloadJson = objectMapper.writeValueAsString(payloadMap);
                     notification.setPayload(payloadJson);
                     notificationRepository.save(notification);
@@ -224,6 +240,12 @@ public class GeneralImageWebhookProcessor implements WebhookProcessor<WebhookEve
                 payloadMap.put("ratio", ratio);
                 payloadMap.put("taskId", taskId);
 
+            String redisKey = "notification:image:" + memberIdStr;
+            String notificationJson = objectMapper.writeValueAsString(notification);
+            redisTemplate.opsForValue().set(redisKey, notificationJson);
+
+            redisTemplate.opsForList().remove("image:queue", 1, taskId);
+
                 try {
                     String payloadJson = objectMapper.writeValueAsString(payloadMap);
                     notification.setPayload(payloadJson);
@@ -273,6 +295,11 @@ public class GeneralImageWebhookProcessor implements WebhookProcessor<WebhookEve
                 payloadMap.put("ratio", ratio);
                 payloadMap.put("taskId", taskId);
 
+            String redisKey = "notification:image:" + memberIdStr;
+            String notificationJson = objectMapper.writeValueAsString(notification);
+            redisTemplate.opsForValue().set(redisKey, notificationJson);
+
+            redisTemplate.opsForList().remove("image:queue", 1, taskId);
 
                 try {
                     String payloadJson = objectMapper.writeValueAsString(payloadMap);
@@ -300,58 +327,66 @@ public class GeneralImageWebhookProcessor implements WebhookProcessor<WebhookEve
         }
     }
 
-    public List<String> downloadAndUploadToBucket(List<String> midjourneyUrls) {
-        List<String> bucketUrls = new ArrayList<>();
-        for (String url : midjourneyUrls) {
-            try {
-                byte[] imageBytes = downloadImage(url);
+    public Member getMemberByTaskId(String taskId) {
+        Task task = taskRepository.findByTaskId(taskId)
+                .orElseThrow(() -> new EntityNotFoundException("Task not found with taskId: " + taskId));
 
-                String fileName = UUID.randomUUID() + ".png";
-                String objectKey = "generated/" + fileName;
-
-                PutObjectRequest request = PutObjectRequest.builder()
-                        .bucket(bucket)
-                        .key(objectKey)
-                        .contentType("image/png")
-                        .build();
-
-                s3Client.putObject(request, RequestBody.fromBytes(imageBytes));
-
-                String bucketUrl = "https://image.hoit.my/" + objectKey;
-                bucketUrls.add(bucketUrl);
-
-            } catch (Exception e) {
-                log.error("이미지 다운로드 또는 업로드 실패: {}", url, e);
-            }
-        }
-        return bucketUrls;
+        return task.getMember();
     }
-    private byte[] downloadImage(String imageUrl) throws IOException {
-        URL url = new URL(imageUrl);
 
-        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("5.161.103.41", 88));
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection(proxy);
-
-        // 2. 헤더 설정
-        connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
-        connection.setRequestProperty("Referer", "https://www.midjourney.com/");
-        connection.setRequestProperty("Accept", "image/avif,image/webp,image/apng,image/*,*/*;q=0.8");
-        connection.setRequestProperty("Accept-Language", "en-US,en;q=0.9");
-        connection.setRequestProperty("Accept-Encoding", "gzip, deflate, br");
-
-        connection.setInstanceFollowRedirects(true);
-        connection.connect();
-
-        int responseCode = connection.getResponseCode();
-        if (responseCode != HttpURLConnection.HTTP_OK) {
-            throw new IOException("이미지 다운로드 실패, 응답 코드: " + responseCode);
-        }
-
-        try (InputStream in = connection.getInputStream()) {
-            return in.readAllBytes();
-        } finally {
-            connection.disconnect();
-        }
-    }
+//
+//    public List<String> downloadAndUploadToBucket(List<String> midjourneyUrls) {
+//        List<String> bucketUrls = new ArrayList<>();
+//        for (String url : midjourneyUrls) {
+//            try {
+//                byte[] imageBytes = downloadImage(url);
+//
+//                String fileName = UUID.randomUUID() + ".png";
+//                String objectKey = "generated/" + fileName;
+//
+//                PutObjectRequest request = PutObjectRequest.builder()
+//                        .bucket(bucket)
+//                        .key(objectKey)
+//                        .contentType("image/png")
+//                        .build();
+//
+//                s3Client.putObject(request, RequestBody.fromBytes(imageBytes));
+//
+//                String bucketUrl = "https://image.hoit.my/" + objectKey;
+//                bucketUrls.add(bucketUrl);
+//
+//            } catch (Exception e) {
+//                log.error("이미지 다운로드 또는 업로드 실패: {}", url, e);
+//            }
+//        }
+//        return bucketUrls;
+//    }
+//    private byte[] downloadImage(String imageUrl) throws IOException {
+//        URL url = new URL(imageUrl);
+//
+//        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("5.161.103.41", 88));
+//        HttpURLConnection connection = (HttpURLConnection) url.openConnection(proxy);
+//
+//        // 2. 헤더 설정
+//        connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
+//        connection.setRequestProperty("Referer", "https://www.midjourney.com/");
+//        connection.setRequestProperty("Accept", "image/avif,image/webp,image/apng,image/*,*/*;q=0.8");
+//        connection.setRequestProperty("Accept-Language", "en-US,en;q=0.9");
+//        connection.setRequestProperty("Accept-Encoding", "gzip, deflate, br");
+//
+//        connection.setInstanceFollowRedirects(true);
+//        connection.connect();
+//
+//        int responseCode = connection.getResponseCode();
+//        if (responseCode != HttpURLConnection.HTTP_OK) {
+//            throw new IOException("이미지 다운로드 실패, 응답 코드: " + responseCode);
+//        }
+//
+//        try (InputStream in = connection.getInputStream()) {
+//            return in.readAllBytes();
+//        } finally {
+//            connection.disconnect();
+//        }
+//    }
 
 }

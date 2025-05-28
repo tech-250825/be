@@ -18,10 +18,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RequiredArgsConstructor
@@ -34,9 +37,9 @@ public class UpscaledTaskController {
     @Value("${custom.webhook-url}")
     private String webhookUrl;
 
-    private final MemberRepository memberRepository;
     private final ImageMessageProducer imageMessageProducer;
     private final UpscaleWebhookProcessor upscaleWebhookProcessor;
+    private final StringRedisTemplate redisTemplate;
 
     @PostMapping(value = "/create")
     @PreAuthorize("isAuthenticated()")
@@ -50,9 +53,6 @@ public class UpscaledTaskController {
         if (credit <= 0) {
             throw new CustomException(ErrorCode.NO_CREDIT);
         }
-        credit -= 1;
-        member.setCredit(credit);
-        memberRepository.save(member);
 
         UpscaleTaskRequestMessage upscaleTaskRequestMessage= UpscaleTaskRequestMessage.builder()
                 .memberId(memberId)
@@ -88,5 +88,11 @@ public class UpscaledTaskController {
             log.error("Error processing webhook: ", e);
             return GlobalResponse.error(ErrorCode.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/queue/position")
+    public int getPosition(@RequestParam String taskId) {
+        List<String> taskIds = redisTemplate.opsForList().range("upscale:queue", 0, -1);
+        return taskIds.indexOf(taskId);
     }
 }

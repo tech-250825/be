@@ -17,9 +17,12 @@ import com.ll.demo03.global.exception.CustomException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Transactional
@@ -28,9 +31,10 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class VideoTaskController {
 
-    private final MemberRepository memberRepository;
     private final VideoWebhookProcessor videoWebhookProcessor;
     private final ImageMessageProducer imageMessageProducer;
+    private final StringRedisTemplate redisTemplate;
+
 
     @PostMapping(value = "/create")
     @PreAuthorize("isAuthenticated()")
@@ -43,9 +47,6 @@ public class VideoTaskController {
         if (credit <= 0) {
             throw new CustomException(ErrorCode.NO_CREDIT);
         }
-        credit -= 1;
-        member.setCredit(credit);
-        memberRepository.save(member);
 
         VideoMessageRequest videoMessageRequest = new VideoMessageRequest();
         videoMessageRequest.setMemberId(member.getId());
@@ -81,5 +82,11 @@ public class VideoTaskController {
             log.error("Error processing webhook: ", e);
             return GlobalResponse.error(ErrorCode.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/queue/position")
+    public int getPosition(@RequestParam String taskId) {
+        List<String> taskIds = redisTemplate.opsForList().range("video:queue", 0, -1);
+        return taskIds.indexOf(taskId);
     }
 }
