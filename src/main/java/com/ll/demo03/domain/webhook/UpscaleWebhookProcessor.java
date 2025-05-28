@@ -301,7 +301,7 @@ public class UpscaleWebhookProcessor implements WebhookProcessor<UpscaleWebhookE
         }
     }
     public Member getMemberByTaskId(String taskId) {
-        UpscaleTask task = upscaleTaskRepository.findByTaskId(taskId)
+        UpscaleTask task = upscaleTaskRepository.findByNewTaskId(taskId)
                 .orElseThrow(() -> new EntityNotFoundException("Task not found with taskId: " + taskId));
 
         return task.getMember();
