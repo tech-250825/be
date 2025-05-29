@@ -79,7 +79,10 @@ public class SecurityConfig {
                                                 "/home/**",
                                                 "/actuator/health",
                                         "/actuator/prometheus",
-                                        "/sse/**"
+                                        "/sse/**",
+                                                "/auth/**",              // OAuth 관련 모든 경로 허용
+                                                "/login/**",
+                                                "/oauth2/**"
 
                                 ).permitAll() //
                 .anyRequest().authenticated() //나머지는 인증 필요

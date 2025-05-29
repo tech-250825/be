@@ -1,7 +1,6 @@
 package com.ll.demo03.domain.task.service;
 
 import com.ll.demo03.domain.task.dto.ImageRequestMessage;
-import com.ll.demo03.domain.task.dto.WebhookEvent;
 import com.ll.demo03.config.RabbitMQConfig;
 import com.ll.demo03.domain.upscaledTask.dto.UpscaleTaskRequestMessage;
 import com.ll.demo03.domain.videoTask.dto.VideoMessageRequest;

@@ -28,9 +28,9 @@ public class UpscaleTaskService {
 
     public String createUpscaleImage(String taskId, String imageIndex,  String webhook) {
         try {
+            log.info("Creating upscale image with taskId: {}, imageIndex: {}, webhook: {}", taskId, imageIndex, webhook);
+            Unirest.setTimeouts(0, 0);
 
-            Unirest.setTimeouts(0, 0);
-            Unirest.setTimeouts(0, 0);
             HttpResponse<String> response = (HttpResponse<String>) Unirest.post("https://api.piapi.ai/api/v1/task")
                     .header("x-api-key", piApiKey)
                     .header("Content-Type", "application/json")

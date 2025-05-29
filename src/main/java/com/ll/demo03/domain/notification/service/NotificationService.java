@@ -1,8 +1,12 @@
 package com.ll.demo03.domain.notification.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ll.demo03.domain.notification.dto.NotificationMessage;
 import com.ll.demo03.domain.notification.dto.NotificationResponse;
 import com.ll.demo03.domain.notification.entity.Notification;
 import com.ll.demo03.domain.notification.repository.NotificationRepository;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import org.springframework.security.access.AccessDeniedException;
@@ -20,6 +24,8 @@ import java.util.stream.Collectors;
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
+    private final ObjectMapper objectMapper;
+    private final RedisTemplate<String, String> redisTemplate;
 
 
     public List<NotificationResponse> getNotificationsByMemberId(Long memberId) {
@@ -89,4 +95,18 @@ public class NotificationService {
 
         return notification;
     }
+
+    public void publishNotificationToOtherServers(String memberIdStr, String notificationJson) {
+        NotificationMessage message = new NotificationMessage();
+        message.setMemberId(Long.parseLong(memberIdStr));
+        message.setNotificationJson(notificationJson); // 또는 직렬화된 Notification 객체
+
+        try {
+            String jsonMessage = objectMapper.writeValueAsString(message);
+            redisTemplate.convertAndSend("sse-notification-channel", jsonMessage);
+        } catch (JsonProcessingException e) {
+            log.error("❌ Redis Publish 실패: memberId={}, error={}", memberIdStr, e.getMessage());
+        }
+    }
+
 }

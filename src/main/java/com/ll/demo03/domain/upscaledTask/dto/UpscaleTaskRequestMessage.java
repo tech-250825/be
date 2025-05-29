@@ -13,4 +13,5 @@ public class UpscaleTaskRequestMessage implements Serializable {
     private String taskId;
     private String index;
     private Long memberId;
+    private String webhookUrl;
 }

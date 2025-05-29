@@ -3,10 +3,11 @@ app:
     url: https://front.hoit.my:3000
 server:
   port: 8090
-  address: 127.0.0.1
   shutdown: graceful
 spring:
   config:
+    activate:
+        on-profile: default
     import: "application-secret.yml"
   docker:
     compose:
@@ -61,6 +62,10 @@ logging:
     org.springframework.transaction.interceptor: INFO
     org.springframework.security: DEBUG
     org.springframework.core.env: DEBUG
+    com.zaxxer.hikari.HikariConfig: DEBUG
+    com.zaxxer.hikari.HikariDataSource: DEBUG
+    org.springframework.security.oauth2: DEBUG
+    org.springframework.web.client: DEBUG
 custom:
   webhook-url: https://api.hoit.my
   site:

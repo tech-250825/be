@@ -1,5 +1,7 @@
 package com.ll.demo03.domain.task.service;
 
+import com.ll.demo03.domain.member.entity.Member;
+import com.ll.demo03.domain.member.repository.MemberRepository;
 import com.ll.demo03.domain.task.dto.ImageRequestMessage;
 import com.ll.demo03.domain.taskProcessor.TaskProcessingService;
 import com.ll.demo03.domain.task.entity.Task;
@@ -8,6 +10,7 @@ import com.ll.demo03.domain.task.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,8 +21,11 @@ public class ImageMessageConsumer {
 
     private final TaskService taskService;
     private final TaskProcessingService taskProcessingService;
+    private final StringRedisTemplate redisTemplate;
     private final TaskRepository taskRepository;
+    private final MemberRepository memberRepository;
 
+    @Transactional
     @RabbitListener(queues = RabbitMQConfig.IMAGE_QUEUE)
     public void processImageCreation(ImageRequestMessage message) {
         try {
@@ -34,6 +40,12 @@ public class ImageMessageConsumer {
             );
 
             String taskId = taskProcessingService.extractTaskIdFromResponse(response);
+            redisTemplate.opsForList().rightPush("image:queue", taskId);
+            Member member = memberRepository.getById(memberId);
+            int credit = member.getCredit();
+            credit -= 1;
+            member.setCredit(credit);
+            memberRepository.save(member);
 
             Task task = saveImageTask(memberId, taskId, message);
 
@@ -44,7 +56,6 @@ public class ImageMessageConsumer {
         }
     }
 
-    @Transactional
     public Task saveImageTask(Long memberId, String taskId, ImageRequestMessage message) {
         try {
             Task task = new Task();

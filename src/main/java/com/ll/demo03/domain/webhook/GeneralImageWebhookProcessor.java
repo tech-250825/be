@@ -12,6 +12,7 @@ import com.ll.demo03.domain.notification.entity.Notification;
 import com.ll.demo03.domain.notification.entity.NotificationStatus;
 import com.ll.demo03.domain.notification.entity.NotificationType;
 import com.ll.demo03.domain.notification.repository.NotificationRepository;
+import com.ll.demo03.domain.notification.service.NotificationService;
 import com.ll.demo03.domain.sse.repository.SseEmitterRepository;
 import com.ll.demo03.domain.task.dto.WebhookEvent;
 import com.ll.demo03.domain.task.entity.Task;
@@ -42,12 +43,10 @@ import java.util.*;
 public class GeneralImageWebhookProcessor implements WebhookProcessor<WebhookEvent> {
 
     private final TaskRepository taskRepository;
-    private final SseEmitterRepository sseEmitterRepository;
     private final ImageRepository imageRepository;
     private final NotificationRepository notificationRepository;
-    private final MemberRepository memberRepository;
     private final ObjectMapper objectMapper;
-    private final S3Client s3Client;
+    private final NotificationService notificationService;
     private final StringRedisTemplate redisTemplate;
 
     @Value("${r2.bucket}")
@@ -56,13 +55,6 @@ public class GeneralImageWebhookProcessor implements WebhookProcessor<WebhookEve
     @Override
     public void processWebhookEvent(WebhookEvent event) {
         String taskId = getTaskId(event);
-        redisTemplate.opsForList().rightPush("image:queue", taskId);
-        Member member = getMemberByTaskId(taskId);
-
-        int credit = member.getCredit();
-        credit -= 1;
-        member.setCredit(credit);
-        memberRepository.save(member);
 
         log.info("웹훅 이벤트 수신: {}", taskId);
         String ratio = getRatio(event);
@@ -160,8 +152,6 @@ public class GeneralImageWebhookProcessor implements WebhookProcessor<WebhookEve
             Long memberId = task.getMember().getId();
             String memberIdStr = String.valueOf(memberId);
 
-            SseEmitter emitter = sseEmitterRepository.get(memberIdStr);
-
                 Notification notification = new Notification();
                 notification.setType(NotificationType.IMAGE); // 예시
                 notification.setMessage("이미지 생성 중입니다.");
@@ -176,32 +166,20 @@ public class GeneralImageWebhookProcessor implements WebhookProcessor<WebhookEve
                 payloadMap.put("taskId", taskId);
                 payloadMap.put("progress", progress);
 
-            String redisKey = "notification:image:" + memberIdStr;
-            String notificationJson = objectMapper.writeValueAsString(notification);
-            redisTemplate.opsForValue().set(redisKey, notificationJson);
-
-
             try {
                     String payloadJson = objectMapper.writeValueAsString(payloadMap);
                     notification.setPayload(payloadJson);
                     notificationRepository.save(notification);
+
+                String redisKey = "notification:image:" + memberIdStr;
+                String notificationJson = objectMapper.writeValueAsString(notification);
+                redisTemplate.opsForValue().set(redisKey, notificationJson);
+
+                notificationService.publishNotificationToOtherServers(memberIdStr, notificationJson);
+
                 } catch (JsonProcessingException e) {
                     log.error("payload 직렬화 실패", e);
                 }
-                if (emitter != null) {
-
-                try {
-                    NotificationResponse response = NotificationMapper.toResponse(notification);
-                    emitter.send(SseEmitter.event()
-                            .data(response));
-
-                } catch (Exception e) {
-                    log.error("SSE 이벤트 전송 중 오류: {}", e.getMessage(), e);
-                    sseEmitterRepository.removeTaskMapping(memberIdStr);
-                }
-            } else {
-                log.warn("❗ SSE 연결 없음: memberId={}, taskId={}", memberId, taskId);
-            }
         } catch (Exception e) {
             log.error("SSE 알림 전송 중 오류 발생: {}", e.getMessage(), e);
         }
@@ -225,8 +203,6 @@ public class GeneralImageWebhookProcessor implements WebhookProcessor<WebhookEve
             Long memberId = task.getMember().getId();
             String memberIdStr = String.valueOf(memberId);
 
-            SseEmitter emitter = sseEmitterRepository.get(memberIdStr);
-
                 Notification notification = new Notification();
                 notification.setType(NotificationType.IMAGE); // 예시
                 notification.setStatus(NotificationStatus.SUCCESS);
@@ -240,33 +216,21 @@ public class GeneralImageWebhookProcessor implements WebhookProcessor<WebhookEve
                 payloadMap.put("ratio", ratio);
                 payloadMap.put("taskId", taskId);
 
-            String redisKey = "notification:image:" + memberIdStr;
-            String notificationJson = objectMapper.writeValueAsString(notification);
-            redisTemplate.opsForValue().set(redisKey, notificationJson);
-
             redisTemplate.opsForList().remove("image:queue", 1, taskId);
 
                 try {
                     String payloadJson = objectMapper.writeValueAsString(payloadMap);
                     notification.setPayload(payloadJson);
                     notificationRepository.save(notification);
+
+                    String redisKey = "notification:image:" + memberIdStr;
+                    String notificationJson = objectMapper.writeValueAsString(notification);
+                    redisTemplate.opsForValue().set(redisKey, notificationJson);
+
+                    notificationService.publishNotificationToOtherServers(memberIdStr, notificationJson);
                 } catch (JsonProcessingException e) {
                     log.error("payload 직렬화 실패", e);
                 }
-            if (emitter != null) {
-                try {
-                    NotificationResponse response = NotificationMapper.toResponse(notification);
-                    emitter.send(SseEmitter.event()
-                            .data(response));
-
-                    log.info("✅ 클라이언트에게 이미지 URL 전송 완료: {}, memberId: {}", taskId, memberId);
-
-                } catch (Exception e) {
-                    log.error("SSE 이벤트 전송 중 오류: {}", e.getMessage(), e);
-                }
-            } else {
-                log.warn("❗ SSE 연결 없음: memberId={}, taskId={}", memberId, taskId);
-            }
         } catch (Exception e) {
             log.error("SSE 알림 전송 중 오류 발생: {}", e.getMessage(), e);
         }
@@ -279,8 +243,6 @@ public class GeneralImageWebhookProcessor implements WebhookProcessor<WebhookEve
 
             Long memberId = task.getMember().getId();
             String memberIdStr = String.valueOf(memberId);
-
-            SseEmitter emitter = sseEmitterRepository.get(memberIdStr);
 
                 Notification notification = new Notification();
                 notification.setType(NotificationType.IMAGE); // 예시
@@ -295,98 +257,25 @@ public class GeneralImageWebhookProcessor implements WebhookProcessor<WebhookEve
                 payloadMap.put("ratio", ratio);
                 payloadMap.put("taskId", taskId);
 
-            String redisKey = "notification:image:" + memberIdStr;
-            String notificationJson = objectMapper.writeValueAsString(notification);
-            redisTemplate.opsForValue().set(redisKey, notificationJson);
-
             redisTemplate.opsForList().remove("image:queue", 1, taskId);
 
                 try {
                     String payloadJson = objectMapper.writeValueAsString(payloadMap);
                     notification.setPayload(payloadJson);
                     notificationRepository.save(notification);
+
+                    String redisKey = "notification:image:" + memberIdStr;
+                    String notificationJson = objectMapper.writeValueAsString(notification);
+                    redisTemplate.opsForValue().set(redisKey, notificationJson);
+
+                    notificationService.publishNotificationToOtherServers(memberIdStr, notificationJson);
                 } catch (JsonProcessingException e) {
                     log.error("payload 직렬화 실패", e);
                 }
 
-            if (emitter != null) {
-                try {
-                    NotificationResponse response = NotificationMapper.toResponse(notification);
-                    emitter.send(SseEmitter.event()
-                            .data(response));
-
-                    log.info("✅ 클라이언트에게 에러 알람 전송 실패 : {}, memberId: {}", taskId, memberId);
-                } catch (Exception e) {
-                    log.error("SSE 이벤트 전송 중 오류: {}", e.getMessage(), e);
-                }
-            } else {
-                log.warn("❗ SSE 연결 없음: memberId={}, taskId={}", memberId, taskId);
-            }
         } catch (Exception e) {
             log.error("SSE 알림 전송 중 오류 발생: {}", e.getMessage(), e);
         }
     }
-
-    public Member getMemberByTaskId(String taskId) {
-        Task task = taskRepository.findByTaskId(taskId)
-                .orElseThrow(() -> new EntityNotFoundException("Task not found with taskId: " + taskId));
-
-        return task.getMember();
-    }
-
-//
-//    public List<String> downloadAndUploadToBucket(List<String> midjourneyUrls) {
-//        List<String> bucketUrls = new ArrayList<>();
-//        for (String url : midjourneyUrls) {
-//            try {
-//                byte[] imageBytes = downloadImage(url);
-//
-//                String fileName = UUID.randomUUID() + ".png";
-//                String objectKey = "generated/" + fileName;
-//
-//                PutObjectRequest request = PutObjectRequest.builder()
-//                        .bucket(bucket)
-//                        .key(objectKey)
-//                        .contentType("image/png")
-//                        .build();
-//
-//                s3Client.putObject(request, RequestBody.fromBytes(imageBytes));
-//
-//                String bucketUrl = "https://image.hoit.my/" + objectKey;
-//                bucketUrls.add(bucketUrl);
-//
-//            } catch (Exception e) {
-//                log.error("이미지 다운로드 또는 업로드 실패: {}", url, e);
-//            }
-//        }
-//        return bucketUrls;
-//    }
-//    private byte[] downloadImage(String imageUrl) throws IOException {
-//        URL url = new URL(imageUrl);
-//
-//        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("5.161.103.41", 88));
-//        HttpURLConnection connection = (HttpURLConnection) url.openConnection(proxy);
-//
-//        // 2. 헤더 설정
-//        connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
-//        connection.setRequestProperty("Referer", "https://www.midjourney.com/");
-//        connection.setRequestProperty("Accept", "image/avif,image/webp,image/apng,image/*,*/*;q=0.8");
-//        connection.setRequestProperty("Accept-Language", "en-US,en;q=0.9");
-//        connection.setRequestProperty("Accept-Encoding", "gzip, deflate, br");
-//
-//        connection.setInstanceFollowRedirects(true);
-//        connection.connect();
-//
-//        int responseCode = connection.getResponseCode();
-//        if (responseCode != HttpURLConnection.HTTP_OK) {
-//            throw new IOException("이미지 다운로드 실패, 응답 코드: " + responseCode);
-//        }
-//
-//        try (InputStream in = connection.getInputStream()) {
-//            return in.readAllBytes();
-//        } finally {
-//            connection.disconnect();
-//        }
-//    }
 
 }

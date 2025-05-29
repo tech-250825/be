@@ -12,6 +12,7 @@ import com.ll.demo03.domain.notification.entity.Notification;
 import com.ll.demo03.domain.notification.entity.NotificationStatus;
 import com.ll.demo03.domain.notification.entity.NotificationType;
 import com.ll.demo03.domain.notification.repository.NotificationRepository;
+import com.ll.demo03.domain.notification.service.NotificationService;
 import com.ll.demo03.domain.sse.repository.SseEmitterRepository;
 import com.ll.demo03.domain.task.entity.Task;
 import com.ll.demo03.domain.task.repository.TaskRepository;
@@ -37,23 +38,16 @@ import java.util.Map;
 public class VideoWebhookProcessor implements WebhookProcessor<VideoWebhookEvent> {
 
     private final VideoTaskRepository videoTaskRepository;
-    private final SseEmitterRepository sseEmitterRepository;
     private final ImageRepository imageRepository;
     private final TaskRepository taskRepository;
     private final ObjectMapper objectMapper;
     private final NotificationRepository notificationRepository;
-    private final MemberRepository memberRepository;
+    private final NotificationService notificationService;
     private final StringRedisTemplate redisTemplate;
 
     public void processWebhookEvent(VideoWebhookEvent event) {
         String taskId = getTaskId(event);
-        Member member = getMemberByTaskId(taskId);
 
-        int credit = member.getCredit();
-        credit -= 1;
-        member.setCredit(credit);
-        memberRepository.save(member);
-        redisTemplate.opsForList().rightPush("video:queue", taskId);
         String prompt = getPrompt(event);
         log.info("웹훅 이벤트 수신: {}", taskId);
 
@@ -141,8 +135,6 @@ public class VideoWebhookProcessor implements WebhookProcessor<VideoWebhookEvent
             Long memberId = videoTask.getMember().getId();
             String memberIdStr = String.valueOf(memberId);
 
-            SseEmitter emitter = sseEmitterRepository.get(memberIdStr);
-
                 Notification notification = new Notification();
                 notification.setType(NotificationType.VIDEO); // 예시
                 notification.setStatus(NotificationStatus.FAILED);
@@ -155,10 +147,6 @@ public class VideoWebhookProcessor implements WebhookProcessor<VideoWebhookEvent
                 payloadMap.put("prompt", videoTask.getPrompt());
                 payloadMap.put("taskId", taskId);
 
-            String redisKey = "notification:video:" + memberIdStr;
-            String notificationJson = objectMapper.writeValueAsString(notification);
-            redisTemplate.opsForValue().set(redisKey, notificationJson);
-
             redisTemplate.opsForList().remove("video:queue", 1, taskId);
 
 
@@ -166,25 +154,16 @@ public class VideoWebhookProcessor implements WebhookProcessor<VideoWebhookEvent
                     String payloadJson = objectMapper.writeValueAsString(payloadMap);
                     notification.setPayload(payloadJson);
                     notificationRepository.save(notification);
+
+                    String redisKey = "notification:video:" + memberIdStr;
+                    String notificationJson = objectMapper.writeValueAsString(notification);
+                    redisTemplate.opsForValue().set(redisKey, notificationJson);
+
+                    notificationService.publishNotificationToOtherServers(memberIdStr, notificationJson);
                 } catch (JsonProcessingException e) {
                     log.error("payload 직렬화 실패", e);
                 }
 
-            if (emitter != null) {
-                try {
-                    NotificationResponse response = NotificationMapper.toResponse(notification);
-                    emitter.send(SseEmitter.event()
-                            .data(response));
-                    log.info("✅ 클라이언트 SSE 전송 완료: {}, memberId: {}", taskId, memberId);
-
-                    emitter.complete();
-                    sseEmitterRepository.removeTaskMapping(taskId);
-                } catch (Exception e) {
-                    log.error("SSE 이벤트 전송 중 오류: {}", e.getMessage(), e);
-                }
-            } else {
-                log.warn("❗ SSE 연결 없음: memberId={}, taskId={}", memberId, taskId);
-            }
         } catch (Exception e) {
             log.error("SSE 알림 전송 중 오류 발생: {}", e.getMessage(), e);
         }
@@ -199,8 +178,6 @@ public class VideoWebhookProcessor implements WebhookProcessor<VideoWebhookEvent
             Long memberId = task.getMember().getId();
             String memberIdStr = String.valueOf(memberId);
 
-            SseEmitter emitter = sseEmitterRepository.get(memberIdStr);
-
                 Notification notification = new Notification();
                 notification.setType(NotificationType.VIDEO); // 예시
                 notification.setMessage("영상 생성 중입니다.");
@@ -214,31 +191,20 @@ public class VideoWebhookProcessor implements WebhookProcessor<VideoWebhookEvent
                 payloadMap.put("taskId", taskId);
                 payloadMap.put("progress", progress);
 
-            String redisKey = "notification:video:" + memberIdStr;
-            String notificationJson = objectMapper.writeValueAsString(notification);
-            redisTemplate.opsForValue().set(redisKey, notificationJson);
 
                 try {
                     String payloadJson = objectMapper.writeValueAsString(payloadMap);
                     notification.setPayload(payloadJson);
                     notificationRepository.save(notification);
+
+                    String redisKey = "notification:video:" + memberIdStr;
+                    String notificationJson = objectMapper.writeValueAsString(notification);
+                    redisTemplate.opsForValue().set(redisKey, notificationJson);
+
+                    notificationService.publishNotificationToOtherServers(memberIdStr, notificationJson);
                 } catch (JsonProcessingException e) {
                     log.error("payload 직렬화 실패", e);
                 }
-            if (emitter != null) {
-                try {
-                    NotificationResponse response = NotificationMapper.toResponse(notification);
-                    emitter.send(SseEmitter.event()
-                            .data(response));
-
-                } catch (Exception e) {
-                    log.error("SSE 이벤트 전송 중 오류: {}", e.getMessage(), e);
-                    notificationRepository.save(notification);
-                    sseEmitterRepository.removeTaskMapping(taskId);
-                }
-            } else {
-                log.warn("❗ SSE 연결 없음: memberId={}, taskId={}", memberId, taskId);
-            }
         } catch (Exception e) {
             log.error("SSE 알림 전송 중 오류 발생: {}", e.getMessage(), e);
         }
@@ -262,20 +228,11 @@ public class VideoWebhookProcessor implements WebhookProcessor<VideoWebhookEvent
             Long memberId = task.getMember().getId();
             String memberIdStr = String.valueOf(memberId);
 
-            SseEmitter emitter = sseEmitterRepository.get(memberIdStr);
-
                 Notification notification = new Notification();
                 notification.setType(NotificationType.VIDEO); // 예시
                 notification.setStatus(NotificationStatus.SUCCESS);
                 notification.setMessage("영상 생성 완료");
                 notification.setRead(false);
-
-            String redisKey = "notification:video:" + memberIdStr;
-            String notificationJson = objectMapper.writeValueAsString(notification);
-            redisTemplate.opsForValue().set(redisKey, notificationJson);
-
-            redisTemplate.opsForList().remove("video:queue", 1, taskId);
-
 
             Map<String, Object> payloadMap = new HashMap<>();
                 payloadMap.put("requestId", task.getId());
@@ -283,38 +240,25 @@ public class VideoWebhookProcessor implements WebhookProcessor<VideoWebhookEvent
                 payloadMap.put("prompt", prompt);
                 payloadMap.put("taskId", taskId);
 
+
+            redisTemplate.opsForList().remove("video:queue", 1, taskId);
+
                 try {
                     String payloadJson = objectMapper.writeValueAsString(payloadMap);
                     notification.setPayload(payloadJson);
                     notificationRepository.save(notification);
+
+                    String redisKey = "notification:video:" + memberIdStr;
+                    String notificationJson = objectMapper.writeValueAsString(notification);
+                    redisTemplate.opsForValue().set(redisKey, notificationJson);
+
+                    notificationService.publishNotificationToOtherServers(memberIdStr, notificationJson);
                 } catch (JsonProcessingException e) {
                     log.error("payload 직렬화 실패", e);
                 }
-            if (emitter != null) {
-                try {
-                    NotificationResponse response = NotificationMapper.toResponse(notification);
-                    emitter.send(SseEmitter.event()
-                            .data(response));
-
-                    log.info("✅ 클라이언트에게 이미지 URL 전송 완료: {}, memberId: {}", taskId, memberId);
-
-                    sseEmitterRepository.removeTaskMapping(taskId);
-                } catch (Exception e) {
-                    log.error("SSE 이벤트 전송 중 오류: {}", e.getMessage(), e);
-                    sseEmitterRepository.removeTaskMapping(taskId);
-                }
-            } else {
-                log.warn("❗ SSE 연결 없음: memberId={}, taskId={}", memberId, taskId);
-            }
         } catch (Exception e) {
             log.error("SSE 알림 전송 중 오류 발생: {}", e.getMessage(), e);
         }
     }
 
-    public Member getMemberByTaskId(String taskId) {
-        VideoTask task = videoTaskRepository.findByTaskId(taskId)
-                .orElseThrow(() -> new EntityNotFoundException("Task not found with taskId: " + taskId));
-
-        return task.getMember();
-    }
 }

@@ -57,7 +57,8 @@ public class UpscaledTaskController {
         UpscaleTaskRequestMessage upscaleTaskRequestMessage= UpscaleTaskRequestMessage.builder()
                 .memberId(memberId)
                 .taskId(upscaleTaskRequest.getTaskId())
-                .index(upscaleTaskRequest.getIndex()).build();
+                .index(upscaleTaskRequest.getIndex())
+                .webhookUrl( webhookUrl + "/api/upscale-images/webhook").build();
 
         try {
             imageMessageProducer.sendImageUpscaleMessage(upscaleTaskRequestMessage);
@@ -90,9 +91,8 @@ public class UpscaledTaskController {
         }
     }
 
-    @GetMapping("/queue/position")
-    public int getPosition(@RequestParam String taskId) {
-        List<String> taskIds = redisTemplate.opsForList().range("upscale:queue", 0, -1);
-        return taskIds.indexOf(taskId);
+    @GetMapping("/queue")
+    public long getQueueLength() {
+        return redisTemplate.opsForList().size("upscale:queue");
     }
 }

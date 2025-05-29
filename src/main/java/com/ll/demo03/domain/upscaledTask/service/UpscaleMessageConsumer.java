@@ -2,6 +2,7 @@ package com.ll.demo03.domain.upscaledTask.service;
 
 import com.ll.demo03.config.RabbitMQConfig;
 import com.ll.demo03.domain.member.entity.Member;
+import com.ll.demo03.domain.member.repository.MemberRepository;
 import com.ll.demo03.domain.task.entity.Task;
 import com.ll.demo03.domain.task.repository.TaskRepository;
 import com.ll.demo03.domain.taskProcessor.TaskProcessingService;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -25,10 +27,10 @@ public class UpscaleMessageConsumer {
     private final TaskProcessingService taskProcessingService;
     private final UpscaleTaskRepository upscaleTaskRepository;
     private final TaskRepository taskRepository;
+    private final MemberRepository memberRepository;
+    private final StringRedisTemplate redisTemplate;
 
-    @Value("${custom.webhook-url}")
-    private String webhookUrl;
-
+    @Transactional
     @RabbitListener(queues = RabbitMQConfig.UPSCALE_QUEUE)
     public void processImageCreation(UpscaleTaskRequestMessage message) {
         try {
@@ -37,23 +39,31 @@ public class UpscaleMessageConsumer {
             String response = upscaleTaskService.createUpscaleImage(
                     message.getTaskId(),
                     message.getIndex(),
-                    webhookUrl + "/api/upscale-images/webhook"
+                    message.getWebhookUrl()
             );
+            log.info("업스케일 이미지 생성 요청 응답: {}", response);
 
             String taskId = taskProcessingService.extractTaskIdFromResponse(response);
+            redisTemplate.opsForList().rightPush("upscale:queue", taskId);
+
+            Member member = memberRepository.getById(memberId);
+            int credit = member.getCredit();
+            credit -= 1;
+            member.setCredit(credit);
+            memberRepository.save(member);
+
             log.info("Extracted upscale task_id: {}", taskId);
 
-            saveUpscaleTask(taskId, message);
+            UpscaleTask task = saveUpscaleTask(taskId, message);
 
-//            taskProcessingService.sendUpscaleSseEvent(memberId, taskId, "업스케일 생성 요청 완료");
+            taskProcessingService.sendUpscaleSseEvent(memberId, task);
 
         } catch (Exception e) {
             log.error("업스케일 처리 중 오류 발생: {}", e.getMessage(), e);
         }
     }
 
-    @Transactional
-    private void saveUpscaleTask(String taskId, UpscaleTaskRequestMessage message) {
+    private UpscaleTask saveUpscaleTask(String taskId, UpscaleTaskRequestMessage message) {
         Member member = taskProcessingService.getMember(message.getMemberId());
 
         Task task = taskRepository.findByTaskId(message.getTaskId())
@@ -65,6 +75,7 @@ public class UpscaleMessageConsumer {
         upscaleTask.setNewTaskId(taskId);
         upscaleTask.setMember(member);
 
-        upscaleTaskRepository.save(upscaleTask);
+        UpscaleTask result =upscaleTaskRepository.save(upscaleTask);
+        return result;
     }
 }

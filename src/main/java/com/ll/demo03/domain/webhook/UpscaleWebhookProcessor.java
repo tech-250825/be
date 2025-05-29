@@ -12,6 +12,7 @@ import com.ll.demo03.domain.notification.entity.Notification;
 import com.ll.demo03.domain.notification.entity.NotificationStatus;
 import com.ll.demo03.domain.notification.entity.NotificationType;
 import com.ll.demo03.domain.notification.repository.NotificationRepository;
+import com.ll.demo03.domain.notification.service.NotificationService;
 import com.ll.demo03.domain.sse.repository.SseEmitterRepository;
 import com.ll.demo03.domain.task.entity.Task;
 import com.ll.demo03.domain.task.repository.TaskRepository;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -35,24 +37,17 @@ public class UpscaleWebhookProcessor implements WebhookProcessor<UpscaleWebhookE
 
     private final UpscaleTaskRepository upscaleTaskRepository;
     private final TaskRepository taskRepository;
-    private final SseEmitterRepository sseEmitterRepository;
     private final ImageRepository imageRepository;
     private final NotificationRepository notificationRepository;
     private final MemberRepository memberRepository;
+    private final NotificationService notificationService;
     private final ObjectMapper objectMapper;
     private final StringRedisTemplate redisTemplate;
 
     @Override
     public void processWebhookEvent(UpscaleWebhookEvent event) {
         String taskId = getTaskId(event);
-        Member member = getMemberByTaskId(taskId);
 
-        int credit = member.getCredit();
-        credit -= 1;
-        member.setCredit(credit);
-        memberRepository.save(member);
-
-        redisTemplate.opsForList().rightPush("upscale:queue", taskId);
         String originTaskId = event.getData().getInput().getOrigin_task_id();
         log.info("업스케일 웹훅 이벤트 수신: {}", taskId);
 
@@ -144,8 +139,6 @@ public class UpscaleWebhookProcessor implements WebhookProcessor<UpscaleWebhookE
             Long memberId = upscaleTask.getMember().getId();
             String memberIdStr = String.valueOf(memberId);
 
-            SseEmitter emitter = sseEmitterRepository.get(memberIdStr);
-
             Notification notification = new Notification();
             notification.setType(NotificationType.UPSCALE);
             notification.setMessage("이미지 업스케일 중입니다.");
@@ -159,31 +152,21 @@ public class UpscaleWebhookProcessor implements WebhookProcessor<UpscaleWebhookE
             payloadMap.put("progress", progress);
             payloadMap.put("type", "upscale");
 
-            String redisKey = "notification:upscale:" + memberIdStr;
-            String notificationJson = objectMapper.writeValueAsString(notification);
-            redisTemplate.opsForValue().set(redisKey, notificationJson);
 
             try {
                 String payloadJson = objectMapper.writeValueAsString(payloadMap);
                 notification.setPayload(payloadJson);
                 notificationRepository.save(notification);
+
+                String redisKey = "notification:upscale:" + memberIdStr;
+                String notificationJson = objectMapper.writeValueAsString(notification);
+                redisTemplate.opsForValue().set(redisKey, notificationJson);
+
+                notificationService.publishNotificationToOtherServers(memberIdStr, notificationJson);
             } catch (JsonProcessingException e) {
                 log.error("payload 직렬화 실패", e);
             }
 
-            if (emitter != null) {
-                try {
-                    NotificationResponse response = NotificationMapper.toResponse(notification);
-                    emitter.send(SseEmitter.event()
-                            .data(response));
-
-                } catch (Exception e) {
-                    log.error("SSE 이벤트 전송 중 오류: {}", e.getMessage(), e);
-                    sseEmitterRepository.removeTaskMapping(memberIdStr);
-                }
-            } else {
-                log.warn("❗ SSE 연결 없음: memberId={}, taskId={}", memberId, taskId);
-            }
         } catch (Exception e) {
             log.error("SSE 알림 전송 중 오류 발생: {}", e.getMessage(), e);
         }
@@ -199,8 +182,6 @@ public class UpscaleWebhookProcessor implements WebhookProcessor<UpscaleWebhookE
             Long memberId = upscaleTask.getMember().getId();
             String memberIdStr = String.valueOf(memberId);
 
-            SseEmitter emitter = sseEmitterRepository.get(memberIdStr);
-
             Notification notification = new Notification();
             notification.setType(NotificationType.UPSCALE);
             notification.setStatus(NotificationStatus.SUCCESS);
@@ -213,10 +194,6 @@ public class UpscaleWebhookProcessor implements WebhookProcessor<UpscaleWebhookE
             payloadMap.put("taskId", taskId);
             payloadMap.put("type", "upscale");
 
-            String redisKey = "notification:upscale:" + memberIdStr;
-            String notificationJson = objectMapper.writeValueAsString(notification);
-            redisTemplate.opsForValue().set(redisKey, notificationJson);
-
             redisTemplate.opsForList().remove("upscale:queue", 1, taskId);
 
 
@@ -224,24 +201,16 @@ public class UpscaleWebhookProcessor implements WebhookProcessor<UpscaleWebhookE
                 String payloadJson = objectMapper.writeValueAsString(payloadMap);
                 notification.setPayload(payloadJson);
                 notificationRepository.save(notification);
+
+                String redisKey = "notification:upscale:" + memberIdStr;
+                String notificationJson = objectMapper.writeValueAsString(notification);
+                redisTemplate.opsForValue().set(redisKey, notificationJson);
+
+                notificationService.publishNotificationToOtherServers(memberIdStr, notificationJson);
             } catch (JsonProcessingException e) {
                 log.error("payload 직렬화 실패", e);
             }
 
-            if (emitter != null) {
-                try {
-                    NotificationResponse response = NotificationMapper.toResponse(notification);
-                    emitter.send(SseEmitter.event()
-                            .data(response));
-
-                    log.info("✅ 클라이언트에게 업스케일 이미지 URL 전송 완료: {}, memberId: {}", taskId, memberId);
-
-                } catch (Exception e) {
-                    log.error("SSE 이벤트 전송 중 오류: {}", e.getMessage(), e);
-                }
-            } else {
-                log.warn("❗ SSE 연결 없음: memberId={}, taskId={}", memberId, taskId);
-            }
         } catch (Exception e) {
             log.error("SSE 알림 전송 중 오류 발생: {}", e.getMessage(), e);
         }
@@ -255,8 +224,6 @@ public class UpscaleWebhookProcessor implements WebhookProcessor<UpscaleWebhookE
             Long memberId = upscaleTask.getMember().getId();
             String memberIdStr = String.valueOf(memberId);
 
-            SseEmitter emitter = sseEmitterRepository.get(memberIdStr);
-
             Notification notification = new Notification();
             notification.setType(NotificationType.UPSCALE);
             notification.setStatus(NotificationStatus.FAILED);
@@ -269,42 +236,25 @@ public class UpscaleWebhookProcessor implements WebhookProcessor<UpscaleWebhookE
             payloadMap.put("taskId", taskId);
             payloadMap.put("type", "upscale");
 
-            String redisKey = "notification:upscale:" + memberIdStr;
-            String notificationJson = objectMapper.writeValueAsString(notification);
-            redisTemplate.opsForValue().set(redisKey, notificationJson);
-
             redisTemplate.opsForList().remove("upscale:queue", 1, taskId);
 
             try {
                 String payloadJson = objectMapper.writeValueAsString(payloadMap);
                 notification.setPayload(payloadJson);
                 notificationRepository.save(notification);
+
+                String redisKey = "notification:upscale:" + memberIdStr;
+                String notificationJson = objectMapper.writeValueAsString(notification);
+                redisTemplate.opsForValue().set(redisKey, notificationJson);
+
+                notificationService.publishNotificationToOtherServers(memberIdStr, notificationJson);
             } catch (JsonProcessingException e) {
                 log.error("payload 직렬화 실패", e);
             }
 
-            if (emitter != null) {
-                try {
-                    NotificationResponse response = NotificationMapper.toResponse(notification);
-                    emitter.send(SseEmitter.event()
-                            .data(response));
-
-                    log.info("✅ 클라이언트에게 업스케일 에러 알람 전송 완료: {}, memberId: {}", taskId, memberId);
-                } catch (Exception e) {
-                    log.error("SSE 이벤트 전송 중 오류: {}", e.getMessage(), e);
-                }
-            } else {
-                log.warn("❗ SSE 연결 없음: memberId={}, taskId={}", memberId, taskId);
-            }
         } catch (Exception e) {
             log.error("SSE 알림 전송 중 오류 발생: {}", e.getMessage(), e);
         }
-    }
-    public Member getMemberByTaskId(String taskId) {
-        UpscaleTask task = upscaleTaskRepository.findByNewTaskId(taskId)
-                .orElseThrow(() -> new EntityNotFoundException("Task not found with taskId: " + taskId));
-
-        return task.getMember();
     }
 
 }

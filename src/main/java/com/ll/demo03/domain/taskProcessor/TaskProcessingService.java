@@ -1,5 +1,6 @@
 package com.ll.demo03.domain.taskProcessor;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ll.demo03.domain.image.dto.ImageResponse;
@@ -11,12 +12,15 @@ import com.ll.demo03.domain.notification.entity.Notification;
 import com.ll.demo03.domain.notification.entity.NotificationStatus;
 import com.ll.demo03.domain.notification.entity.NotificationType;
 import com.ll.demo03.domain.notification.repository.NotificationRepository;
+import com.ll.demo03.domain.notification.service.NotificationService;
 import com.ll.demo03.domain.sse.repository.SseEmitterRepository;
 import com.ll.demo03.domain.task.dto.ImageRequestMessage;
 import com.ll.demo03.domain.task.entity.Task;
+import com.ll.demo03.domain.upscaledTask.entity.UpscaleTask;
 import com.ll.demo03.domain.videoTask.entity.VideoTask;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -31,16 +35,16 @@ public class TaskProcessingService {
 
     private final MemberRepository memberRepository;
 
-    private final SseEmitterRepository sseEmitterRepository;
+    private final StringRedisTemplate redisTemplate;
 
     private final ObjectMapper objectMapper;
     private final NotificationRepository notificationRepository;
+    private final NotificationService notificationService;
 
     public void sendImageSseEvent(Long memberId, Task task) {
         try {
-            SseEmitter emitter = sseEmitterRepository.get(String.valueOf(memberId));
 
-                Notification notification = new Notification();
+               Notification notification = new Notification();
                 notification.setType(NotificationType.IMAGE); // 예시
                 notification.setMessage("이미지 생성 중입니다.");
                 notification.setStatus(NotificationStatus.PENDING);
@@ -54,20 +58,20 @@ public class TaskProcessingService {
                 payloadMap.put("taskId", task.getTaskId());
                 payloadMap.put("progress", 0);
 
+            try {
+                String memberIdStr = String.valueOf(memberId);
                 String payloadJson = objectMapper.writeValueAsString(payloadMap);
                 notification.setPayload(payloadJson);
-
                 notificationRepository.save(notification);
-                NotificationResponse response = NotificationMapper.toResponse(notification);
-            if (emitter != null) {
-                emitter.send(SseEmitter.event()
-                        .data(objectMapper.writeValueAsString(response)));
 
-//                sseEmitterRepository.save(String.valueOf(memberId), emitter);
+                String redisKey = "notification:image:" + memberIdStr;
+                String notificationJson = objectMapper.writeValueAsString(notification);
+                redisTemplate.opsForValue().set(redisKey, notificationJson);
 
-                log.info("SSE 상태 메시지 전송 완료: {}, memberId: {}", task.getTaskId(), memberId);
-            } else {
-                log.warn("SSE 연결을 찾을 수 없음: memberId={}", memberId);
+                notificationService.publishNotificationToOtherServers(memberIdStr, notificationJson);
+
+            } catch (JsonProcessingException e) {
+                log.error("payload 직렬화 실패", e);
             }
         } catch (Exception e) {
             log.error("알림 저장 중 에러 발생 : {}", e.getMessage(), e);
@@ -76,7 +80,6 @@ public class TaskProcessingService {
 
     public void sendVideoSseEvent(Long memberId, VideoTask task) {
         try {
-            SseEmitter emitter = sseEmitterRepository.get(String.valueOf(memberId));
             Notification notification = new Notification();
             notification.setType(NotificationType.VIDEO); // 예시
             notification.setMessage("영상 생성 중입니다.");
@@ -90,63 +93,61 @@ public class TaskProcessingService {
             payloadMap.put("taskId", task.getTaskId());
             payloadMap.put("progress", 0);
 
-            String payloadJson = objectMapper.writeValueAsString(payloadMap);
-            notification.setPayload(payloadJson);
+            try {
+                String memberIdStr = String.valueOf(memberId);
+                String payloadJson = objectMapper.writeValueAsString(payloadMap);
+                notification.setPayload(payloadJson);
+                notificationRepository.save(notification);
 
-            notificationRepository.save(notification);
-            NotificationResponse response = NotificationMapper.toResponse(notification);
-            if (emitter != null) {
-                emitter.send(SseEmitter.event()
-                        .data(objectMapper.writeValueAsString(response)));
+                String redisKey = "notification:image:" + memberIdStr;
+                String notificationJson = objectMapper.writeValueAsString(notification);
+                redisTemplate.opsForValue().set(redisKey, notificationJson);
 
-//                sseEmitterRepository.save(String.valueOf(memberId), emitter);
+                notificationService.publishNotificationToOtherServers(memberIdStr, notificationJson);
 
-                log.info("SSE 상태 메시지 전송 완료: {}, memberId: {}", task.getTaskId(), memberId);
-            } else {
-                log.warn("SSE 연결을 찾을 수 없음: memberId={}", memberId);
+            } catch (JsonProcessingException e) {
+                log.error("payload 직렬화 실패", e);
             }
         } catch (Exception e) {
             log.error("알림 저장 중 에러 발생 : {}", e.getMessage(), e);
         }
     }
 
-//    public void sendUpsacleSseEvent(Long memberId, Task task) {
-//        try {
-//            SseEmitter emitter = sseEmitterRepository.get(String.valueOf(memberId));
-//            Notification notification = new Notification();
-//            notification.setType(NotificationType.IMAGE); // 예시
-//            notification.setMessage("이미지 생성 중입니다.");
-//            notification.setStatus(NotificationStatus.PENDING);
-//            notification.setRead(false);
-//
-//            Map<String, Object> payloadMap = new HashMap<>();
-//            payloadMap.put("requestId", task.getId());
-//            payloadMap.put("imageUrls", new String[]{});
-//            payloadMap.put("prompt", task.getRawPrompt());
-//            payloadMap.put("ratio", task.getRatio());
-//            payloadMap.put("taskId", task.getTaskId());
-//            payloadMap.put("progress", 0);
-//
-//            ObjectMapper objectMapper = new ObjectMapper();
-//            String payloadJson = objectMapper.writeValueAsString(payloadMap);
-//            notification.setPayload(payloadJson);
-//
-//            notificationRepository.save(notification);
-//            NotificationResponse response = NotificationMapper.toResponse(notification);
-//            if (emitter != null) {
-//                emitter.send(SseEmitter.event()
-//                        .data(objectMapper.writeValueAsString(response)));
-//
-//                sseEmitterRepository.save(task.getTaskId(), emitter);
-//
-//                log.info("SSE 상태 메시지 전송 완료: {}, memberId: {}", task.getTaskId(), memberId);
-//            } else {
-//                log.warn("SSE 연결을 찾을 수 없음: memberId={}", memberId);
-//            }
-//        } catch (Exception e) {
-//            log.error("알림 저장 중 에러 발생 : {}", e.getMessage(), e);
-//        }
-//    }
+    public void sendUpscaleSseEvent(Long memberId, UpscaleTask task) {
+        try {
+            Notification notification = new Notification();
+            notification.setType(NotificationType.UPSCALE); // 예시
+            notification.setMessage("업스케일 중입니다.");
+            notification.setStatus(NotificationStatus.PENDING);
+            notification.setRead(false);
+
+            Map<String, Object> payloadMap = new HashMap<>();
+            payloadMap.put("requestId", task.getId());
+            payloadMap.put("imageUrls", new String[]{});
+            payloadMap.put("prompt", task.getTask().getRawPrompt());
+            payloadMap.put("ratio", task.getTask().getRatio());
+            payloadMap.put("taskId", task.getNewTaskId());
+            payloadMap.put("progress", 0);
+
+            try {
+                String memberIdStr = String.valueOf(memberId);
+                String payloadJson = objectMapper.writeValueAsString(payloadMap);
+                notification.setPayload(payloadJson);
+                notificationRepository.save(notification);
+
+                String redisKey = "notification:image:" + memberIdStr;
+                String notificationJson = objectMapper.writeValueAsString(notification);
+                redisTemplate.opsForValue().set(redisKey, notificationJson);
+
+                notificationService.publishNotificationToOtherServers(memberIdStr, notificationJson);
+
+            } catch (JsonProcessingException e) {
+                log.error("payload 직렬화 실패", e);
+            }
+        } catch (Exception e) {
+            log.error("알림 저장 중 에러 발생 : {}", e.getMessage(), e);
+        }
+    }
 
 
     public String extractTaskIdFromResponse(String response) {

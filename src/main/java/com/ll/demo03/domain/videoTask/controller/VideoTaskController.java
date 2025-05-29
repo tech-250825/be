@@ -84,9 +84,8 @@ public class VideoTaskController {
         }
     }
 
-    @GetMapping("/queue/position")
-    public int getPosition(@RequestParam String taskId) {
-        List<String> taskIds = redisTemplate.opsForList().range("video:queue", 0, -1);
-        return taskIds.indexOf(taskId);
+    @GetMapping("/queue")
+    public long getQueueLength() {
+        return redisTemplate.opsForList().size("video:queue");
     }
 }

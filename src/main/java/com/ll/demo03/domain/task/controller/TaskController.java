@@ -203,10 +203,10 @@ public class TaskController {
         }
     }
 
-    @GetMapping("/queue/position")
-    public int getPosition(@RequestParam String taskId) {
-        List<String> taskIds = redisTemplate.opsForList().range("image:queue", 0, -1);
-        return taskIds.indexOf(taskId);
+    @GetMapping("/queue")
+    public long getQueueLength() {
+        return redisTemplate.opsForList().size("image:queue");
     }
+
 
 }

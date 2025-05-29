@@ -34,7 +34,6 @@ public class TaskService {
 
     public String createImage(String prompt, String ratio, String cref, String sref,  String webhook) {
         try {
-            System.out.println("prompt: " + prompt);
             if(sref !=null ){
                 prompt = prompt + " --sref " + sref;
             }
