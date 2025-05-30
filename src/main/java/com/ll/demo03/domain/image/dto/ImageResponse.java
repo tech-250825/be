@@ -33,7 +33,7 @@ public class ImageResponse {
                 image.getTask().getRatio(),
                 image.getLikeCount(),
                 isLiked,
-                image.getIsShared(),
+               image.getUpscaleTask() != null || Boolean.TRUE.equals(image.getIsShared()),
                 image.getIsUpscaled(),
                 image.getTask().getTaskId(),
                 image.getImgIndex(),
