@@ -7,12 +7,15 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.Optional;
 
 public interface ImageRepository extends JpaRepository<Image, Long>, JpaSpecificationExecutor<Image> {
 
-    Slice<Image> findByFolderId(Long folderId, Pageable pageable);
-
-    boolean existsByIdLessThan(Long id);
+    @Query("SELECT i FROM Image i WHERE i.task.taskId = :taskId AND i.imgIndex = :index")
+    Optional<Image> getByTaskIdAndIndex(@Param("taskId") String taskId, @Param("index") Integer index);
 
     boolean existsByIdLessThanAndMemberId(Long id, Long memberId);
 

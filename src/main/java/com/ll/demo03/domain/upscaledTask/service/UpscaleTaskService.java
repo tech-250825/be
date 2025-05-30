@@ -37,6 +37,8 @@ public class UpscaleTaskService {
                     .body("{\n    \"model\": \"midjourney\",\n    \"task_type\": \"upscale\",\n    \"input\": {\n        \"origin_task_id\": \""+ taskId+ "\",\n        \"index\": \""+imageIndex+"\"\n    },\n    \"config\": {\n        \"service_mode\": \"\",\n        \"webhook_config\": {\n            \"endpoint\": \"" + webhook + "\",\n            \"secret\": \"123456\"\n        }\n    }\n}")
                     .asString();
 
+
+
             return response.getBody();
         } catch (UnirestException e) {
             e.printStackTrace();

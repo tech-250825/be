@@ -1,6 +1,8 @@
 package com.ll.demo03.domain.upscaledTask.service;
 
 import com.ll.demo03.config.RabbitMQConfig;
+import com.ll.demo03.domain.image.entity.Image;
+import com.ll.demo03.domain.image.repository.ImageRepository;
 import com.ll.demo03.domain.member.entity.Member;
 import com.ll.demo03.domain.member.repository.MemberRepository;
 import com.ll.demo03.domain.task.entity.Task;
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Service;
 public class UpscaleMessageConsumer {
 
     private final UpscaleTaskService upscaleTaskService;
+    private final ImageRepository imageRepository;
     private final TaskProcessingService taskProcessingService;
     private final UpscaleTaskRepository upscaleTaskRepository;
     private final TaskRepository taskRepository;
@@ -45,6 +48,11 @@ public class UpscaleMessageConsumer {
 
             String taskId = taskProcessingService.extractTaskIdFromResponse(response);
             redisTemplate.opsForList().rightPush("upscale:queue", taskId);
+
+            Image image = imageRepository.getByTaskIdAndIndex(message.getTaskId(), Integer.valueOf(message.getIndex()))
+                    .orElseThrow(() -> new RuntimeException("Image not found for taskId: " + message.getTaskId() + ", index: " + message.getIndex()));
+            image.setIsUpscaled(true);
+            imageRepository.save(image);
 
             Member member = memberRepository.getById(memberId);
             int credit = member.getCredit();

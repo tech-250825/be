@@ -34,7 +34,7 @@ public class ImageResponse {
                 image.getLikeCount(),
                 isLiked,
                 image.getIsShared(),
-                image.getUpscaleTask() != null,
+                image.getIsUpscaled(),
                 image.getTask().getTaskId(),
                 image.getImgIndex(),
                 image.getCreatedAt()

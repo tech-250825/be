@@ -132,7 +132,7 @@ public class GeneralImageWebhookProcessor implements WebhookProcessor<WebhookEve
                 List<String> firstFourUrls = imageUrls.subList(0, 4);
                 for (int i = 0; i < firstFourUrls.size(); i++) {
                     Image image = Image.of(firstFourUrls.get(i), task);
-                    image.setImgIndex(i + 1);
+                    image.setImgIndex(i);
                     imageRepository.save(image);
                 }
 
