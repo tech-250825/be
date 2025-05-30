@@ -116,7 +116,7 @@ public class TaskProcessingService {
     public void sendUpscaleSseEvent(Long memberId, UpscaleTask task) {
         try {
             Notification notification = new Notification();
-            notification.setType(NotificationType.UPSCALE); // 예시
+            notification.setType(NotificationType.UPSCALE);
             notification.setMessage("업스케일 중입니다.");
             notification.setStatus(NotificationStatus.PENDING);
             notification.setRead(false);
