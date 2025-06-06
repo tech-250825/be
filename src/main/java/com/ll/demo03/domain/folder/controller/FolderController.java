@@ -7,6 +7,7 @@ import com.ll.demo03.domain.folder.dto.FolderResponse;
 import com.ll.demo03.domain.folder.service.FolderService;
 import com.ll.demo03.domain.oauth.entity.PrincipalDetails;
 import com.ll.demo03.domain.sharedImage.entity.SharedImage;
+import com.ll.demo03.global.dto.GlobalResponse;
 import com.ll.demo03.global.util.CursorBasedPageable;
 import com.ll.demo03.global.util.PageSpecification;
 import io.swagger.v3.oas.annotations.Operation;
@@ -52,12 +53,12 @@ public class FolderController {
 
     @DeleteMapping("/{folderId}")
     @Operation(summary = "폴더 삭제", description = "폴더를 삭제합니다.")
-    public ResponseEntity<String> deleteFolder(
+    public GlobalResponse<String> deleteFolder(
             @PathVariable Long folderId,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
         folderService.deleteFolder(principalDetails.user(), folderId);
-        return ResponseEntity.ok("폴더가 성공적으로 삭제되었습니다.");
+        return GlobalResponse.success("폴더가 성공적으로 삭제되었습니다.");
     }
 
     @PutMapping("/{folderId}")
@@ -73,24 +74,24 @@ public class FolderController {
 
     @PostMapping("/{folderId}/images")
     @Operation(summary = "폴더에 이미지 추가", description = "폴더에 이미지를 추가합니다.")
-    public ResponseEntity<String> addImagesToFolder(
+    public GlobalResponse<String> addImagesToFolder(
             @PathVariable Long folderId,
             @RequestBody ImageIdsRequest request,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
         folderService.addImagesToFolder(principalDetails.user(), folderId, request.getImageIds());
-        return ResponseEntity.ok("폴더에 이미지가 추가되었습니다.");
+        return GlobalResponse.success("폴더에 이미지가 추가되었습니다.");
     }
 
     @DeleteMapping("/{folderId}/images")
     @Operation(summary = "폴더에서 이미지 제거", description = "폴더에서 이미지를 제거합니다.")
-    public ResponseEntity<String> removeImagesFromFolder(
+    public GlobalResponse<String> removeImagesFromFolder(
             @PathVariable Long folderId,
             @RequestBody ImageIdsRequest request,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
         folderService.removeImagesFromFolder(principalDetails.user(), folderId, request.getImageIds());
-        return ResponseEntity.ok("폴더에서 이미지가 제거되었습니다.");
+        return GlobalResponse.success("폴더에서 이미지가 제거되었습니다.");
     }
 
     @GetMapping("/{folderId}/images")

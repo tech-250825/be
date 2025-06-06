@@ -219,7 +219,7 @@ public class SharedImageService {
     @Transactional
     public boolean deleteSharedImage(Long id, Long userId) {
 
-        SharedImage sharedImage = sharedImageRepository.findById(id)
+        SharedImage sharedImage = sharedImageRepository.findByImage_Id(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
         if (!sharedImage.getImage().getMember().getId().equals(userId)) {

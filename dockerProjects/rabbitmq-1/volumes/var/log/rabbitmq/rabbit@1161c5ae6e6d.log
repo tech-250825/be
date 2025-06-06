@@ -9722,3 +9722,33 @@
 2025-05-30 15:15:31.765316+00:00 [info] <0.501.0>  * rabbitmq_management_agent
 2025-05-30 15:15:31.765316+00:00 [info] <0.501.0>  * rabbitmq_web_dispatch
 2025-05-30 15:15:31.954427+00:00 [info] <0.10.0> Time to start RabbitMQ: 4931 ms
+2025-05-30 16:09:56.006891+00:00 [info] <0.350.0> Free disk space is insufficient. Free bytes: 49344512. Limit: 50000000
+2025-05-30 16:09:56.018109+00:00 [warning] <0.346.0> disk resource limit alarm set on node rabbit@1161c5ae6e6d.
+2025-05-30 16:09:56.018109+00:00 [warning] <0.346.0> 
+2025-05-30 16:09:56.018109+00:00 [warning] <0.346.0> **********************************************************
+2025-05-30 16:09:56.018109+00:00 [warning] <0.346.0> *** Publishers will be blocked until this alarm clears ***
+2025-05-30 16:09:56.018109+00:00 [warning] <0.346.0> **********************************************************
+2025-05-30 16:09:56.018109+00:00 [warning] <0.346.0> 
+2025-05-30 16:10:06.035597+00:00 [info] <0.350.0> Free disk space is sufficient. Free bytes: 169877504. Limit: 50000000
+2025-05-30 16:10:06.035952+00:00 [warning] <0.346.0> disk resource limit alarm cleared on node rabbit@1161c5ae6e6d
+2025-05-30 16:10:06.038151+00:00 [warning] <0.346.0> disk resource limit alarm cleared across the cluster
+2025-05-30 16:14:02.325403+00:00 [info] <0.350.0> Free disk space is insufficient. Free bytes: 0. Limit: 50000000
+2025-05-30 16:14:02.325615+00:00 [warning] <0.346.0> disk resource limit alarm set on node rabbit@1161c5ae6e6d.
+2025-05-30 16:14:02.325615+00:00 [warning] <0.346.0> 
+2025-05-30 16:14:02.325615+00:00 [warning] <0.346.0> **********************************************************
+2025-05-30 16:14:02.325615+00:00 [warning] <0.346.0> *** Publishers will be blocked until this alarm clears ***
+2025-05-30 16:14:02.325615+00:00 [warning] <0.346.0> **********************************************************
+2025-05-30 16:14:02.325615+00:00 [warning] <0.346.0> 
+2025-05-30 16:14:52.359400+00:00 [info] <0.350.0> Free disk space is sufficient. Free bytes: 158490624. Limit: 50000000
+2025-05-30 16:14:52.359529+00:00 [warning] <0.346.0> disk resource limit alarm cleared on node rabbit@1161c5ae6e6d
+2025-05-30 16:14:52.359611+00:00 [warning] <0.346.0> disk resource limit alarm cleared across the cluster
+2025-05-30 16:33:57.724707+00:00 [info] <0.350.0> Free disk space is insufficient. Free bytes: 47382528. Limit: 50000000
+2025-05-30 16:33:57.760304+00:00 [warning] <0.346.0> disk resource limit alarm set on node rabbit@1161c5ae6e6d.
+2025-05-30 16:33:57.760304+00:00 [warning] <0.346.0> 
+2025-05-30 16:33:57.760304+00:00 [warning] <0.346.0> **********************************************************
+2025-05-30 16:33:57.760304+00:00 [warning] <0.346.0> *** Publishers will be blocked until this alarm clears ***
+2025-05-30 16:33:57.760304+00:00 [warning] <0.346.0> **********************************************************
+2025-05-30 16:33:57.760304+00:00 [warning] <0.346.0> 
+2025-05-30 16:38:08.971690+00:00 [info] <0.350.0> Free disk space is sufficient. Free bytes: 565514240. Limit: 50000000
+2025-05-30 16:38:08.973102+00:00 [warning] <0.346.0> disk resource limit alarm cleared on node rabbit@1161c5ae6e6d
+2025-05-30 16:38:08.973522+00:00 [warning] <0.346.0> disk resource limit alarm cleared across the cluster

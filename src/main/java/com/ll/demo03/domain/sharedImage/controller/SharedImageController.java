@@ -4,6 +4,7 @@ import com.ll.demo03.domain.oauth.entity.PrincipalDetails;
 import com.ll.demo03.domain.sharedImage.dto.SharedImageResponse;
 import com.ll.demo03.domain.sharedImage.entity.SharedImage;
 import com.ll.demo03.domain.sharedImage.service.SharedImageService;
+import com.ll.demo03.global.dto.GlobalResponse;
 import com.ll.demo03.global.exception.CustomException;
 import com.ll.demo03.global.util.CursorBasedPageable;
 import com.ll.demo03.global.util.PageResponse;
@@ -76,14 +77,14 @@ public class SharedImageController {
 
     @PostMapping("/shared-images/{imageId}")
     @Operation(summary = "이미지 공유", description= "내 이미지 공유")
-    public ResponseEntity<String> createSharedImage(
+    public GlobalResponse<String> createSharedImage(
             @PathVariable Long imageId,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
         try {
             sharedImageService.createSharedImage(imageId);
 
-            return ResponseEntity.ok("이미지가 성공적으로 공유되었습니다.");
+            return GlobalResponse.success("이미지가 성공적으로 공유되었습니다.");
         } catch (CustomException e) {
             throw e;
         }
