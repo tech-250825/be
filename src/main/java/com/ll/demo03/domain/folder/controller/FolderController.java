@@ -9,6 +9,7 @@ import com.ll.demo03.domain.oauth.entity.PrincipalDetails;
 import com.ll.demo03.domain.sharedImage.entity.SharedImage;
 import com.ll.demo03.global.dto.GlobalResponse;
 import com.ll.demo03.global.util.CursorBasedPageable;
+import com.ll.demo03.global.util.PageResponse;
 import com.ll.demo03.global.util.PageSpecification;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -35,11 +37,11 @@ public class FolderController {
 
     @GetMapping
     @Operation(summary = "모든 폴더 조회", description = "내가 만든 모든 폴더를 조회합니다.")
-    public ResponseEntity<Page<FolderResponse>> getFolders(
+    public ResponseEntity<PageResponse<List<FolderResponse>>> getFolders(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @PageableDefault(page = 0, size = 10) Pageable pageable
+            CursorBasedPageable cursorBasedPageable
     ) {
-        return ResponseEntity.ok(folderService.getFolders(principalDetails.user(), pageable));
+        return ResponseEntity.ok(folderService.getFolders(principalDetails.user(), cursorBasedPageable));
     }
 
     @PostMapping

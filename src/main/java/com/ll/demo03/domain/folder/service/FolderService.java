@@ -22,6 +22,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -36,9 +37,77 @@ public class FolderService {
     private final ImageRepository imageRepository;
     private final LikeRepository likeRepository;
 
-    public Page<FolderResponse> getFolders(Member member, Pageable pageable) {
-        return folderRepository.findByMemberOrderByCreatedAtDesc(member, pageable)
-                .map(FolderResponse::of);
+    public PageResponse<List<FolderResponse>> getFolders(Member member, CursorBasedPageable pageable) {
+        Slice<Folder> foldersPage;
+
+        // 1. 커서 방향에 따른 처리
+        if (!pageable.hasCursors()) {
+            // 첫 페이지 요청 - createdAt 기준 내림차순
+            Sort descSort = Sort.by(Sort.Direction.DESC, "createdAt");
+            PageRequest pageRequest = PageRequest.of(0, pageable.getSize(), descSort);
+            foldersPage = folderRepository.findByMember(member, pageRequest);
+        } else if (pageable.hasPrevPageCursor()) {
+            // 이전 페이지로 이동 (위로 스크롤)
+            String cursorValue = pageable.getDecodedCursor(pageable.getPrevPageCursor());
+            LocalDateTime cursorCreatedAt = LocalDateTime.parse(cursorValue);
+
+            // 역방향 스펙 생성 (createdAt이 더 큰 항목)
+            Specification<Folder> cursorSpec = (root, query, cb) ->
+                    cb.and(cb.equal(root.get("member"), member),
+                            cb.greaterThan(root.get("createdAt"), cursorCreatedAt));
+
+            // createdAt 오름차순으로 조회
+            Sort ascSort = Sort.by(Sort.Direction.ASC, "createdAt");
+            PageRequest pageRequest = PageRequest.of(0, pageable.getSize(), ascSort);
+
+            foldersPage = folderRepository.findAll(cursorSpec, pageRequest);
+
+            // 결과를 역순으로 바꿔서 일관된 정렬 유지 (최신순)
+            List<Folder> content = new ArrayList<>(foldersPage.getContent());
+            Collections.reverse(content);
+            foldersPage = new SliceImpl<>(content, pageRequest, foldersPage.hasNext());
+        } else {
+            // 다음 페이지로 이동 (아래로 스크롤)
+            String cursorValue = pageable.getDecodedCursor(pageable.getNextPageCursor());
+            LocalDateTime cursorCreatedAt = LocalDateTime.parse(cursorValue);
+
+            // 다음 페이지 스펙 (createdAt이 더 작은 항목)
+            Specification<Folder> cursorSpec = (root, query, cb) ->
+                    cb.and(cb.equal(root.get("member"), member),
+                            cb.lessThan(root.get("createdAt"), cursorCreatedAt));
+
+            // createdAt 내림차순으로 조회
+            Sort descSort = Sort.by(Sort.Direction.DESC, "createdAt");
+            PageRequest pageRequest = PageRequest.of(0, pageable.getSize(), descSort);
+            foldersPage = folderRepository.findAll(cursorSpec, pageRequest);
+        }
+
+        // 2. 결과가 없을 경우 빈 응답 반환
+        if (!foldersPage.hasContent()) {
+            return new PageResponse<>(Collections.emptyList(), null, null);
+        }
+
+        List<Folder> folders = foldersPage.getContent();
+        Folder firstFolder = folders.get(0);
+        Folder lastFolder = folders.get(folders.size() - 1);
+
+        // 3. 응답 데이터 준비
+        List<FolderResponse> responseList = folders.stream()
+                .map(FolderResponse::of)
+                .collect(Collectors.toList());
+
+        // 4. 이전/다음 페이지 커서 생성 (createdAt 기준)
+        String prevCursor = pageable.getEncodedCursor(
+                firstFolder.getCreatedAt().toString(),
+                folderRepository.existsByMemberAndCreatedAtGreaterThan(member, firstFolder.getCreatedAt())
+        );
+
+        String nextCursor = pageable.getEncodedCursor(
+                lastFolder.getCreatedAt().toString(),
+                folderRepository.existsByMemberAndCreatedAtLessThan(member, lastFolder.getCreatedAt())
+        );
+
+        return new PageResponse<>(responseList, prevCursor, nextCursor);
     }
 
     @Transactional
