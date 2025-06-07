@@ -23,5 +23,5 @@ public interface SharedImageRepository extends JpaRepository<SharedImage, Long> 
 
     boolean existsByIdLessThanAndImage_Member_Id(Long id, Long memberId);
 
-    Optional<Object> findByImage_Id(Long id);
+    Optional<SharedImage> findByImage_Id(Long id);
 }
