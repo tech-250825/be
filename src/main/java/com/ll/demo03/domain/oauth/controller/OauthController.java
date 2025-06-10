@@ -1,5 +1,6 @@
 package com.ll.demo03.domain.oauth.controller;
 
+import com.ll.demo03.global.dto.GlobalResponse;
 import com.ll.demo03.global.util.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,11 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class OauthController {
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+    public GlobalResponse<?> logout(HttpServletRequest request, HttpServletResponse response) {
 
         CookieUtils.deleteCookie(request, response, "_hoauth");
         CookieUtils.deleteCookie(request, response, "_hrauth");
 
-        return ResponseEntity.ok().body("로그아웃 되었습니다.");
+        return GlobalResponse.success("로그아웃 되었습니다.");
     }
 }

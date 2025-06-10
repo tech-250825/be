@@ -10,7 +10,6 @@ import com.ll.demo03.domain.member.entity.Member;
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
 import com.ll.demo03.global.util.CursorBasedPageable;
-import com.ll.demo03.global.util.CursorPagingUtils;
 import com.ll.demo03.global.util.PageResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,13 +19,11 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import static org.springframework.data.domain.PageRequest.ofSize;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
