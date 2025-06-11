@@ -62,7 +62,7 @@ public class NotificationController {
     /**
      * 알림 읽음 처리
      */
-    @PutMapping("/{notificationId}/read")
+    @PatchMapping("/{notificationId}/read")
     @Operation(summary = "알림 읽음 처리", description = "사용자의 알림을 읽음 처리합니다.")
     public ResponseEntity<Void> markAsRead(
             @PathVariable Long notificationId,
@@ -75,7 +75,7 @@ public class NotificationController {
     /**
      * 모든 알림 읽음 처리
      */
-    @PutMapping("/read-all")
+    @PatchMapping("/read-all")
     @Operation(summary = "모든 알림 읽음 처리", description = "사용자의 모든 알림을 읽음 처리합니다.")
     public ResponseEntity<Void> markAllAsRead(
             @AuthenticationPrincipal PrincipalDetails principalDetails) {
