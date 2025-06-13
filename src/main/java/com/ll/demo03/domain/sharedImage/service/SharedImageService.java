@@ -221,12 +221,17 @@ public class SharedImageService {
 
         SharedImage sharedImage = sharedImageRepository.findByImage_Id(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+        Image image = imageRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
         if (!sharedImage.getImage().getMember().getId().equals(userId)) {
             throw new CustomException(ErrorCode.ACCESS_DENIED);
         }
+        image.setIsShared(false);
 
+        imageRepository.save(image);
         sharedImageRepository.delete(sharedImage);
+
         return true;
     }
 
