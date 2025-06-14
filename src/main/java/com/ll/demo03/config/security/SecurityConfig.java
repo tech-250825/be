@@ -64,7 +64,7 @@ public class SecurityConfig {
                                 request.requestMatchers(
                                                 "/",
                                                 "/api/shared-images",
-                                                "/api/shared-images/**",
+                                                "/api/shared-images/{imageId}",
                                                 "/api/images/webhook",
                                                 "/api/videos/webhook",
                                                 "/api/upscale-images/webhook",

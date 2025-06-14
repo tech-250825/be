@@ -3,6 +3,8 @@ package com.ll.demo03.domain.notification.controller;
 import com.ll.demo03.domain.notification.dto.NotificationResponse;
 import com.ll.demo03.domain.notification.service.NotificationService;
 import com.ll.demo03.domain.oauth.entity.PrincipalDetails;
+import com.ll.demo03.global.util.CursorBasedPageable;
+import com.ll.demo03.global.util.PageResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -23,26 +25,28 @@ public class NotificationController {
     private final NotificationService notificationService;
 
     /**
-     * 사용자의 모든 알림 목록 조회
+     * 사용자의 모든 알림 목록 조회 (커서 기반 페이징)
      */
     @GetMapping
     @Operation(summary = "모든 알림 조회", description = "사용자의 모든 알림을 조회합니다.")
-    public ResponseEntity<List<NotificationResponse>> getNotifications(
-            @AuthenticationPrincipal PrincipalDetails principalDetails) {
+    public ResponseEntity<PageResponse<List<NotificationResponse>>> getNotifications(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            CursorBasedPageable cursorBasedPageable) {
         Long memberId = principalDetails.user().getId();
-        List<NotificationResponse> notifications = notificationService.getNotificationsByMemberId(memberId);
+        PageResponse<List<NotificationResponse>> notifications = notificationService.getNotificationsByMemberId(memberId, cursorBasedPageable);
         return ResponseEntity.ok(notifications);
     }
 
     /**
-     * 읽지 않은 알림 목록 조회
+     * 읽지 않은 알림 목록 조회 (커서 기반 페이징)
      */
     @GetMapping("/unread")
     @Operation(summary = "읽지 않은 알림 조회", description = "사용자의 읽지 않은 알림을 조회합니다.")
-    public ResponseEntity<List<NotificationResponse>> getUnreadNotifications(
-            @AuthenticationPrincipal PrincipalDetails principalDetails) {
+    public ResponseEntity<PageResponse<List<NotificationResponse>>> getUnreadNotifications(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            CursorBasedPageable cursorBasedPageable) {
         Long memberId = principalDetails.user().getId();
-        List<NotificationResponse> notifications = notificationService.getUnreadNotificationsByMemberId(memberId);
+        PageResponse<List<NotificationResponse>> notifications = notificationService.getUnreadNotificationsByMemberId(memberId, cursorBasedPageable);
         return ResponseEntity.ok(notifications);
     }
 

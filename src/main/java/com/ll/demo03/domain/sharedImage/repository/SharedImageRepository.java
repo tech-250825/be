@@ -15,13 +15,5 @@ public interface SharedImageRepository extends JpaRepository<SharedImage, Long> 
 
     Slice<SharedImage> findAllByImage_Member_Id(Long memberId, Specification<SharedImage> specification, Pageable pageable);
 
-    boolean existsByIdLessThan(Long id);
-
-    boolean existsByIdGreaterThan(Long id);
-
-    boolean existsByIdGreaterThanAndImage_Member_Id(Long id, Long memberId);
-
-    boolean existsByIdLessThanAndImage_Member_Id(Long id, Long memberId);
-
     Optional<SharedImage> findByImage_Id(Long id);
 }

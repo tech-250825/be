@@ -13,8 +13,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,19 +34,41 @@ public class SharedImageController {
 
     @GetMapping("/shared-images")
     @Operation(summary = "모든 공유된 이미지 조회", description= "모든 공유된 이미지 조회")
-    public ResponseEntity<PageResponse<SharedImageResponse>> getAllSharedImages(
+    public ResponseEntity<PageResponse<List<SharedImageResponse>>> getAllSharedImages(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @RequestParam(required = false) String type,
             CursorBasedPageable cursorBasedPageable
     ) {
         Long currentMemberId = principalDetails != null ? principalDetails.user().getId() : null;
 
-        PageSpecification specification = new PageSpecification<SharedImage>("id", cursorBasedPageable);
-        PageResponse<SharedImageResponse> dtoPage = sharedImageService.getAllSharedImageResponses(currentMemberId,specification, cursorBasedPageable);
+        // type 필터 포함한 Specification 생성
+        PageSpecification specification = new PageSpecification<>("id", cursorBasedPageable);
+        Specification<SharedImage> typeSpec = createTypeSpecification(type);
+        Specification<SharedImage> combinedSpec = specification.and(typeSpec);
+
+        PageResponse<List<SharedImageResponse>> dtoPage = sharedImageService.getAllSharedImageResponses(
+                currentMemberId,
+                combinedSpec,
+                cursorBasedPageable
+        );
+
         return ResponseEntity.ok(dtoPage);
     }
 
+    private Specification<SharedImage> createTypeSpecification(String type) {
+        if ("video".equalsIgnoreCase(type)) {
+            return (root, query, cb) -> cb.isNotNull(root.get("image").get("videoTask"));
+        } else if ("image".equalsIgnoreCase(type)) {
+            return (root, query, cb) -> cb.isNull(root.get("image").get("videoTask"));
+        } else {
+            return Specification.where(null); // 전체 조회
+        }
+    }
+
+
 
     @GetMapping("/mypage/shared-images")
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "내가 공유한 이미지 조회", description= "내가 공유한 이미지 조회")
     public ResponseEntity<PageResponse<SharedImageResponse>> getMySharedImages(
             @AuthenticationPrincipal PrincipalDetails principalDetails,

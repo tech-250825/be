@@ -49,8 +49,10 @@ public class Image extends BaseEntity {
     @JoinColumn(name = "folder_id")
     private Folder folder;
 
+    @Builder.Default
     private Boolean isShared = false;
 
+    @Builder.Default
     private Boolean isUpscaled = false;
 
     public static Image of(String url, Task task) {

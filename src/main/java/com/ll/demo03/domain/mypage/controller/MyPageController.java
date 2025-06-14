@@ -31,11 +31,12 @@ public class MyPageController {
     @GetMapping("/mypage")
     public ResponseEntity<PageResponse<List<ImageResponse>>> getMyImages(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            CursorBasedPageable cursorBasedPageable
+            CursorBasedPageable cursorBasedPageable,
+            @RequestParam(required = false) String type
     ) {
         Member member = principalDetails.user();
 
-        PageResponse<List<ImageResponse>> mypage=myPageService.getMyImages(member, cursorBasedPageable);
+        PageResponse<List<ImageResponse>> mypage=myPageService.getMyImages(member, cursorBasedPageable, type);
         return ResponseEntity.ok( mypage);
     }
 

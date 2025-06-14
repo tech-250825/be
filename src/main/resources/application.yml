@@ -7,7 +7,7 @@ server:
 spring:
   config:
     activate:
-        on-profile: default
+      on-profile: default
     import: "application-secret.yml"
   docker:
     compose:
@@ -40,7 +40,7 @@ spring:
         highlight_sql: false
         use_sql_comments: false
         dialect: org.hibernate.dialect.MySQLDialect
-# 🔹 Actuator 설정 추가 (서버 설정 바로 아래 or 최하단)
+# :small_blue_diamond: Actuator 설정 추가 (서버 설정 바로 아래 or 최하단)
 management:
   endpoints:
     web:

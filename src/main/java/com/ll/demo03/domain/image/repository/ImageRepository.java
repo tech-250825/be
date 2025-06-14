@@ -35,4 +35,24 @@ public interface ImageRepository extends JpaRepository<Image, Long>, JpaSpecific
     Slice<Image> findByFolderIdAndIdGreaterThanOrderByIdAsc(Long folderId, Long cursorId, PageRequest pageRequest);
 
     Slice<Image> findByFolderIdAndIdLessThanOrderByIdDesc(Long folderId, Long cursorId, PageRequest pageRequest);
+
+    Slice<Image> findByMemberIdAndVideoTaskIsNullOrderByIdDesc(Long id, Pageable pageRequest);
+
+    Slice<Image> findByMemberIdAndVideoTaskIsNotNullOrderByIdDesc(Long id, Pageable pageRequest);
+
+    Slice<Image> findByMemberIdAndVideoTaskIsNotNullAndIdGreaterThanOrderByIdAsc(Long id, Long cursorId, Pageable pageRequest);
+
+    Slice<Image> findByMemberIdAndVideoTaskIsNullAndIdGreaterThanOrderByIdAsc(Long id, Long cursorId, Pageable pageRequest);
+
+    Slice<Image> findByMemberIdAndVideoTaskIsNotNullAndIdLessThanOrderByIdDesc(Long id, Long cursorId, Pageable pageRequest);
+
+    Slice<Image> findByMemberIdAndVideoTaskIsNullAndIdLessThanOrderByIdDesc(Long id, Long cursorId, Pageable pageRequest);
+
+    boolean existsByIdGreaterThanAndMemberIdAndVideoTaskIsNotNull(Long id, Long id1);
+
+    boolean existsByIdLessThanAndMemberIdAndVideoTaskIsNotNull(Long id, Long id1);
+
+    boolean existsByIdGreaterThanAndMemberIdAndVideoTaskIsNull(Long id, Long id1);
+
+    boolean existsByIdLessThanAndMemberIdAndVideoTaskIsNull(Long id, Long id1);
 }

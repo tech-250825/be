@@ -1,8 +1,10 @@
 package com.ll.demo03.domain.sse.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ll.demo03.domain.notification.dto.NotificationMessage;
+import com.ll.demo03.domain.notification.dto.NotificationResponse;
 import com.ll.demo03.domain.notification.entity.Notification;
 import com.ll.demo03.domain.sse.repository.SseEmitterRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -86,9 +88,49 @@ public class SseController {
     public void subscribeToNotifications() {
         redisMessageListenerContainer.addMessageListener((message, pattern) -> {
             String msgBody = new String(message.getBody(), StandardCharsets.UTF_8);
-            NotificationMessage notification = parseNotificationMessage(msgBody);
+            NotificationMessage notificationMessage = parseNotificationMessage(msgBody);
 
-            String memberKey = "sse:member:" + notification.getMemberId();
+            // 1) Redis에서 받은 notificationJson을 Notification 객체로 변환
+            Notification notification;
+            try {
+                notification = objectMapper.readValue(notificationMessage.getNotificationJson(), Notification.class);
+            } catch (JsonProcessingException e) {
+                log.error("NotificationJson 파싱 실패: {}", e.getMessage());
+                return;
+            }
+
+            // 2) Notification 내부 payload(String) -> Map 등으로 변환
+            Map<String, Object> payloadObj = null;
+            try {
+                if (notification.getPayload() != null) {
+                    payloadObj = objectMapper.readValue(notification.getPayload(), new TypeReference<Map<String, Object>>() {});
+                }
+            } catch (JsonProcessingException e) {
+                log.error("Payload 파싱 실패: {}", e.getMessage());
+            }
+
+            // 3) Notification 객체에서 payload를 Map으로 교체할 새로운 DTO 생성
+            NotificationResponse response = new NotificationResponse(
+                    notification.getId(),
+                    notification.getType(),
+                    notification.getStatus(),
+                    notification.getMessage(),
+                    notification.isRead(),
+                    notification.getMember(),
+                    notification.getCreatedAt(),
+                    payloadObj
+            );
+
+            // 4) DTO를 다시 JSON으로 직렬화해서 클라이언트에 보냄
+            String sendJson;
+            try {
+                sendJson = objectMapper.writeValueAsString(response);
+            } catch (JsonProcessingException e) {
+                log.error("NotificationResponse 직렬화 실패: {}", e.getMessage());
+                sendJson = notificationMessage.getNotificationJson(); // 실패 시 원본 그대로 보내기
+            }
+
+            String memberKey = "sse:member:" + notificationMessage.getMemberId();
             List<String> sessionIds = redisTemplate.opsForList().range(memberKey, 0, -1);
 
             if (sessionIds != null) {
@@ -96,24 +138,19 @@ public class SseController {
                     SseEmitter emitter = sseEmitterRepository.get(sessionId);
                     if (emitter != null) {
                         try {
-                            emitter.send(SseEmitter.event()
-                                    .data(notification.getNotificationJson()));
+                            emitter.send(SseEmitter.event().data(sendJson));
                         } catch (Exception e) {
                             log.error("❌ SSE 전송 실패: sessionId={}, error={}", sessionId, e.getMessage());
-
-                            // emitter 제거
                             sseEmitterRepository.remove(sessionId);
-
-                            // Redis에서도 해당 세션 제거
                             redisTemplate.opsForList().remove(memberKey, 1, sessionId);
                         }
                     } else {
-                        // emitter 없으면 Redis에서도 정리
                         redisTemplate.opsForList().remove(memberKey, 1, sessionId);
                     }
                 }
             }
         }, new ChannelTopic("sse-notification-channel"));
+
     }
 
     private NotificationMessage parseNotificationMessage(String message) {

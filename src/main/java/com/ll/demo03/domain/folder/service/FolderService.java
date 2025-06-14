@@ -169,17 +169,15 @@ public class FolderService {
             throw new CustomException(ErrorCode.ENTITY_NOT_FOUND);
         }
 
-        List<Image> duplicateImages = images.stream()
-                .filter(image -> image.getFolder() != null && image.getFolder().getId().equals(folderId))
+        List<Image> nonDuplicateImages = images.stream()
+                .filter(image -> image.getFolder() == null || !image.getFolder().getId().equals(folderId))
                 .collect(Collectors.toList());
 
-        if (!duplicateImages.isEmpty()) {
-            throw new CustomException(ErrorCode.DUPLICATED_METHOD);
-        }
+        nonDuplicateImages.forEach(image -> image.setFolder(folder));
 
-        images.forEach(image -> image.setFolder(folder));
-        imageRepository.saveAll(images);
+        imageRepository.saveAll(nonDuplicateImages);
     }
+
 
     @Transactional
     public void removeImagesFromFolder(Member member, Long folderId, List<Long> imageIds) {

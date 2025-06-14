@@ -6,8 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ll.demo03.domain.image.dto.ImageResponse;
 import com.ll.demo03.domain.member.entity.Member;
 import com.ll.demo03.domain.member.repository.MemberRepository;
-import com.ll.demo03.domain.notification.dto.NotificationMapper;
-import com.ll.demo03.domain.notification.dto.NotificationResponse;
 import com.ll.demo03.domain.notification.entity.Notification;
 import com.ll.demo03.domain.notification.entity.NotificationStatus;
 import com.ll.demo03.domain.notification.entity.NotificationType;

@@ -7,7 +7,6 @@ import com.ll.demo03.domain.task.dto.ImageRequestMessage;
 import com.ll.demo03.domain.task.dto.WebhookEvent;
 import com.ll.demo03.domain.task.service.ImageMessageProducer;
 import com.ll.demo03.domain.member.entity.Member;
-import com.ll.demo03.domain.member.repository.MemberRepository;
 import com.ll.demo03.domain.oauth.entity.PrincipalDetails;
 import com.ll.demo03.domain.webhook.GeneralImageWebhookProcessor;
 import com.ll.demo03.global.dto.GlobalResponse;
@@ -43,7 +42,6 @@ public class TaskController {
     @Value("${openai.api.key}")
     private String openAiApiKey;
 
-    private final MemberRepository memberRepository;
     private final ImageMessageProducer imageMessageProducer;
     private final GeneralImageWebhookProcessor generalImageWebhookProcessor;
     private final RestTemplate restTemplate;

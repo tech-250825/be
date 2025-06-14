@@ -34,34 +34,60 @@ public class MyPageService {
     private final LikeRepository likeRepository;
 
     @Transactional(readOnly = true)
-    public PageResponse<List<ImageResponse>> getMyImages(Member member, CursorBasedPageable pageable) {
+    public PageResponse<List<ImageResponse>> getMyImages(Member member, CursorBasedPageable pageable, String type) {
         Pageable pageRequest = PageRequest.of(0, pageable.getSize());
         Slice<Image> imageSlice;
 
-        // 1. 커서 방향에 따른 처리 개선
-        if (!pageable.hasCursors()) {
-            // 첫 페이지 요청
-            imageSlice = imageRepository.findByMemberIdOrderByIdDesc(member.getId(), pageRequest);
-        } else if (pageable.hasPrevPageCursor()) {
-            // 이전 페이지로 이동 (위로 스크롤)
-            Long cursorId = Long.parseLong(pageable.getDecodedCursor(pageable.getPrevPageCursor()));
-            log.info("Moving to previous page, cursorId: {}", cursorId);
-            imageSlice = imageRepository.findByMemberIdAndIdGreaterThanOrderByIdAsc(
-                    member.getId(), cursorId, pageRequest);
+        boolean isVideoOnly = "video".equalsIgnoreCase(type);
+        boolean isImageOnly = "image".equalsIgnoreCase(type);
 
-            // 결과를 역순으로 바꿔서 일관된 내림차순 표시 유지
+        // 1. 페이지네이션 방향에 따라 쿼리 분기
+        if (!pageable.hasCursors()) {
+            // 첫 페이지
+            if (isVideoOnly) {
+                imageSlice = imageRepository.findByMemberIdAndVideoTaskIsNotNullOrderByIdDesc(member.getId(), pageRequest);
+            } else if (isImageOnly) {
+                imageSlice = imageRepository.findByMemberIdAndVideoTaskIsNullOrderByIdDesc(member.getId(), pageRequest);
+            } else {
+                imageSlice = imageRepository.findByMemberIdOrderByIdDesc(member.getId(), pageRequest);
+            }
+        } else if (pageable.hasPrevPageCursor()) {
+            // 이전 페이지 (위로 스크롤)
+            Long cursorId = Long.parseLong(pageable.getDecodedCursor(pageable.getPrevPageCursor()));
+
+            if (isVideoOnly) {
+                imageSlice = imageRepository.findByMemberIdAndVideoTaskIsNotNullAndIdGreaterThanOrderByIdAsc(
+                        member.getId(), cursorId, pageRequest);
+            } else if (isImageOnly) {
+                imageSlice = imageRepository.findByMemberIdAndVideoTaskIsNullAndIdGreaterThanOrderByIdAsc(
+                        member.getId(), cursorId, pageRequest);
+            } else {
+                imageSlice = imageRepository.findByMemberIdAndIdGreaterThanOrderByIdAsc(
+                        member.getId(), cursorId, pageRequest);
+            }
+
+            // 결과 역순 정렬
             List<Image> content = new ArrayList<>(imageSlice.getContent());
             Collections.reverse(content);
             imageSlice = new SliceImpl<>(content, pageRequest, imageSlice.hasNext());
+
         } else {
-            // 다음 페이지로 이동 (아래로 스크롤)
+            // 다음 페이지 (아래로 스크롤)
             Long cursorId = Long.parseLong(pageable.getDecodedCursor(pageable.getNextPageCursor()));
-            log.info("Moving to next page, cursorId: {}", cursorId);
-            imageSlice = imageRepository.findByMemberIdAndIdLessThanOrderByIdDesc(
-                    member.getId(), cursorId, pageRequest);
+
+            if (isVideoOnly) {
+                imageSlice = imageRepository.findByMemberIdAndVideoTaskIsNotNullAndIdLessThanOrderByIdDesc(
+                        member.getId(), cursorId, pageRequest);
+            } else if (isImageOnly) {
+                imageSlice = imageRepository.findByMemberIdAndVideoTaskIsNullAndIdLessThanOrderByIdDesc(
+                        member.getId(), cursorId, pageRequest);
+            } else {
+                imageSlice = imageRepository.findByMemberIdAndIdLessThanOrderByIdDesc(
+                        member.getId(), cursorId, pageRequest);
+            }
         }
 
-        // 2. 결과가 없을 경우 빈 응답 반환
+        // 2. 비어있는 경우 처리
         if (!imageSlice.hasContent()) {
             return new PageResponse<>(Collections.emptyList(), null, null);
         }
@@ -70,25 +96,32 @@ public class MyPageService {
         Image firstImage = images.get(0);
         Image lastImage = images.get(images.size() - 1);
 
-        // 3. 좋아요 정보 조회 최적화
+        // 3. 좋아요 정보 조회
         Set<Long> likedImageIds = fetchLikedImageIds(member.getId(), images);
 
-        // 4. 응답 변환 로직 분리
+        // 4. 응답 변환
         List<ImageResponse> imageResponses = convertToImageResponses(images, likedImageIds);
 
-        // 5. 이전/다음 페이지 커서 생성 개선
-        String prevCursor = pageable.getEncodedCursor(
-                String.valueOf(firstImage.getId()),
-                imageRepository.existsByIdGreaterThanAndMemberId(firstImage.getId(), member.getId())
-        );
+        // 5. 커서 여부 확인 (type 조건 반영)
+        boolean hasPrev, hasNext;
 
-        String nextCursor = pageable.getEncodedCursor(
-                String.valueOf(lastImage.getId()),
-                imageRepository.existsByIdLessThanAndMemberId(lastImage.getId(), member.getId())
-        );
+        if (isVideoOnly) {
+            hasPrev = imageRepository.existsByIdGreaterThanAndMemberIdAndVideoTaskIsNotNull(firstImage.getId(), member.getId());
+            hasNext = imageRepository.existsByIdLessThanAndMemberIdAndVideoTaskIsNotNull(lastImage.getId(), member.getId());
+        } else if (isImageOnly) {
+            hasPrev = imageRepository.existsByIdGreaterThanAndMemberIdAndVideoTaskIsNull(firstImage.getId(), member.getId());
+            hasNext = imageRepository.existsByIdLessThanAndMemberIdAndVideoTaskIsNull(lastImage.getId(), member.getId());
+        } else {
+            hasPrev = imageRepository.existsByIdGreaterThanAndMemberId(firstImage.getId(), member.getId());
+            hasNext = imageRepository.existsByIdLessThanAndMemberId(lastImage.getId(), member.getId());
+        }
+
+        String prevCursor = pageable.getEncodedCursor(String.valueOf(firstImage.getId()), hasPrev);
+        String nextCursor = pageable.getEncodedCursor(String.valueOf(lastImage.getId()), hasNext);
 
         return new PageResponse<>(imageResponses, prevCursor, nextCursor);
     }
+
 
     // 분리된 헬퍼 메서드
     private Set<Long> fetchLikedImageIds(Long memberId, List<Image> images) {
