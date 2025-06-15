@@ -97,23 +97,36 @@ public class SharedImageService {
     public PageResponse<List<SharedImageResponse>> getMySharedImages(Long memberId, Specification<SharedImage> specification, CursorBasedPageable pageable) {
         Slice<SharedImage> sharedImagesPage;
 
+        // 기본 memberId 조건을 Specification으로 만들기
+        Specification<SharedImage> memberSpec = (root, query, cb) ->
+                cb.equal(root.get("image").get("member").get("id"), memberId);
+
+        // 기본 specification과 memberId 조건 결합 (null 체크 추가)
+        Specification<SharedImage> baseSpec = specification != null ?
+                memberSpec.and(specification) : memberSpec;
+
         // 1. 커서 방향에 따른 처리 개선
         if (!pageable.hasCursors()) {
-            // 첫 페이지 요청
-            sharedImagesPage = sharedImageRepository.findAllByImage_Member_Id(memberId, specification, ofSize(pageable.getSize()));
+            // 첫 페이지 요청 - 기본 정렬(ID 내림차순) 적용
+            Sort defaultSort = Sort.by(Sort.Direction.DESC, "id");
+            PageRequest pageRequest = PageRequest.of(0, pageable.getSize(), defaultSort);
+            sharedImagesPage = sharedImageRepository.findAll(baseSpec, pageRequest);
         } else if (pageable.hasPrevPageCursor()) {
             // 이전 페이지로 이동 (위로 스크롤)
             Long cursorId = Long.parseLong(pageable.getDecodedCursor(pageable.getPrevPageCursor()));
-            // 역방향 스펙 생성 (ID가 더 큰 항목)
+
+            // 커서 조건을 별도 Specification으로 생성
             Specification<SharedImage> cursorSpec = (root, query, cb) ->
-                    cb.and(specification.toPredicate(root, query, cb),
-                            cb.greaterThan(root.get("id"), cursorId));
+                    cb.greaterThan(root.get("id"), cursorId);
+
+            // 모든 조건 결합
+            Specification<SharedImage> finalSpec = baseSpec.and(cursorSpec);
 
             // ID 오름차순으로 조회
             Sort ascSort = Sort.by(Sort.Direction.ASC, "id");
             PageRequest pageRequest = PageRequest.of(0, pageable.getSize(), ascSort);
 
-            sharedImagesPage = sharedImageRepository.findAllByImage_Member_Id(memberId, cursorSpec, pageRequest);
+            sharedImagesPage = sharedImageRepository.findAll(finalSpec, pageRequest);
 
             // 결과를 역순으로 바꿔서 일관된 정렬 유지
             List<SharedImage> content = new ArrayList<>(sharedImagesPage.getContent());
@@ -122,12 +135,18 @@ public class SharedImageService {
         } else {
             // 다음 페이지로 이동 (아래로 스크롤)
             Long cursorId = Long.parseLong(pageable.getDecodedCursor(pageable.getNextPageCursor()));
-            // 다음 페이지 스펙 (ID가 더 작은 항목)
-            Specification<SharedImage> cursorSpec = (root, query, cb) ->
-                    cb.and(specification.toPredicate(root, query, cb),
-                            cb.lessThan(root.get("id"), cursorId));
 
-            sharedImagesPage = sharedImageRepository.findAllByImage_Member_Id(memberId, cursorSpec, ofSize(pageable.getSize()));
+            // 커서 조건을 별도 Specification으로 생성
+            Specification<SharedImage> cursorSpec = (root, query, cb) ->
+                    cb.lessThan(root.get("id"), cursorId);
+
+            // 모든 조건 결합
+            Specification<SharedImage> finalSpec = baseSpec.and(cursorSpec);
+
+            // ID 내림차순으로 조회 (기본 정렬과 일치)
+            Sort descSort = Sort.by(Sort.Direction.DESC, "id");
+            PageRequest pageRequest = PageRequest.of(0, pageable.getSize(), descSort);
+            sharedImagesPage = sharedImageRepository.findAll(finalSpec, pageRequest);
         }
 
         // 2. 결과가 없을 경우 빈 응답 반환
@@ -139,13 +158,12 @@ public class SharedImageService {
         SharedImage firstImage = sharedImages.get(0);
         SharedImage lastImage = sharedImages.get(sharedImages.size() - 1);
 
-        // 3. 응답 데이터 준비 - 여기서는 항상 memberId가 null이 아님
+        // 3. 응답 데이터 준비
         List<SharedImageResponse> responseList = prepareSharedImageResponses(memberId, sharedImages);
 
         // 4. 이전/다음 페이지 커서 생성
-        Specification<SharedImage> prevPageSpec = (root, query, cb) ->
-                cb.and(specification.toPredicate(root, query, cb),
-                        cb.greaterThan(root.get("id"), firstImage.getId()));
+        Specification<SharedImage> prevPageSpec = baseSpec.and((root, query, cb) ->
+                cb.greaterThan(root.get("id"), firstImage.getId()));
 
         boolean hasPrevPage = sharedImageRepository.count(prevPageSpec) > 0;
 
@@ -154,10 +172,9 @@ public class SharedImageService {
                 hasPrevPage
         );
 
-        // 현재 specification과 ID 조건을 모두 만족하는 다음 페이지 데이터가 있는지 확인
-        Specification<SharedImage> nextPageSpec = (root, query, cb) ->
-                cb.and(specification.toPredicate(root, query, cb),
-                        cb.lessThan(root.get("id"), lastImage.getId()));
+        // 다음 페이지 확인
+        Specification<SharedImage> nextPageSpec = baseSpec.and((root, query, cb) ->
+                cb.lessThan(root.get("id"), lastImage.getId()));
 
         boolean hasNextPage = sharedImageRepository.count(nextPageSpec) > 0;
 
@@ -165,7 +182,6 @@ public class SharedImageService {
                 String.valueOf(lastImage.getId()),
                 hasNextPage
         );
-
 
         return new PageResponse<>(responseList, prevCursor, nextCursor);
     }
