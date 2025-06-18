@@ -6,6 +6,7 @@ import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFacto
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -16,11 +17,9 @@ public class RabbitMQConfig {
     public static final String IMAGE_QUEUE = "image.queue";
     public static final String IMAGE_CREATE_ROUTING_KEY = "image.create";
 
-
     public static final String UPSCALE_EXCHANGE = "upscale.exchange";
     public static final String UPSCALE_QUEUE = "upscale.queue";
     public static final String UPSCALE_ROUTING_KEY = "upscale.create";
-
 
     public static final String VIDEO_EXCHANGE = "video.exchange";
     public static final String VIDEO_QUEUE = "video.queue";
@@ -37,7 +36,8 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public Binding imageBinding(Queue imageQueue, TopicExchange imageExchange) {
+    public Binding imageBinding(@Qualifier("imageQueue") Queue imageQueue,
+                                @Qualifier("imageExchange") TopicExchange imageExchange) {
         return BindingBuilder.bind(imageQueue).to(imageExchange).with(IMAGE_CREATE_ROUTING_KEY);
     }
 
@@ -53,7 +53,8 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public Binding upscaleBinding(Queue upscaleQueue, TopicExchange upscaleExchange) {
+    public Binding upscaleBinding(@Qualifier("upscaleQueue") Queue upscaleQueue,
+                                  @Qualifier("upscaleExchange") TopicExchange upscaleExchange) {
         return BindingBuilder.bind(upscaleQueue).to(upscaleExchange).with(UPSCALE_ROUTING_KEY);
     }
 
@@ -68,7 +69,8 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public Binding videoBinding(Queue videoQueue, TopicExchange videoExchange) {
+    public Binding videoBinding(@Qualifier("videoQueue") Queue videoQueue,
+                                @Qualifier("videoExchange") TopicExchange videoExchange) {
         return BindingBuilder.bind(videoQueue).to(videoExchange).with(VIDEO_ROUTING_KEY);
     }
 

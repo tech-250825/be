@@ -51,14 +51,14 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             ResponseCookie accessTokenCookie = ResponseCookie.from("_hoauth", accessToken)
                     .httpOnly(true)
                     .path("/")
-                    .domain(".hoit.my")
+                    // .domain(".hoit.my")
                     .maxAge(3600)
                     .build();
 
             ResponseCookie refreshTokenCookie = ResponseCookie.from("_hrauth", refreshToken)
                     .httpOnly(true)
                     .path("/")
-                    .domain(".hoit.my")
+                    // .domain(".hoit.my")
                     .maxAge(604800)
                     .build();
 
