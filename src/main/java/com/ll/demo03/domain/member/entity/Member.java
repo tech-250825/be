@@ -26,7 +26,7 @@ public class Member extends BaseEntity {
     private String nickname=generateRandomNickname();
 
     @Builder.Default
-    private int credit = 5; //토큰 개수
+    private int credit = 100000; //토큰 개수
 
     @Enumerated(EnumType.STRING)
     private Role role;

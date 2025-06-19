@@ -9,20 +9,16 @@ import com.ll.demo03.domain.notification.entity.NotificationStatus;
 import com.ll.demo03.domain.notification.entity.NotificationType;
 import com.ll.demo03.domain.notification.repository.NotificationRepository;
 import com.ll.demo03.domain.notification.service.NotificationService;
-import com.ll.demo03.domain.sse.repository.SseEmitterRepository;
 import com.ll.demo03.domain.task.entity.Task;
 import com.ll.demo03.domain.task.repository.TaskRepository;
-import com.ll.demo03.domain.upscaledTask.dto.UpscaleImageUrlResponse;
 import com.ll.demo03.domain.videoTask.dto.VideoWebhookEvent;
 import com.ll.demo03.domain.videoTask.entity.VideoTask;
 import com.ll.demo03.domain.videoTask.repository.VideoTaskRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.HashMap;
 import java.util.List;
@@ -48,10 +44,13 @@ public class VideoWebhookProcessor implements WebhookProcessor<VideoWebhookEvent
         log.info("웹훅 이벤트 수신: {}", taskId);
 
         try {
-            if (!isCompleted(event)) {
-                Integer process = getProcess(event);
-                log.info("Task not yet completed, status: {}", getStatus(event));
-                notifyProcess(taskId, String.valueOf(process), prompt);
+            if (getStatus(event) == "pending" || getStatus(event) == "processing") {
+                String process = getProcess(event);
+                notifyProcess(taskId, String.valueOf(process));
+                return;
+            } else if (getStatus(event) == "failed") {
+                log.error("Task failed: {}", taskId);
+                notifyClient(taskId);
                 return;
             }
             Object resourceData = getResourceData(event);
@@ -66,7 +65,7 @@ public class VideoWebhookProcessor implements WebhookProcessor<VideoWebhookEvent
 
         } catch (Exception e) {
             log.error("웹훅 이벤트 처리 중 오류 발생: {}", e.getMessage(), e);
-            notifyClient(taskId, prompt);
+            notifyClient(taskId);
         }
     }
 
@@ -75,8 +74,8 @@ public class VideoWebhookProcessor implements WebhookProcessor<VideoWebhookEvent
         return event.getData().getTaskId();
     }
 
-    public Integer getProcess(VideoWebhookEvent event){
-        return event.getData().getOutput().getPercent();
+    public String getProcess(VideoWebhookEvent event){
+        return event.getData().getStatus();
     }
 
     public String getPrompt(VideoWebhookEvent event) {
@@ -90,7 +89,7 @@ public class VideoWebhookProcessor implements WebhookProcessor<VideoWebhookEvent
 
     @Override
     public Object getResourceData(VideoWebhookEvent event) {
-        return event.getData().getOutput().getDownloadUrl();
+        return event.getData().getOutput().getVideoUrl();
     }
 
     @Override
@@ -123,7 +122,7 @@ public class VideoWebhookProcessor implements WebhookProcessor<VideoWebhookEvent
     }
 
 
-    public void notifyClient(String taskId, String prompt) {
+    public void notifyClient(String taskId) {
         try {
             VideoTask videoTask = videoTaskRepository.findByTaskId(taskId)
                     .orElseThrow(() -> new EntityNotFoundException("Video task not found"));
@@ -164,7 +163,7 @@ public class VideoWebhookProcessor implements WebhookProcessor<VideoWebhookEvent
         }
     }
 
-    public void notifyProcess(String taskId, String progress, String prompt) {
+    public void notifyProcess(String taskId, String progress) {
         try {
 
             Task task = taskRepository.findByTaskId(taskId)
@@ -224,7 +223,7 @@ public class VideoWebhookProcessor implements WebhookProcessor<VideoWebhookEvent
             String memberIdStr = String.valueOf(memberId);
 
                 Notification notification = new Notification();
-                notification.setType(NotificationType.VIDEO); // 예시
+                notification.setType(NotificationType.VIDEO);
                 notification.setStatus(NotificationStatus.SUCCESS);
                 notification.setMessage("영상 생성 완료");
                 notification.setRead(false);

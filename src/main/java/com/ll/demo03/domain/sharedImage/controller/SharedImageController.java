@@ -2,6 +2,7 @@ package com.ll.demo03.domain.sharedImage.controller;
 import com.ll.demo03.domain.member.entity.Member;
 import com.ll.demo03.domain.oauth.entity.PrincipalDetails;
 import com.ll.demo03.domain.sharedImage.dto.SharedImageResponse;
+import com.ll.demo03.domain.sharedImage.dto.SharedImagesResponse;
 import com.ll.demo03.domain.sharedImage.entity.SharedImage;
 import com.ll.demo03.domain.sharedImage.service.SharedImageService;
 import com.ll.demo03.global.dto.GlobalResponse;
@@ -34,7 +35,7 @@ public class SharedImageController {
 
     @GetMapping("/shared-images")
     @Operation(summary = "모든 공유된 이미지 조회", description= "모든 공유된 이미지 조회")
-    public ResponseEntity<PageResponse<List<SharedImageResponse>>> getAllSharedImages(
+    public ResponseEntity<PageResponse<List<SharedImagesResponse>>> getAllSharedImages(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestParam(required = false) String type,
             CursorBasedPageable cursorBasedPageable
@@ -46,7 +47,7 @@ public class SharedImageController {
         Specification<SharedImage> typeSpec = createTypeSpecification(type);
         Specification<SharedImage> combinedSpec = specification.and(typeSpec);
 
-        PageResponse<List<SharedImageResponse>> dtoPage = sharedImageService.getAllSharedImageResponses(
+        PageResponse<List<SharedImagesResponse>> dtoPage = sharedImageService.getAllSharedImageResponses(
                 currentMemberId,
                 combinedSpec,
                 cursorBasedPageable
@@ -86,11 +87,13 @@ public class SharedImageController {
     @Operation(summary = "특정 공유된 이미지 조회", description= "특정 공유된 이미지 조회")
     public ResponseEntity<SharedImageResponse> getSharedImage(
             @PathVariable Long imageId,
-            @AuthenticationPrincipal PrincipalDetails principalDetails
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            CursorBasedPageable cursorBasedPageable
     ) {
         try {
             Long currentMemberId = principalDetails != null ? principalDetails.user().getId() : null;
-            SharedImageResponse image = sharedImageService.getSharedImage(currentMemberId, imageId);
+            PageSpecification specification = new PageSpecification<>("id", cursorBasedPageable);
+            SharedImageResponse image = sharedImageService.getSharedImage(currentMemberId, specification, cursorBasedPageable, imageId);
 
             return ResponseEntity.ok(image);
         } catch (CustomException e) {

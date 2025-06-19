@@ -4,6 +4,7 @@ import com.ll.demo03.domain.image.entity.Image;
 import com.ll.demo03.domain.image.repository.ImageRepository;
 import com.ll.demo03.domain.like.repository.LikeRepository;
 import com.ll.demo03.domain.sharedImage.dto.SharedImageResponse;
+import com.ll.demo03.domain.sharedImage.dto.SharedImagesResponse;
 import com.ll.demo03.domain.sharedImage.entity.SharedImage;
 import com.ll.demo03.domain.sharedImage.repository.SharedImageRepository;
 import com.ll.demo03.global.error.ErrorCode;
@@ -16,8 +17,6 @@ import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import static org.springframework.data.domain.PageRequest.ofSize;
-
 import java.util.*;
 
 
@@ -31,7 +30,7 @@ public class SharedImageService {
     private final LikeRepository likeRepository;
 
     @Transactional(readOnly = true)
-    public PageResponse<List<SharedImageResponse>> getAllSharedImageResponses(
+    public PageResponse<List<SharedImagesResponse>> getAllSharedImageResponses(
             Long memberId,
             Specification<SharedImage> specification,
             CursorBasedPageable pageable
@@ -76,7 +75,7 @@ public class SharedImageService {
         SharedImage first = sharedImages.get(0);
         SharedImage last = sharedImages.get(sharedImages.size() - 1);
 
-        List<SharedImageResponse> responseList = prepareSharedImageResponses(memberId, sharedImages);
+        List<SharedImagesResponse> responseList = prepareSharedImageResponses(memberId, sharedImages);
 
         // 커서 전/후 존재 여부 판단은 필터링 포함하여 판단
         Specification<SharedImage> prevSpec = (root, query, cb) ->
@@ -94,7 +93,7 @@ public class SharedImageService {
     }
 
 
-    public PageResponse<List<SharedImageResponse>> getMySharedImages(Long memberId, Specification<SharedImage> specification, CursorBasedPageable pageable) {
+    public PageResponse<List<SharedImagesResponse>> getMySharedImages(Long memberId, Specification<SharedImage> specification, CursorBasedPageable pageable) {
         Slice<SharedImage> sharedImagesPage;
 
         // 기본 memberId 조건을 Specification으로 만들기
@@ -159,7 +158,7 @@ public class SharedImageService {
         SharedImage lastImage = sharedImages.get(sharedImages.size() - 1);
 
         // 3. 응답 데이터 준비
-        List<SharedImageResponse> responseList = prepareSharedImageResponses(memberId, sharedImages);
+        List<SharedImagesResponse> responseList = prepareSharedImageResponses(memberId, sharedImages);
 
         // 4. 이전/다음 페이지 커서 생성
         Specification<SharedImage> prevPageSpec = baseSpec.and((root, query, cb) ->
@@ -187,7 +186,7 @@ public class SharedImageService {
     }
 
     // 공통 로직을 분리한 헬퍼 메서드
-    private List<SharedImageResponse> prepareSharedImageResponses(Long memberId, List<SharedImage> sharedImages) {
+    private List<SharedImagesResponse> prepareSharedImageResponses(Long memberId, List<SharedImage> sharedImages) {
         if (sharedImages.isEmpty()) {
             return Collections.emptyList();
         }
@@ -204,13 +203,16 @@ public class SharedImageService {
                 .map(sharedImage -> {
                     Long imageId = sharedImage.getImage().getId();
                     Boolean isLiked = memberId != null ? likedImageIds.contains(imageId) : null;
-                    return SharedImageResponse.of(sharedImage, isLiked);
+                    return SharedImagesResponse.of(sharedImage, isLiked);
                 })
                 .toList();
     }
 
 
-    public SharedImageResponse getSharedImage(Long memberId, Long imageId) {
+    public SharedImageResponse getSharedImage(Long memberId,
+                                              Specification<SharedImage> specification,
+                                              CursorBasedPageable pageable,
+                                              Long imageId) {
         SharedImage sharedImage = sharedImageRepository.findById(imageId)
                 .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
@@ -220,7 +222,18 @@ public class SharedImageService {
             isLiked = likedImageIds.contains(imageId);
         }
 
-        return SharedImageResponse.of(sharedImage, isLiked);
+        Specification<SharedImage> prevSpec = (root, query, cb) ->
+                cb.and(specification.toPredicate(root, query, cb), cb.greaterThan(root.get("id"), imageId));
+        boolean hasPrev = sharedImageRepository.count(prevSpec) > 0;
+
+        Specification<SharedImage> nextSpec = (root, query, cb) ->
+                cb.and(specification.toPredicate(root, query, cb), cb.lessThan(root.get("id"), imageId));
+        boolean hasNext = sharedImageRepository.count(nextSpec) > 0;
+
+        String prevCursor = pageable.getEncodedCursor(String.valueOf(imageId), hasPrev);
+        String nextCursor = pageable.getEncodedCursor(String.valueOf(imageId), hasNext);
+
+        return SharedImageResponse.of(sharedImage, isLiked, prevCursor, nextCursor);
     }
 
 
