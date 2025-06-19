@@ -45,4 +45,17 @@ public class Member extends BaseEntity {
     public void updateNickname(String nickname) {
         this.nickname = nickname;
     }
+
+    // 추가
+    public void updateProfile(String profileImage) {
+        this.profile = profileImage;
+    }
+
+    // 또는 둘 다 업데이트하는 메서드
+    public void updateProfileInfo(String nickname, String profileImage) {
+        this.nickname = nickname;
+        if (profileImage != null && !profileImage.trim().isEmpty()) {
+            this.profile = profileImage;
+        }
+    }
 }

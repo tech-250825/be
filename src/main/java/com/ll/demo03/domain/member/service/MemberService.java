@@ -11,12 +11,16 @@ import com.ll.demo03.domain.member.repository.MemberRepository;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final ProfileImageService profileImageService; // 추가
 
     public MemberDto findMemberByEmail(String email) {
         Member member = memberRepository.findByEmail(email)
@@ -36,6 +40,35 @@ public class MemberService {
     @Scheduled(cron = "0 0 0 * * *")
     public void resetDailyCredit() {
         memberRepository.resetAllMembersCredit();
+    }
+
+    @Transactional
+    public MemberDto updateProfile(Long memberId, String nickname, MultipartFile profileImage) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.ACCESS_DENIED));
+
+        if (memberRepository.existsByNickname(nickname)) {
+            throw new CustomException(ErrorCode.DUPLICATED_NICKNAME);
+        }
+
+        // member.updateProfileInfo(nickname, profileImage);
+        // 닉네임 업데이트
+        member.updateNickname(nickname);
+
+        // 프로필 이미지가 있으면 업로드하고 URL 저장
+        if (profileImage != null && !profileImage.isEmpty()) {
+            try {
+                String imageUrl = profileImageService.uploadProfileImage(profileImage, memberId);
+                member.updateProfile(imageUrl);
+            } catch (IOException e) {
+                throw new RuntimeException("프로필 이미지 업로드 중 오류가 발생했습니다.", e);
+            } catch (IllegalArgumentException e) {
+                throw new CustomException(ErrorCode.INVALID_INPUT_VALUE); // 적절한 에러 코드로 변경
+            }
+        }
+        Member savedMember = memberRepository.save(member);
+
+        return MemberDto.of(savedMember);
     }
 
     @Transactional
