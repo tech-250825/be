@@ -52,10 +52,44 @@ public class VideoWebhookEvent {
     public static class VideoTaskInput {
         @JsonProperty("expand_prompt")
         private boolean expandPrompt;
+
         @JsonProperty("image_url")
         private String imageUrl;
+
         private String model;
         private String prompt;
+
+        @JsonProperty("negative_prompt")
+        private String negativePrompt;
+
+        @JsonProperty("cfg_scale")
+        private double cfgScale;
+
+        private int duration;
+
+        @JsonProperty("aspect_ratio")
+        private String aspectRatio;
+
+        private String mode;
+
+        @JsonProperty("camera_control")
+        private CameraControl cameraControl;
+
+        @Data
+        public static class CameraControl {
+            private String type;
+            private Config config;
+
+            @Data
+            public static class Config {
+                private int horizontal;
+                private int vertical;
+                private int pan;
+                private int tilt;
+                private int roll;
+                private int zoom;
+            }
+        }
     }
 
     @Data

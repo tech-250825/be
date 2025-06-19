@@ -8,7 +8,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class SharedImageResponse {
+public class SharedImagesResponse {
     private PublicMemberDto member;
     private Long id;
     private String url;
@@ -17,14 +17,12 @@ public class SharedImageResponse {
     private int likeCount;
     private Boolean isLiked;
     private String createdAt;
-    private String prevCursor;
-    private String nextCursor;
 
-    public static SharedImageResponse of(SharedImage sharedImage, String prevCursor, String nextCursor) {
-        return of(sharedImage, null, prevCursor, nextCursor);
+    public static SharedImagesResponse of(SharedImage sharedImage) {
+        return of(sharedImage, null);
     }
 
-    public static SharedImageResponse of(SharedImage sharedImage, Boolean isLiked, String prevCursor, String nextCursor) {
+    public static SharedImagesResponse of(SharedImage sharedImage, Boolean isLiked) {
         Image image = sharedImage.getImage();
 
         String rawPrompt = null;
@@ -35,7 +33,7 @@ public class SharedImageResponse {
             ratio = image.getTask().getRatio();
         }
 
-        return new SharedImageResponse(
+        return new SharedImagesResponse(
                 PublicMemberDto.of(image.getMember()),
                 sharedImage.getId(),
                 image.getUrl(),
@@ -43,9 +41,8 @@ public class SharedImageResponse {
                 ratio,
                 image.getLikeCount(),
                 isLiked,
-                image.getCreatedAt().toString(),
-                prevCursor,
-                nextCursor
+                image.getCreatedAt().toString()
         );
     }
 }
+

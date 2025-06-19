@@ -3,7 +3,6 @@ package com.ll.demo03.domain.taskProcessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ll.demo03.domain.image.dto.ImageResponse;
 import com.ll.demo03.domain.member.entity.Member;
 import com.ll.demo03.domain.member.repository.MemberRepository;
 import com.ll.demo03.domain.notification.entity.Notification;
@@ -11,16 +10,12 @@ import com.ll.demo03.domain.notification.entity.NotificationStatus;
 import com.ll.demo03.domain.notification.entity.NotificationType;
 import com.ll.demo03.domain.notification.repository.NotificationRepository;
 import com.ll.demo03.domain.notification.service.NotificationService;
-import com.ll.demo03.domain.sse.repository.SseEmitterRepository;
-import com.ll.demo03.domain.task.dto.ImageRequestMessage;
 import com.ll.demo03.domain.task.entity.Task;
 import com.ll.demo03.domain.upscaledTask.entity.UpscaleTask;
 import com.ll.demo03.domain.videoTask.entity.VideoTask;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import lombok.extern.slf4j.Slf4j;
 import java.util.HashMap;
@@ -97,7 +92,7 @@ public class TaskProcessingService {
                 notification.setPayload(payloadJson);
                 notificationRepository.save(notification);
 
-                String redisKey = "notification:image:" + memberIdStr;
+                String redisKey = "notification:video:" + memberIdStr;
                 String notificationJson = objectMapper.writeValueAsString(notification);
                 redisTemplate.opsForValue().set(redisKey, notificationJson);
 
@@ -133,7 +128,7 @@ public class TaskProcessingService {
                 notification.setPayload(payloadJson);
                 notificationRepository.save(notification);
 
-                String redisKey = "notification:image:" + memberIdStr;
+                String redisKey = "notification:upscale:" + memberIdStr;
                 String notificationJson = objectMapper.writeValueAsString(notification);
                 redisTemplate.opsForValue().set(redisKey, notificationJson);
 

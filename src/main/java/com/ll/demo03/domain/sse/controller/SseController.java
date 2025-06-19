@@ -66,14 +66,19 @@ public class SseController {
         String upscaleJson = redisTemplate.opsForValue().get("notification:upscale:" + memberId);
         String videoJson = redisTemplate.opsForValue().get("notification:video:" + memberId);
 
-        // 통합된 응답 객체 생성
+        // JSON -> 객체 파싱
+        ObjectMapper objectMapper = new ObjectMapper();
+        NotificationResponse image = imageJson != null ? objectMapper.readValue(imageJson, NotificationResponse.class) : new NotificationResponse();
+        NotificationResponse upscale = upscaleJson != null ? objectMapper.readValue(upscaleJson, NotificationResponse.class) : new NotificationResponse();
+        NotificationResponse video = videoJson != null ? objectMapper.readValue(videoJson, NotificationResponse.class) : new NotificationResponse();
+
+        // 응답 데이터 조합
         Map<String, Object> notificationData = new HashMap<>();
-        notificationData.put("image", imageJson != null ? imageJson : "{}");
-        notificationData.put("upscale", upscaleJson != null ? upscaleJson : "{}");
-        notificationData.put("video", videoJson != null ? videoJson : "{}");
+        notificationData.put("image", image);
+        notificationData.put("upscale", upscale);
+        notificationData.put("video", video);
 
         try {
-            // 하나의 이벤트로 전송
             emitter.send(SseEmitter.event()
                     .name("notification")
                     .data(notificationData, MediaType.APPLICATION_JSON));
@@ -83,6 +88,7 @@ public class SseController {
 
         return emitter;
     }
+
 
     @EventListener(ApplicationReadyEvent.class)
     public void subscribeToNotifications() {

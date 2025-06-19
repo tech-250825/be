@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class VideoTaskRequest {
     private String prompt;
     private String imageUrl;
+
 }

@@ -18,6 +18,8 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.Optional;
 
+import static com.ll.demo03.global.util.CookieUtils.addCookie;
+
 @Slf4j
 @RequiredArgsConstructor
 @Component
@@ -48,22 +50,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 log.info("기본 리다이렉트 URI 사용: {}", redirectUri);
             }
 
-            ResponseCookie accessTokenCookie = ResponseCookie.from("_hoauth", accessToken)
-                    .httpOnly(true)
-                    .path("/")
-                    .domain(".hoit.my")
-                    .maxAge(3600)
-                    .build();
-
-            ResponseCookie refreshTokenCookie = ResponseCookie.from("_hrauth", refreshToken)
-                    .httpOnly(true)
-                    .path("/")
-                    .domain(".hoit.my")
-                    .maxAge(604800)
-                    .build();
-
-            response.addHeader(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
-            response.addHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+            addCookie(response, "_hoauth", accessToken, 3600);
+            addCookie(response, "_hrauth", refreshToken, 604800);
 
             httpCookieOAuth2AuthorizationRequestRepository.removeAuthorizationRequestCookies(request, response);
 
