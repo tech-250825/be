@@ -44,10 +44,13 @@ public class VideoWebhookProcessor implements WebhookProcessor<VideoWebhookEvent
         log.info("웹훅 이벤트 수신: {}", taskId);
 
         try {
-            if (!isCompleted(event)) {
-                Integer process = getProcess(event);
-                log.info("Task not yet completed, status: {}", getStatus(event));
+            if (getStatus(event) == "pending" || getStatus(event) == "processing") {
+                String process = getProcess(event);
                 notifyProcess(taskId, String.valueOf(process));
+                return;
+            } else if (getStatus(event) == "failed") {
+                log.error("Task failed: {}", taskId);
+                notifyClient(taskId);
                 return;
             }
             Object resourceData = getResourceData(event);
@@ -71,8 +74,8 @@ public class VideoWebhookProcessor implements WebhookProcessor<VideoWebhookEvent
         return event.getData().getTaskId();
     }
 
-    public Integer getProcess(VideoWebhookEvent event){
-        return event.getData().getOutput().getPercent();
+    public String getProcess(VideoWebhookEvent event){
+        return event.getData().getStatus();
     }
 
     public String getPrompt(VideoWebhookEvent event) {
@@ -86,7 +89,7 @@ public class VideoWebhookProcessor implements WebhookProcessor<VideoWebhookEvent
 
     @Override
     public Object getResourceData(VideoWebhookEvent event) {
-        return event.getData().getOutput().getDownloadUrl();
+        return event.getData().getOutput().getVideoUrl();
     }
 
     @Override
