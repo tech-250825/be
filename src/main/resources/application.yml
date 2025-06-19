@@ -66,6 +66,6 @@ logging:
     org.springframework.security.oauth2: DEBUG
     org.springframework.web.client: DEBUG
 custom:
-  webhook-url: https://81be-116-44-217-211.ngrok-free.app
+  webhook-url: https://api.hoit.my
   site:
     name: "My Site Prod"
