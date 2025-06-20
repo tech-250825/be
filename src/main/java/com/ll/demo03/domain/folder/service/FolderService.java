@@ -14,7 +14,6 @@ import com.ll.demo03.domain.image.repository.ImageRepository;
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
 import com.ll.demo03.global.util.CursorBasedPageable;
-import com.ll.demo03.global.util.CursorPagingUtils;
 import com.ll.demo03.global.util.PageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
@@ -24,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.springframework.data.domain.PageRequest.ofSize;
