@@ -5,6 +5,9 @@ server:
   port: 8090
   shutdown: graceful
 spring:
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
   config:
     activate:
       on-profile: default
