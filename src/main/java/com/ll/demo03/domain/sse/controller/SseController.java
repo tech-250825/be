@@ -9,7 +9,6 @@ import com.ll.demo03.domain.notification.entity.Notification;
 import com.ll.demo03.domain.sse.repository.SseEmitterRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -21,7 +20,6 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,8 +64,6 @@ public class SseController {
         String upscaleJson = redisTemplate.opsForValue().get("notification:upscale:" + memberId);
         String videoJson = redisTemplate.opsForValue().get("notification:video:" + memberId);
 
-        // JSON -> 객체 파싱
-        ObjectMapper objectMapper = new ObjectMapper();
         NotificationResponse image = imageJson != null ? objectMapper.readValue(imageJson, NotificationResponse.class) : new NotificationResponse();
         NotificationResponse upscale = upscaleJson != null ? objectMapper.readValue(upscaleJson, NotificationResponse.class) : new NotificationResponse();
         NotificationResponse video = videoJson != null ? objectMapper.readValue(videoJson, NotificationResponse.class) : new NotificationResponse();
