@@ -64,9 +64,13 @@ public class SseController {
         String upscaleJson = redisTemplate.opsForValue().get("notification:upscale:" + memberId);
         String videoJson = redisTemplate.opsForValue().get("notification:video:" + memberId);
 
-        NotificationResponse image = imageJson != null ? objectMapper.readValue(imageJson, NotificationResponse.class) : new NotificationResponse();
-        NotificationResponse upscale = upscaleJson != null ? objectMapper.readValue(upscaleJson, NotificationResponse.class) : new NotificationResponse();
-        NotificationResponse video = videoJson != null ? objectMapper.readValue(videoJson, NotificationResponse.class) : new NotificationResponse();
+        // payload를 객체로 변환하여 처리
+        NotificationResponse image = imageJson != null ?
+                convertToNotificationResponse(imageJson) : new NotificationResponse();
+        NotificationResponse upscale = upscaleJson != null ?
+                convertToNotificationResponse(upscaleJson) : new NotificationResponse();
+        NotificationResponse video = videoJson != null ?
+                convertToNotificationResponse(videoJson) : new NotificationResponse();
 
         // 응답 데이터 조합
         Map<String, Object> notificationData = new HashMap<>();
@@ -85,6 +89,43 @@ public class SseController {
         return emitter;
     }
 
+    // Redis 리스너와 동일한 로직을 메서드로 분리
+    private NotificationResponse convertToNotificationResponse(String json) {
+        try {
+            // 1) JSON을 Notification 객체로 변환
+            Notification notification = objectMapper.readValue(json, Notification.class);
+
+            // 2) payload(String)를 Map으로 변환
+            Map<String, Object> payloadObj = null;
+            try {
+                if (notification.getPayload() != null) {
+                    payloadObj = objectMapper.readValue(
+                            notification.getPayload(),
+                            new TypeReference<Map<String, Object>>() {}
+                    );
+                }
+            } catch (JsonProcessingException e) {
+                log.error("Payload 파싱 실패: {}", e.getMessage());
+            }
+
+            // 3) NotificationResponse 객체 생성 (payload를 객체로)
+            return new NotificationResponse(
+                    notification.getId(),
+                    notification.getType(),
+                    notification.getStatus(),
+                    notification.getMessage(),
+                    notification.isRead(),
+                    notification.getMember(),
+                    notification.getCreatedAt(),
+                    notification.getModifiedAt(),
+                    payloadObj  // 객체로 변환된 payload
+            );
+
+        } catch (JsonProcessingException e) {
+            log.error("Notification 파싱 실패: {}", e.getMessage());
+            return new NotificationResponse();
+        }
+    }
 
     @EventListener(ApplicationReadyEvent.class)
     public void subscribeToNotifications() {
@@ -120,6 +161,7 @@ public class SseController {
                     notification.isRead(),
                     notification.getMember(),
                     notification.getCreatedAt(),
+                    notification.getModifiedAt(),
                     payloadObj
             );
 
