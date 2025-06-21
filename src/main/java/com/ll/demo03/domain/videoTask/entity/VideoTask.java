@@ -14,7 +14,6 @@ import lombok.Setter;
 @Getter
 @Entity
 public class VideoTask extends BaseEntity {
-    private String imageUrl;
 
     private String prompt;
 

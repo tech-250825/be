@@ -51,7 +51,7 @@ public class VideoMessageConsumer {
             String taskId = taskProcessingService.extractTaskIdFromResponse(response);
             redisTemplate.opsForList().rightPush("video:queue", taskId);
 
-            VideoTask videoTask=videoTaskService.saveVideoTask(taskId, memberId);
+            VideoTask videoTask=videoTaskService.saveVideoTask(taskId, message.getPrompt(), memberId);
 
             taskProcessingService.sendVideoSseEvent(memberId, videoTask);
 

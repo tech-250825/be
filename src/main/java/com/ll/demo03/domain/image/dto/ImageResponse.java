@@ -25,21 +25,39 @@ public class ImageResponse {
 
     // 좋아요 상태를 직접 받는 팩토리 메서드
     public static ImageResponse of(Image image, boolean isLiked) {
+        String prompt;
+        String ratio = null;
+        String taskId;
+
+        if (image.getTask() != null) {
+            prompt = image.getTask().getRawPrompt();
+            ratio = image.getTask().getRatio();
+            taskId = image.getTask().getTaskId();
+        } else if (image.getVideoTask() != null) {
+            prompt = image.getVideoTask().getPrompt();
+            taskId = image.getVideoTask().getTaskId();
+        } else {
+            prompt = "알 수 없음";
+            ratio = null;
+            taskId = "unknown";
+        }
+
         return new ImageResponse(
                 PublicMemberDto.of(image.getMember()),
                 image.getId(),
                 image.getUrl(),
-                image.getTask().getRawPrompt(),
-                image.getTask().getRatio(),
+                prompt,
+                ratio,
                 image.getLikeCount(),
                 isLiked,
-               image.getUpscaleTask() != null || Boolean.TRUE.equals(image.getIsShared()),
+                image.getUpscaleTask() != null || Boolean.TRUE.equals(image.getIsShared()),
                 image.getIsUpscaled(),
-                image.getTask().getTaskId(),
+                taskId,
                 image.getImgIndex(),
                 image.getCreatedAt()
         );
     }
+
 
     // 기본 팩토리 메서드 (isLiked = false)
     public static ImageResponse of(Image image) {

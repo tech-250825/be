@@ -111,9 +111,9 @@ public class VideoWebhookProcessor implements WebhookProcessor<VideoWebhookEvent
             VideoTask videoTask = videoTaskRepository.findByTaskId(taskId)
                     .orElseThrow(() -> new EntityNotFoundException("Video task not found"));
 
-            Image image = Image.ofVideo(videoUrl, videoTask);
-            image.setImgIndex(0);
-            imageRepository.save(image);
+            Image video = Image.ofVideo(videoUrl, videoTask);
+            video.setImgIndex(0);
+            imageRepository.save(video);
 
             log.info("✅ DB 저장 완료: taskId={}, videoUrl={}", taskId, videoUrl);
         } catch (Exception e) {
@@ -173,7 +173,7 @@ public class VideoWebhookProcessor implements WebhookProcessor<VideoWebhookEvent
             String memberIdStr = String.valueOf(memberId);
 
                 Notification notification = new Notification();
-                notification.setType(NotificationType.VIDEO); // 예시
+                notification.setType(NotificationType.VIDEO);
                 notification.setMessage("영상 생성 중입니다.");
                 notification.setStatus(NotificationStatus.PENDING);
                 notification.setRead(false);

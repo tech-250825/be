@@ -263,21 +263,9 @@ public class FolderService {
 
         // 6. 이미지 응답 생성
         List<ImageResponse> imageResponses = images.stream()
-                .map(image -> new ImageResponse(
-                        PublicMemberDto.of(image.getMember()),
-                        image.getId(),
-                        image.getUrl(),
-                        image.getTask().getRawPrompt(),
-                        image.getTask().getRatio(),
-                        image.getLikeCount(),
-                        likedImageIds.contains(image.getId()),
-                        image.getIsShared(),
-                        image.getUpscaleTask() != null,
-                        image.getTask().getTaskId(),
-                        image.getImgIndex(),
-                        image.getCreatedAt()
-                ))
+                .map(image -> ImageResponse.of(image, likedImageIds.contains(image.getId())))
                 .toList();
+
 
         // 7. 이전/다음 페이지 커서 생성
         String prevCursor = pageable.getEncodedCursor(

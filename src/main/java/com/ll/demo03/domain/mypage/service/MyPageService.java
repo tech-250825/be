@@ -138,22 +138,10 @@ public class MyPageService {
 
     private List<ImageResponse> convertToImageResponses(List<Image> images, Set<Long> likedImageIds) {
         return images.stream()
-                .map(image -> new ImageResponse(
-                        PublicMemberDto.of(image.getMember()),
-                        image.getId(),
-                        image.getUrl(),
-                        image.getTask().getRawPrompt(),
-                        image.getTask().getRatio(),
-                        image.getLikeCount(),
-                        likedImageIds.contains(image.getId()),
-                        image.getIsShared(),
-                        image.getUpscaleTask() != null,
-                        image.getTask().getTaskId(),
-                        image.getImgIndex(),
-                        image.getCreatedAt()
-                ))
+                .map(image -> ImageResponse.of(image, likedImageIds.contains(image.getId())))
                 .toList();
     }
+
 
 
     @Transactional
