@@ -1,6 +1,7 @@
 package com.ll.demo03.domain.member.service;
 
 import com.ll.demo03.domain.member.dto.MemberDto;
+import com.ll.demo03.domain.sharedImage.repository.SharedImageRepository;
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
 import jakarta.persistence.EntityNotFoundException;
@@ -21,12 +22,14 @@ import java.io.IOException;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final ProfileImageService profileImageService; // 추가
+    private final SharedImageRepository   sharedImageRepository;
 
     public MemberDto findMemberByEmail(String email) {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("회원을 찾을 수 없습니다. 이메일: " + email));
 
-        MemberDto memberDto = MemberDto.of(member);
+        long sharedImageCount = sharedImageRepository.countByMemberId(member.getId());
+        MemberDto memberDto = MemberDto.of(member, sharedImageCount);
         return memberDto;
     }
 
@@ -68,7 +71,9 @@ public class MemberService {
         }
         Member savedMember = memberRepository.save(member);
 
-        return MemberDto.of(savedMember);
+        long sharedImageCount = sharedImageRepository.countByMemberId(savedMember.getId());
+        MemberDto memberDto = MemberDto.of(savedMember, sharedImageCount);
+        return memberDto;
     }
 
     @Transactional
@@ -83,6 +88,9 @@ public class MemberService {
         member.updateNickname(nickname);
         Member savedMember = memberRepository.save(member);
 
-        return MemberDto.of(savedMember);
+        long sharedImageCount = sharedImageRepository.countByMemberId(savedMember.getId());
+        MemberDto dto = MemberDto.of(savedMember, sharedImageCount);
+
+        return dto;
     }
 }

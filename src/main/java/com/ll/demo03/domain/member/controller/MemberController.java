@@ -5,6 +5,7 @@ import com.ll.demo03.domain.member.dto.UpdateProfileRequest;
 import com.ll.demo03.domain.member.entity.Member;
 import com.ll.demo03.domain.member.service.MemberService;
 import com.ll.demo03.domain.oauth.entity.PrincipalDetails;
+import com.ll.demo03.domain.sharedImage.repository.SharedImageRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -28,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class MemberController {
 
     private final MemberService memberService;
+    private final SharedImageRepository sharedImageRepository;
 
     @GetMapping("/profile")
     @PreAuthorize("isAuthenticated()")
@@ -35,7 +37,8 @@ public class MemberController {
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
         Member member = principalDetails.user();
-        MemberDto userProfile = MemberDto.of(member);
+        long sharedImageCount = sharedImageRepository.countByMemberId(member.getId());
+        MemberDto userProfile = MemberDto.of(member, sharedImageCount);
 
         return ResponseEntity.ok(userProfile);
     }
