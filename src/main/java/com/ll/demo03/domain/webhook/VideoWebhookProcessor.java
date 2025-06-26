@@ -131,7 +131,8 @@ public class VideoWebhookProcessor implements WebhookProcessor<VideoWebhookEvent
             String memberIdStr = String.valueOf(memberId);
 
                 Notification notification = new Notification();
-                notification.setType(NotificationType.VIDEO); // 예시
+                notification.setMember(videoTask.getMember());
+                notification.setType(NotificationType.VIDEO);
                 notification.setStatus(NotificationStatus.FAILED);
                 notification.setMessage("이미지 생성 실패");
                 notification.setRead(false);
@@ -166,22 +167,23 @@ public class VideoWebhookProcessor implements WebhookProcessor<VideoWebhookEvent
     public void notifyProcess(String taskId, String progress) {
         try {
 
-            Task task = taskRepository.findByTaskId(taskId)
-                    .orElseThrow(() -> new EntityNotFoundException("Task not found"));
+            VideoTask videoTask = videoTaskRepository.findByTaskId(taskId)
+                    .orElseThrow(() -> new EntityNotFoundException("Video task not found"));
 
-            Long memberId = task.getMember().getId();
+            Long memberId = videoTask.getMember().getId();
             String memberIdStr = String.valueOf(memberId);
 
                 Notification notification = new Notification();
+                notification.setMember(videoTask.getMember());
                 notification.setType(NotificationType.VIDEO);
                 notification.setMessage("영상 생성 중입니다.");
                 notification.setStatus(NotificationStatus.PENDING);
                 notification.setRead(false);
 
                 Map<String, Object> payloadMap = new HashMap<>();
-                payloadMap.put("requestId", task.getId());
+                payloadMap.put("requestId", videoTask.getId());
                 payloadMap.put("imageUrl", new String[]{});
-                payloadMap.put("prompt", task.getRawPrompt());
+                payloadMap.put("prompt", videoTask.getPrompt());
                 payloadMap.put("taskId", taskId);
                 payloadMap.put("progress", progress);
 
@@ -189,7 +191,6 @@ public class VideoWebhookProcessor implements WebhookProcessor<VideoWebhookEvent
                 try {
                     String payloadJson = objectMapper.writeValueAsString(payloadMap);
                     notification.setPayload(payloadJson);
-                    notificationRepository.save(notification);
 
                     String redisKey = "notification:video:" + memberIdStr;
                     String notificationJson = objectMapper.writeValueAsString(notification);
@@ -216,20 +217,21 @@ public class VideoWebhookProcessor implements WebhookProcessor<VideoWebhookEvent
                 imageUrls = castedUrls;
             }
 
-            Task task = taskRepository.findByTaskId(taskId)
-                    .orElseThrow(() -> new EntityNotFoundException("Task not found"));
+            VideoTask videoTask = videoTaskRepository.findByTaskId(taskId)
+                    .orElseThrow(() -> new EntityNotFoundException("Video task not found"));
 
-            Long memberId = task.getMember().getId();
+            Long memberId = videoTask.getMember().getId();
             String memberIdStr = String.valueOf(memberId);
 
                 Notification notification = new Notification();
+                notification.setMember(videoTask.getMember());
                 notification.setType(NotificationType.VIDEO);
                 notification.setStatus(NotificationStatus.SUCCESS);
                 notification.setMessage("영상 생성 완료");
                 notification.setRead(false);
 
             Map<String, Object> payloadMap = new HashMap<>();
-                payloadMap.put("requestId", task.getId());
+                payloadMap.put("requestId", videoTask.getId());
                 payloadMap.put("imageUrl", imageUrls);
                 payloadMap.put("prompt", prompt);
                 payloadMap.put("taskId", taskId);

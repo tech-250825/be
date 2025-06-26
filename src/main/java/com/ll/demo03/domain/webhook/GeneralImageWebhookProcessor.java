@@ -149,6 +149,7 @@ public class GeneralImageWebhookProcessor implements WebhookProcessor<WebhookEve
             String memberIdStr = String.valueOf(memberId);
 
                 Notification notification = new Notification();
+                notification.setMember(task.getMember());
                 notification.setType(NotificationType.IMAGE); // 예시
                 notification.setMessage("이미지 생성 중입니다.");
                 notification.setStatus(NotificationStatus.PENDING);
@@ -165,7 +166,6 @@ public class GeneralImageWebhookProcessor implements WebhookProcessor<WebhookEve
             try {
                     String payloadJson = objectMapper.writeValueAsString(payloadMap);
                     notification.setPayload(payloadJson);
-                    notificationRepository.save(notification);
 
                 String redisKey = "notification:image:" + memberIdStr;
                 String notificationJson = objectMapper.writeValueAsString(notification);
@@ -200,6 +200,7 @@ public class GeneralImageWebhookProcessor implements WebhookProcessor<WebhookEve
             String memberIdStr = String.valueOf(memberId);
 
                 Notification notification = new Notification();
+                notification.setMember(task.getMember());
                 notification.setType(NotificationType.IMAGE); // 예시
                 notification.setStatus(NotificationStatus.SUCCESS);
                 notification.setMessage("이미지 생성 완료");
@@ -241,6 +242,7 @@ public class GeneralImageWebhookProcessor implements WebhookProcessor<WebhookEve
             String memberIdStr = String.valueOf(memberId);
 
                 Notification notification = new Notification();
+                notification.setMember(task.getMember());
                 notification.setType(NotificationType.IMAGE); // 예시
                 notification.setStatus(NotificationStatus.FAILED);
                 notification.setMessage("이미지 생성 실패");

@@ -42,17 +42,13 @@ public class SharedImageController {
     ) {
         Long currentMemberId = principalDetails != null ? principalDetails.user().getId() : null;
 
-        // type 필터 포함한 Specification 생성
-        PageSpecification specification = new PageSpecification<>("id", cursorBasedPageable);
         Specification<SharedImage> typeSpec = createTypeSpecification(type);
-        Specification<SharedImage> combinedSpec = specification.and(typeSpec);
 
         PageResponse<List<SharedImagesResponse>> dtoPage = sharedImageService.getAllSharedImageResponses(
                 currentMemberId,
-                combinedSpec,
+                typeSpec,
                 cursorBasedPageable
         );
-
         return ResponseEntity.ok(dtoPage);
     }
 
@@ -62,7 +58,7 @@ public class SharedImageController {
         } else if ("image".equalsIgnoreCase(type)) {
             return (root, query, cb) -> cb.isNull(root.get("image").get("videoTask"));
         } else {
-            return Specification.where(null); // 전체 조회
+            return (root, query, cb) -> cb.conjunction();
         }
     }
 
@@ -71,14 +67,13 @@ public class SharedImageController {
     @GetMapping("/mypage/shared-images")
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "내가 공유한 이미지 조회", description= "내가 공유한 이미지 조회")
-    public ResponseEntity<PageResponse<SharedImageResponse>> getMySharedImages(
+    public ResponseEntity<PageResponse<List<SharedImagesResponse>>> getMySharedImages(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             CursorBasedPageable cursorBasedPageable
     ) {
         Member member = principalDetails.user();
 
-        PageSpecification specification = new PageSpecification<SharedImage>("id", cursorBasedPageable);
-        PageResponse<SharedImageResponse> dtoPage = sharedImageService.getMySharedImages(member.getId(), specification, cursorBasedPageable);
+        PageResponse<List<SharedImagesResponse>> dtoPage = sharedImageService.getMySharedImages(member.getId(), cursorBasedPageable);
 
         return ResponseEntity.ok(dtoPage);
     }

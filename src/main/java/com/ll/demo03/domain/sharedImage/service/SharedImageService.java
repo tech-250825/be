@@ -77,7 +77,6 @@ public class SharedImageService {
 
         List<SharedImagesResponse> responseList = prepareSharedImageResponses(memberId, sharedImages);
 
-        // 커서 전/후 존재 여부 판단은 필터링 포함하여 판단
         Specification<SharedImage> prevSpec = (root, query, cb) ->
                 cb.and(specification.toPredicate(root, query, cb), cb.greaterThan(root.get("id"), first.getId()));
         boolean hasPrev = sharedImageRepository.count(prevSpec) > 0;
@@ -93,25 +92,19 @@ public class SharedImageService {
     }
 
 
-    public PageResponse<List<SharedImagesResponse>> getMySharedImages(Long memberId, Specification<SharedImage> specification, CursorBasedPageable pageable) {
+    public PageResponse<List<SharedImagesResponse>> getMySharedImages(Long memberId, CursorBasedPageable pageable) {
         Slice<SharedImage> sharedImagesPage;
 
-        // 기본 memberId 조건을 Specification으로 만들기
         Specification<SharedImage> memberSpec = (root, query, cb) ->
                 cb.equal(root.get("image").get("member").get("id"), memberId);
 
-        // 기본 specification과 memberId 조건 결합 (null 체크 추가)
-        Specification<SharedImage> baseSpec = specification != null ?
-                memberSpec.and(specification) : memberSpec;
+        Specification<SharedImage> baseSpec =  memberSpec;
 
-        // 1. 커서 방향에 따른 처리 개선
         if (!pageable.hasCursors()) {
-            // 첫 페이지 요청 - 기본 정렬(ID 내림차순) 적용
             Sort defaultSort = Sort.by(Sort.Direction.DESC, "id");
             PageRequest pageRequest = PageRequest.of(0, pageable.getSize(), defaultSort);
             sharedImagesPage = sharedImageRepository.findAll(baseSpec, pageRequest);
         } else if (pageable.hasPrevPageCursor()) {
-            // 이전 페이지로 이동 (위로 스크롤)
             Long cursorId = Long.parseLong(pageable.getDecodedCursor(pageable.getPrevPageCursor()));
 
             // 커서 조건을 별도 Specification으로 생성

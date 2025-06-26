@@ -2,6 +2,7 @@ package com.ll.demo03.global.util;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.util.Base64;
@@ -10,6 +11,7 @@ import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.substringBetween;
 
 @Data
+@Slf4j
 @AllArgsConstructor
 public class CursorBasedPageable {
     private int size = 5;

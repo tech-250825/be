@@ -38,9 +38,9 @@ spring:
       ddl-auto: update
     properties:
       hibernate:
-        format_sql: false
+        format_sql: true
         highlight_sql: false
-        use_sql_comments: false
+        use_sql_comments: true
         dialect: org.hibernate.dialect.MySQLDialect
 # :small_blue_diamond: Actuator 설정 추가 (서버 설정 바로 아래 or 최하단)
 management:
@@ -58,7 +58,8 @@ management:
 logging:
   level:
     com.ll.demo03: INFO
-    org.hibernate.SQL: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
     org.hibernate.orm.jdbc.bind: INFO
     org.hibernate.orm.jdbc.extract: INFO
     org.springframework.transaction.interceptor: INFO
@@ -72,3 +73,4 @@ custom:
   webhook-url: https://api.hoit.my
   site:
     name: "My Site Prod"
+

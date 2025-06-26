@@ -133,7 +133,6 @@ public class SseController {
             String msgBody = new String(message.getBody(), StandardCharsets.UTF_8);
             NotificationMessage notificationMessage = parseNotificationMessage(msgBody);
 
-            // 1) Redis에서 받은 notificationJson을 Notification 객체로 변환
             Notification notification;
             try {
                 notification = objectMapper.readValue(notificationMessage.getNotificationJson(), Notification.class);
@@ -142,7 +141,6 @@ public class SseController {
                 return;
             }
 
-            // 2) Notification 내부 payload(String) -> Map 등으로 변환
             Map<String, Object> payloadObj = null;
             try {
                 if (notification.getPayload() != null) {
@@ -152,7 +150,6 @@ public class SseController {
                 log.error("Payload 파싱 실패: {}", e.getMessage());
             }
 
-            // 3) Notification 객체에서 payload를 Map으로 교체할 새로운 DTO 생성
             NotificationResponse response = new NotificationResponse(
                     notification.getId(),
                     notification.getType(),
@@ -165,13 +162,12 @@ public class SseController {
                     payloadObj
             );
 
-            // 4) DTO를 다시 JSON으로 직렬화해서 클라이언트에 보냄
             String sendJson;
             try {
                 sendJson = objectMapper.writeValueAsString(response);
             } catch (JsonProcessingException e) {
                 log.error("NotificationResponse 직렬화 실패: {}", e.getMessage());
-                sendJson = notificationMessage.getNotificationJson(); // 실패 시 원본 그대로 보내기
+                sendJson = notificationMessage.getNotificationJson();
             }
 
             String memberKey = "sse:member:" + notificationMessage.getMemberId();

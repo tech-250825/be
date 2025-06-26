@@ -50,13 +50,13 @@ public class MemberService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.ACCESS_DENIED));
 
-        if (memberRepository.existsByNickname(nickname)) {
-            throw new CustomException(ErrorCode.DUPLICATED_NICKNAME);
+        // 닉네임이 바뀌는 경우에만 중복 체크
+        if (!member.getNickname().equals(nickname)) {
+            if (memberRepository.existsByNickname(nickname)) {
+                throw new CustomException(ErrorCode.DUPLICATED_NICKNAME);
+            }
+            member.updateNickname(nickname);
         }
-
-        // member.updateProfileInfo(nickname, profileImage);
-        // 닉네임 업데이트
-        member.updateNickname(nickname);
 
         // 프로필 이미지가 있으면 업로드하고 URL 저장
         if (profileImage != null && !profileImage.isEmpty()) {
@@ -66,15 +66,15 @@ public class MemberService {
             } catch (IOException e) {
                 throw new RuntimeException("프로필 이미지 업로드 중 오류가 발생했습니다.", e);
             } catch (IllegalArgumentException e) {
-                throw new CustomException(ErrorCode.INVALID_INPUT_VALUE); // 적절한 에러 코드로 변경
+                throw new CustomException(ErrorCode.INVALID_INPUT_VALUE);
             }
         }
-        Member savedMember = memberRepository.save(member);
 
+        Member savedMember = memberRepository.save(member);
         long sharedImageCount = sharedImageRepository.countByMemberId(savedMember.getId());
-        MemberDto memberDto = MemberDto.of(savedMember, sharedImageCount);
-        return memberDto;
+        return MemberDto.of(savedMember, sharedImageCount);
     }
+
 
     @Transactional
     public MemberDto updateNickname(Long memberId, String nickname) {

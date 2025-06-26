@@ -133,6 +133,7 @@ public class UpscaleWebhookProcessor implements WebhookProcessor<UpscaleWebhookE
             String memberIdStr = String.valueOf(memberId);
 
             Notification notification = new Notification();
+            notification.setMember(upscaleTask.getMember());
             notification.setType(NotificationType.UPSCALE);
             notification.setMessage("이미지 업스케일 중입니다.");
             notification.setStatus(NotificationStatus.PENDING);
@@ -149,7 +150,6 @@ public class UpscaleWebhookProcessor implements WebhookProcessor<UpscaleWebhookE
             try {
                 String payloadJson = objectMapper.writeValueAsString(payloadMap);
                 notification.setPayload(payloadJson);
-                notificationRepository.save(notification);
 
                 String redisKey = "notification:upscale:" + memberIdStr;
                 String notificationJson = objectMapper.writeValueAsString(notification);
@@ -176,6 +176,7 @@ public class UpscaleWebhookProcessor implements WebhookProcessor<UpscaleWebhookE
             String memberIdStr = String.valueOf(memberId);
 
             Notification notification = new Notification();
+            notification.setMember(upscaleTask.getMember());
             notification.setType(NotificationType.UPSCALE);
             notification.setStatus(NotificationStatus.SUCCESS);
             notification.setMessage("이미지 업스케일 완료");
@@ -218,6 +219,7 @@ public class UpscaleWebhookProcessor implements WebhookProcessor<UpscaleWebhookE
             String memberIdStr = String.valueOf(memberId);
 
             Notification notification = new Notification();
+            notification.setMember(upscaleTask.getMember());
             notification.setType(NotificationType.UPSCALE);
             notification.setStatus(NotificationStatus.FAILED);
             notification.setMessage("이미지 업스케일 실패");
