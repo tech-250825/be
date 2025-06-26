@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Transactional
@@ -73,17 +74,19 @@ public class TaskController {
 
         String newPrompt = modifyPrompt(prompt);
 
+        String finalPrompt = (newPrompt == null || newPrompt.isBlank()) ? prompt : newPrompt;
 
         try {
             ImageRequestMessage requestMessage = new ImageRequestMessage(
-                    newPrompt,
+                    finalPrompt,
                     ratio,
                     cref,
                     sref,
-                    webhookUrl+"/api/images/webhook",
+                    webhookUrl + "/api/images/webhook",
                     member.getId(),
                     prompt
             );
+
 
             imageMessageProducer.sendImageCreationMessage(requestMessage);
 
@@ -114,7 +117,6 @@ public class TaskController {
             return GlobalResponse.error(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
-
     private boolean moderatePrompt(String prompt) {
         String openAiUrl = "https://api.openai.com/v1/chat/completions";
 
@@ -122,32 +124,33 @@ public class TaskController {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(openAiApiKey);
 
-        String requestBody = String.format(
-                "{\n" +
-                        "  \"model\": \"gpt-4o-mini\",\n" +
-                        "  \"messages\": [\n" +
-                        "    {\"role\": \"system\", \"content\": \"You are a content moderation assistant. Analyze the user's input and determine if it contains inappropriate, offensive, or NSFW content. " +
-                        "Try to censor even inappropriate words that Midjourney can't draw, such as sexual elements, sexual clothing. " +
-                        "Cigarette and Tobacco are not subject to censorship. Respond with 'Content approved'. " +
-                        "If it does, respond with 'Content flagged: [reason]'. If not, respond with 'Content approved.' " +
-                        "Use the following categories to flag content: hate speech, adult content, racism, sexism, or illegal activities.\"},\n" +
-                        "    {\"role\": \"user\", \"content\": \"%s\"}\n" +
-                        "  ],\n" +
-                        "  \"temperature\": 0\n" +
-                        "}", prompt);
-
-        HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
-
         try {
+            Map<String, Object> body = Map.of(
+                    "model", "gpt-4o-mini",
+                    "temperature", 0,
+                    "messages", List.of(
+                            Map.of("role", "system", "content",
+                                    "You are a content moderation assistant. Analyze the user's input and determine if it contains inappropriate, offensive, or NSFW content. " +
+                                            "Try to censor even inappropriate words that Midjourney can't draw, such as sexual elements, sexual clothing. " +
+                                            "Cigarette and Tobacco are not subject to censorship. Respond with 'Content approved'. " +
+                                            "If it does, respond with 'Content flagged: [reason]'. If not, respond with 'Content approved.' " +
+                                            "Use the following categories to flag content: hate speech, adult content, racism, sexism, or illegal activities."),
+                            Map.of("role", "user", "content", prompt)
+                    )
+            );
+
+            String jsonBody = objectMapper.writeValueAsString(body);
+            HttpEntity<String> requestEntity = new HttpEntity<>(jsonBody, headers);
+
             ResponseEntity<String> responseEntity = restTemplate.exchange(openAiUrl, HttpMethod.POST, requestEntity, String.class);
             String responseBody = responseEntity.getBody();
 
             JsonNode rootNode = objectMapper.readTree(responseBody);
-            String result = rootNode.path("choices").get(0).path("message").path("content").asText().trim(); // 응답 문자열 가져오기
+            String result = rootNode.path("choices").get(0).path("message").path("content").asText().trim();
 
             log.info("OpenAI 검열 응답: {}", result);
 
-            if (result.equalsIgnoreCase("Content approved.")) {
+            if ("Content approved.".equalsIgnoreCase(result)) {
                 return true;
             } else if (result.startsWith("Content flagged:")) {
                 return false;
@@ -155,11 +158,13 @@ public class TaskController {
                 log.warn("Unexpected response from OpenAI: {}", result);
                 return true;
             }
+
         } catch (Exception e) {
             log.error("OpenAI API 요청 실패: ", e);
             return true;
         }
     }
+
 
     private String modifyPrompt(String prompt) {
         String openAiUrl = "https://api.openai.com/v1/chat/completions";
@@ -168,31 +173,39 @@ public class TaskController {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(openAiApiKey);
 
-        String requestBody = String.format(
-                "{\n" +
-                        "  \"model\": \"gpt-4o-mini\",\n" +
-                        "  \"messages\": [\n" +
-                        "    {\"role\": \"system\", \"content\": \"In english, You are an artist. You are going to describe an illustration\\n" +
-                        "                that meets the user's demand. Don't over-imagine. Use specific wording (ex, light and shadow texture, flat colors, cell shading and ink lines). The style description needs to go first and last in the prompt (ex, retro anime, japanese illustration), or use the director or\\n" +
-                        "                artist's name related to the style (ex, Ghibli Studio, Hayao Miyazaki, Jeremy Geddes, Junji Ito, Naoko Takeuchi, ...), or specific style (ex: retro anime -> vhs effect, grainy texture, 80s anime, motion blur, realistic -> 4k). If it's animation or character,\\n" +
-                        "                write simply, in 1~2 sentences. If the user wants a pretty girl, add 'in the style of guweiz'. Don't use korean.\\n" +
-                        "                If it's realism, describe pose, layout, composition, add 4k.\"},\n" +
-                        "    {\"role\": \"user\", \"content\": \"" + prompt + "\"}\n" +
-                        "  ],\n" +
-                        "  \"temperature\": 0\n" +
-                        "}");
-
-        HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
-
         try {
+            // 메시지 구성
+            Map<String, Object> systemMessage = Map.of(
+                    "role", "system",
+                    "content", "In english, You are an artist. You are going to describe an illustration " +
+                            "that meets the user's demand. Don't over-imagine. Use specific wording (ex, light and shadow texture, flat colors, cell shading and ink lines). " +
+                            "The style description needs to go first and last in the prompt (ex, retro anime, japanese illustration), or use the director or " +
+                            "artist's name related to the style (ex, Ghibli Studio, Hayao Miyazaki, Jeremy Geddes, Junji Ito, Naoko Takeuchi, ...), or specific style " +
+                            "(ex: retro anime -> vhs effect, grainy texture, 80s anime, motion blur, realistic -> 4k). If it's animation or character, " +
+                            "write simply, in 1~2 sentences. If the user wants a pretty girl, add 'in the style of guweiz'. Don't use korean. " +
+                            "If it's realism, describe pose, layout, composition, add 4k."
+            );
+            Map<String, Object> userMessage = Map.of(
+                    "role", "user",
+                    "content", prompt
+            );
+
+            Map<String, Object> body = Map.of(
+                    "model", "gpt-4o-mini",
+                    "temperature", 0,
+                    "messages", List.of(systemMessage, userMessage)
+            );
+
+            String jsonBody = objectMapper.writeValueAsString(body);
+            HttpEntity<String> requestEntity = new HttpEntity<>(jsonBody, headers);
+
             ResponseEntity<String> responseEntity = restTemplate.exchange(openAiUrl, HttpMethod.POST, requestEntity, String.class);
             String responseBody = responseEntity.getBody();
 
             JsonNode rootNode = objectMapper.readTree(responseBody);
-            String result = rootNode.path("choices").get(0).path("message").path("content").asText().trim(); // 응답 문자열 가져오기
+            String result = rootNode.path("choices").get(0).path("message").path("content").asText().trim();
 
             log.info("OpenAI 프롬프트 개선 응답: {}", result);
-
             return result;
 
         } catch (Exception e) {
@@ -200,6 +213,7 @@ public class TaskController {
             return prompt;
         }
     }
+
 
     @GetMapping("/queue")
     public long getQueueLength() {
