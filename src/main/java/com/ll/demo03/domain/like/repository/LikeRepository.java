@@ -35,4 +35,6 @@ public interface LikeRepository extends JpaRepository<Like, Long>, JpaSpecificat
     boolean existsByImage_IdGreaterThanAndMemberId(Long id, Long id1);
 
     boolean existsByImage_IdLessThanAndMemberId(Long id, Long id1);
+
+    void deleteByMemberId(Long memberId);
 }

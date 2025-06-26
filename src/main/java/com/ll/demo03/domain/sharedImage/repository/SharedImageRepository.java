@@ -15,4 +15,6 @@ public interface SharedImageRepository extends JpaRepository<SharedImage, Long> 
     Optional<SharedImage> findByImage_Id(Long id);
     @Query("SELECT COUNT(si) FROM SharedImage si WHERE si.image.member.id = :memberId")
     long countByMemberId(@Param("memberId") Long memberId);
+
+    void deleteByMemberId(Long memberId);
 }

@@ -1,14 +1,13 @@
 package com.ll.demo03.domain.sse.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ll.demo03.domain.notification.dto.NotificationMessage;
 import com.ll.demo03.domain.notification.dto.NotificationResponse;
-import com.ll.demo03.domain.notification.entity.Notification;
 import com.ll.demo03.domain.sse.repository.SseEmitterRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -23,8 +22,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
@@ -59,20 +56,14 @@ public class SseController {
             redisTemplate.opsForList().remove("sse:member:" + memberId, 1, sessionId);
         });
 
-        // Redis에서 데이터 가져오기
         String imageJson = redisTemplate.opsForValue().get("notification:image:" + memberId);
         String upscaleJson = redisTemplate.opsForValue().get("notification:upscale:" + memberId);
         String videoJson = redisTemplate.opsForValue().get("notification:video:" + memberId);
 
-        // payload를 객체로 변환하여 처리
-        NotificationResponse image = imageJson != null ?
-                convertToNotificationResponse(imageJson) : new NotificationResponse();
-        NotificationResponse upscale = upscaleJson != null ?
-                convertToNotificationResponse(upscaleJson) : new NotificationResponse();
-        NotificationResponse video = videoJson != null ?
-                convertToNotificationResponse(videoJson) : new NotificationResponse();
+        NotificationResponse image = imageJson != null ? convertToNotificationResponse(imageJson) : new NotificationResponse();
+        NotificationResponse upscale = upscaleJson != null ? convertToNotificationResponse(upscaleJson) : new NotificationResponse();
+        NotificationResponse video = videoJson != null ? convertToNotificationResponse(videoJson) : new NotificationResponse();
 
-        // 응답 데이터 조합
         Map<String, Object> notificationData = new HashMap<>();
         notificationData.put("image", image);
         notificationData.put("upscale", upscale);
@@ -89,40 +80,11 @@ public class SseController {
         return emitter;
     }
 
-    // Redis 리스너와 동일한 로직을 메서드로 분리
     private NotificationResponse convertToNotificationResponse(String json) {
         try {
-            // 1) JSON을 Notification 객체로 변환
-            Notification notification = objectMapper.readValue(json, Notification.class);
-
-            // 2) payload(String)를 Map으로 변환
-            Map<String, Object> payloadObj = null;
-            try {
-                if (notification.getPayload() != null) {
-                    payloadObj = objectMapper.readValue(
-                            notification.getPayload(),
-                            new TypeReference<Map<String, Object>>() {}
-                    );
-                }
-            } catch (JsonProcessingException e) {
-                log.error("Payload 파싱 실패: {}", e.getMessage());
-            }
-
-            // 3) NotificationResponse 객체 생성 (payload를 객체로)
-            return new NotificationResponse(
-                    notification.getId(),
-                    notification.getType(),
-                    notification.getStatus(),
-                    notification.getMessage(),
-                    notification.isRead(),
-                    notification.getMember(),
-                    notification.getCreatedAt(),
-                    notification.getModifiedAt(),
-                    payloadObj  // 객체로 변환된 payload
-            );
-
+            return objectMapper.readValue(json, NotificationResponse.class);
         } catch (JsonProcessingException e) {
-            log.error("Notification 파싱 실패: {}", e.getMessage());
+            log.error("NotificationResponse 파싱 실패: {}", e.getMessage());
             return new NotificationResponse();
         }
     }
@@ -133,34 +95,13 @@ public class SseController {
             String msgBody = new String(message.getBody(), StandardCharsets.UTF_8);
             NotificationMessage notificationMessage = parseNotificationMessage(msgBody);
 
-            Notification notification;
+            NotificationResponse response;
             try {
-                notification = objectMapper.readValue(notificationMessage.getNotificationJson(), Notification.class);
+                response = objectMapper.readValue(notificationMessage.getNotificationJson(), NotificationResponse.class);
             } catch (JsonProcessingException e) {
-                log.error("NotificationJson 파싱 실패: {}", e.getMessage());
+                log.error("NotificationResponse 파싱 실패: {}", e.getMessage());
                 return;
             }
-
-            Map<String, Object> payloadObj = null;
-            try {
-                if (notification.getPayload() != null) {
-                    payloadObj = objectMapper.readValue(notification.getPayload(), new TypeReference<Map<String, Object>>() {});
-                }
-            } catch (JsonProcessingException e) {
-                log.error("Payload 파싱 실패: {}", e.getMessage());
-            }
-
-            NotificationResponse response = new NotificationResponse(
-                    notification.getId(),
-                    notification.getType(),
-                    notification.getStatus(),
-                    notification.getMessage(),
-                    notification.isRead(),
-                    notification.getMember(),
-                    notification.getCreatedAt(),
-                    notification.getModifiedAt(),
-                    payloadObj
-            );
 
             String sendJson;
             try {
@@ -190,7 +131,6 @@ public class SseController {
                 }
             }
         }, new ChannelTopic("sse-notification-channel"));
-
     }
 
     private NotificationMessage parseNotificationMessage(String message) {
@@ -200,6 +140,4 @@ public class SseController {
             throw new RuntimeException("Redis 메시지 파싱 실패: " + message, e);
         }
     }
-
-
 }

@@ -7,4 +7,6 @@ import java.util.Optional;
 
 public interface VideoTaskRepository extends JpaRepository<VideoTask, Long> {
     Optional<VideoTask> findByTaskId(String taskId);
+
+    void deleteByMemberId(Long memberId);
 }

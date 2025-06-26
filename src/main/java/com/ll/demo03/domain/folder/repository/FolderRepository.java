@@ -22,4 +22,6 @@ public interface FolderRepository extends JpaRepository<Folder, Long>,JpaSpecifi
     boolean existsByMemberAndCreatedAtLessThan(Member member, LocalDateTime createdAt);
 
     Slice<Folder> findByMember(Member member, PageRequest pageRequest);
+
+    void deleteByMemberId(Long memberId);
 }

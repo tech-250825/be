@@ -1,7 +1,13 @@
 package com.ll.demo03.domain.member.service;
 
+import com.ll.demo03.domain.folder.repository.FolderRepository;
+import com.ll.demo03.domain.image.repository.ImageRepository;
+import com.ll.demo03.domain.like.repository.LikeRepository;
 import com.ll.demo03.domain.member.dto.MemberDto;
 import com.ll.demo03.domain.sharedImage.repository.SharedImageRepository;
+import com.ll.demo03.domain.task.repository.TaskRepository;
+import com.ll.demo03.domain.upscaledTask.repository.UpscaleTaskRepository;
+import com.ll.demo03.domain.videoTask.repository.VideoTaskRepository;
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
 import jakarta.persistence.EntityNotFoundException;
@@ -23,6 +29,12 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final ProfileImageService profileImageService; // 추가
     private final SharedImageRepository   sharedImageRepository;
+    private final LikeRepository likeRepository;
+    private final ImageRepository imageRepository;
+    private final FolderRepository folderRepository;
+    private final TaskRepository taskRepository;
+    private final UpscaleTaskRepository upscaleTaskRepository;
+    private final VideoTaskRepository videoTaskRepository;
 
     public MemberDto findMemberByEmail(String email) {
         Member member = memberRepository.findByEmail(email)
@@ -93,4 +105,34 @@ public class MemberService {
 
         return dto;
     }
+
+    @Transactional
+    public void deleteMember(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+
+        // 1. 좋아요 삭제
+        likeRepository.deleteByMemberId(memberId);
+
+        // 2. 공유 이미지 삭제
+        sharedImageRepository.deleteByMemberId(memberId);
+
+        // 3. 폴더 삭제
+        folderRepository.deleteByMemberId(memberId);
+
+        // 4. 업스케일/비디오 태스크 (userId 기준으로 직접 삭제)
+        upscaleTaskRepository.deleteByMemberId(memberId);
+        videoTaskRepository.deleteByMemberId(memberId);
+
+        // 5. 태스크 삭제 (task가 orphan 상태일 수 있으므로 userId로 삭제)
+        taskRepository.deleteByMemberId(memberId);
+
+        // 6. 이미지 삭제
+        imageRepository.deleteByMemberId(memberId);
+
+        // 7. 최종 멤버 삭제
+        memberRepository.delete(member);
+    }
+
+
 }

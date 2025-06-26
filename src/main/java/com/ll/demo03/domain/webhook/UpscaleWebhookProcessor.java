@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ll.demo03.domain.image.entity.Image;
 import com.ll.demo03.domain.image.repository.ImageRepository;
+import com.ll.demo03.domain.notification.dto.NotificationResponse;
 import com.ll.demo03.domain.notification.entity.Notification;
 import com.ll.demo03.domain.notification.entity.NotificationStatus;
 import com.ll.demo03.domain.notification.entity.NotificationType;
@@ -188,16 +189,30 @@ public class UpscaleWebhookProcessor implements WebhookProcessor<UpscaleWebhookE
             payloadMap.put("taskId", taskId);
             payloadMap.put("type", "upscale");
 
+            notificationRepository.save(notification);
+
             redisTemplate.opsForList().remove("upscale:queue", 1, taskId);
 
 
             try {
                 String payloadJson = objectMapper.writeValueAsString(payloadMap);
                 notification.setPayload(payloadJson);
-                notificationRepository.save(notification);
+
+                NotificationResponse dto = NotificationResponse.builder()
+                        .id(notification.getId())  // 저장 이후라면 null 일 수 있음
+                        .type(notification.getType())
+                        .status(notification.getStatus())
+                        .message(notification.getMessage())
+                        .isRead(notification.isRead())
+                        .createdAt(notification.getCreatedAt()) // 혹은 LocalDateTime.now()
+                        .modifiedAt(notification.getModifiedAt())
+                        .payload(payloadMap) // 또는 payloadJson 그대로
+                        .build();
 
                 String redisKey = "notification:upscale:" + memberIdStr;
-                String notificationJson = objectMapper.writeValueAsString(notification);
+
+
+                String notificationJson = objectMapper.writeValueAsString(dto);
                 redisTemplate.opsForValue().set(redisKey, notificationJson);
 
                 notificationService.publishNotificationToOtherServers(memberIdStr, notificationJson);
@@ -231,15 +246,29 @@ public class UpscaleWebhookProcessor implements WebhookProcessor<UpscaleWebhookE
             payloadMap.put("taskId", taskId);
             payloadMap.put("type", "upscale");
 
+            notificationRepository.save(notification);
+
             redisTemplate.opsForList().remove("upscale:queue", 1, taskId);
 
             try {
                 String payloadJson = objectMapper.writeValueAsString(payloadMap);
                 notification.setPayload(payloadJson);
-                notificationRepository.save(notification);
+
+                NotificationResponse dto = NotificationResponse.builder()
+                        .id(notification.getId())  // 저장 이후라면 null 일 수 있음
+                        .type(notification.getType())
+                        .status(notification.getStatus())
+                        .message(notification.getMessage())
+                        .isRead(notification.isRead())
+                        .createdAt(notification.getCreatedAt()) // 혹은 LocalDateTime.now()
+                        .modifiedAt(notification.getModifiedAt())
+                        .payload(payloadMap) // 또는 payloadJson 그대로
+                        .build();
 
                 String redisKey = "notification:upscale:" + memberIdStr;
-                String notificationJson = objectMapper.writeValueAsString(notification);
+
+
+                String notificationJson = objectMapper.writeValueAsString(dto);
                 redisTemplate.opsForValue().set(redisKey, notificationJson);
 
                 notificationService.publishNotificationToOtherServers(memberIdStr, notificationJson);

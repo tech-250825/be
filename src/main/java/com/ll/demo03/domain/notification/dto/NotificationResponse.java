@@ -1,6 +1,5 @@
 package com.ll.demo03.domain.notification.dto;
 
-import com.ll.demo03.domain.member.entity.Member;
 import com.ll.demo03.domain.notification.entity.NotificationStatus;
 import com.ll.demo03.domain.notification.entity.NotificationType;
 import lombok.AllArgsConstructor;
@@ -25,8 +24,6 @@ public class NotificationResponse {
     private String message;
 
     private boolean isRead;
-
-    private Member member;
 
     private LocalDateTime createdAt;
 

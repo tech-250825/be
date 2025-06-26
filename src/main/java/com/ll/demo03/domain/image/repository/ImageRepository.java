@@ -55,4 +55,6 @@ public interface ImageRepository extends JpaRepository<Image, Long>, JpaSpecific
     boolean existsByIdGreaterThanAndMemberIdAndVideoTaskIsNull(Long id, Long id1);
 
     boolean existsByIdLessThanAndMemberIdAndVideoTaskIsNull(Long id, Long id1);
+
+    void deleteByMemberId(Long memberId);
 }

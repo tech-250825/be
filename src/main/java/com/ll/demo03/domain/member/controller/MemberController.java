@@ -70,5 +70,17 @@ public class MemberController {
         return ResponseEntity.ok(updatedMember);
     }
 
+    @DeleteMapping("/withdraw")
+    @PreAuthorize("isAuthenticated()")
+    @Operation(summary = "회원 탈퇴", description = "로그인한 사용자가 자신의 계정을 탈퇴합니다.")
+    public ResponseEntity<Void> deleteMember(
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    ) {
+        Long memberId = principalDetails.user().getId();
+        memberService.deleteMember(memberId);
+        return ResponseEntity.noContent().build(); // HTTP 204 No Content
+    }
+
+
 
 }
