@@ -4,6 +4,7 @@ import com.ll.demo03.domain.folder.repository.FolderRepository;
 import com.ll.demo03.domain.image.repository.ImageRepository;
 import com.ll.demo03.domain.like.repository.LikeRepository;
 import com.ll.demo03.domain.member.dto.MemberDto;
+import com.ll.demo03.domain.notification.repository.NotificationRepository;
 import com.ll.demo03.domain.sharedImage.repository.SharedImageRepository;
 import com.ll.demo03.domain.task.repository.TaskRepository;
 import com.ll.demo03.domain.upscaledTask.repository.UpscaleTaskRepository;
@@ -35,6 +36,7 @@ public class MemberService {
     private final TaskRepository taskRepository;
     private final UpscaleTaskRepository upscaleTaskRepository;
     private final VideoTaskRepository videoTaskRepository;
+    private final NotificationRepository notificationRepository;
 
     public MemberDto findMemberByEmail(String email) {
         Member member = memberRepository.findByEmail(email)
@@ -117,22 +119,23 @@ public class MemberService {
         // 2. 공유 이미지 삭제
         sharedImageRepository.deleteByMemberId(memberId);
 
-        // 3. 폴더 삭제
-        folderRepository.deleteByMemberId(memberId);
+        // 3. 알림 삭제 (member를 참조하므로 member 삭제 전에 먼저 삭제)
+        notificationRepository.deleteByMemberId(memberId);
 
-        // 4. 업스케일/비디오 태스크 (userId 기준으로 직접 삭제)
+        // 4. 업스케일/비디오 태스크 삭제 (이미지를 참조할 수 있음)
         upscaleTaskRepository.deleteByMemberId(memberId);
         videoTaskRepository.deleteByMemberId(memberId);
 
-        // 5. 태스크 삭제 (task가 orphan 상태일 수 있으므로 userId로 삭제)
+        // 5. 태스크 삭제 (이미지를 참조할 수 있음)
         taskRepository.deleteByMemberId(memberId);
 
-        // 6. 이미지 삭제
+        // 6. 이미지 삭제 (폴더를 참조하므로 폴더 삭제 전에 먼저 삭제)
         imageRepository.deleteByMemberId(memberId);
 
-        // 7. 최종 멤버 삭제
+        // 7. 폴더 삭제 (이미지 삭제 후에 삭제)
+        folderRepository.deleteByMemberId(memberId);
+
+        // 8. 최종 멤버 삭제
         memberRepository.delete(member);
     }
-
-
 }

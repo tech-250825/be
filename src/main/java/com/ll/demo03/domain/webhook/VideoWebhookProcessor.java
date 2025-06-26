@@ -46,11 +46,12 @@ public class VideoWebhookProcessor implements WebhookProcessor<VideoWebhookEvent
         log.info("웹훅 이벤트 수신: {}", taskId);
 
         try {
-            if (getStatus(event) == "pending" || getStatus(event) == "processing") {
+            String status = getStatus(event);
+            if ("pending".equals(status) || "processing".equals(status)) {
                 String process = getProcess(event);
                 notifyProcess(taskId, String.valueOf(process));
                 return;
-            } else if (getStatus(event) == "failed") {
+            } else if ("failed".equals(status)) {
                 log.error("Task failed: {}", taskId);
                 notifyClient(taskId);
                 return;
@@ -136,7 +137,7 @@ public class VideoWebhookProcessor implements WebhookProcessor<VideoWebhookEvent
                 notification.setMember(videoTask.getMember());
                 notification.setType(NotificationType.VIDEO);
                 notification.setStatus(NotificationStatus.FAILED);
-                notification.setMessage("이미지 생성 실패");
+                notification.setMessage("영상 생성 실패");
                 notification.setRead(false);
 
                 Map<String, Object> payloadMap = new HashMap<>();
