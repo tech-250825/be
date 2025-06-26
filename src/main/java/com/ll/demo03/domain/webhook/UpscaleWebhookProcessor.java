@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -152,8 +153,22 @@ public class UpscaleWebhookProcessor implements WebhookProcessor<UpscaleWebhookE
                 String payloadJson = objectMapper.writeValueAsString(payloadMap);
                 notification.setPayload(payloadJson);
 
+                LocalDateTime now = LocalDateTime.now();
+
+                NotificationResponse dto = NotificationResponse.builder()
+                        .id(1L)
+                        .type(notification.getType())
+                        .status(notification.getStatus())
+                        .message(notification.getMessage())
+                        .isRead(notification.isRead())
+                        .createdAt(now)
+                        .modifiedAt(now)
+                        .payload(payloadMap)
+                        .build();
+
                 String redisKey = "notification:upscale:" + memberIdStr;
-                String notificationJson = objectMapper.writeValueAsString(notification);
+
+                String notificationJson = objectMapper.writeValueAsString(dto);
                 redisTemplate.opsForValue().set(redisKey, notificationJson);
 
                 notificationService.publishNotificationToOtherServers(memberIdStr, notificationJson);
@@ -193,20 +208,19 @@ public class UpscaleWebhookProcessor implements WebhookProcessor<UpscaleWebhookE
 
             redisTemplate.opsForList().remove("upscale:queue", 1, taskId);
 
-
             try {
                 String payloadJson = objectMapper.writeValueAsString(payloadMap);
                 notification.setPayload(payloadJson);
 
                 NotificationResponse dto = NotificationResponse.builder()
-                        .id(notification.getId())  // 저장 이후라면 null 일 수 있음
+                        .id(notification.getId())
                         .type(notification.getType())
                         .status(notification.getStatus())
                         .message(notification.getMessage())
                         .isRead(notification.isRead())
-                        .createdAt(notification.getCreatedAt()) // 혹은 LocalDateTime.now()
+                        .createdAt(notification.getCreatedAt())
                         .modifiedAt(notification.getModifiedAt())
-                        .payload(payloadMap) // 또는 payloadJson 그대로
+                        .payload(payloadMap)
                         .build();
 
                 String redisKey = "notification:upscale:" + memberIdStr;
@@ -255,14 +269,14 @@ public class UpscaleWebhookProcessor implements WebhookProcessor<UpscaleWebhookE
                 notification.setPayload(payloadJson);
 
                 NotificationResponse dto = NotificationResponse.builder()
-                        .id(notification.getId())  // 저장 이후라면 null 일 수 있음
+                        .id(notification.getId())
                         .type(notification.getType())
                         .status(notification.getStatus())
                         .message(notification.getMessage())
                         .isRead(notification.isRead())
-                        .createdAt(notification.getCreatedAt()) // 혹은 LocalDateTime.now()
+                        .createdAt(notification.getCreatedAt())
                         .modifiedAt(notification.getModifiedAt())
-                        .payload(payloadMap) // 또는 payloadJson 그대로
+                        .payload(payloadMap)
                         .build();
 
                 String redisKey = "notification:upscale:" + memberIdStr;
@@ -280,5 +294,4 @@ public class UpscaleWebhookProcessor implements WebhookProcessor<UpscaleWebhookE
             log.error("SSE 알림 전송 중 오류 발생: {}", e.getMessage(), e);
         }
     }
-
 }

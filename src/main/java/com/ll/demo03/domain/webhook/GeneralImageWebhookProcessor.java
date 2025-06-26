@@ -32,6 +32,7 @@ import java.net.*;
 
 
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -164,15 +165,28 @@ public class GeneralImageWebhookProcessor implements WebhookProcessor<WebhookEve
                 payloadMap.put("progress", progress);
 
             try {
-                    String payloadJson = objectMapper.writeValueAsString(payloadMap);
-                    notification.setPayload(payloadJson);
+                String payloadJson = objectMapper.writeValueAsString(payloadMap);
+                notification.setPayload(payloadJson);
+
+                LocalDateTime now = LocalDateTime.now();
+
+                NotificationResponse dto = NotificationResponse.builder()
+                        .id(1L)
+                        .type(notification.getType())
+                        .status(notification.getStatus())
+                        .message(notification.getMessage())
+                        .isRead(notification.isRead())
+                        .createdAt(now)
+                        .modifiedAt(now)
+                        .payload(payloadMap)
+                        .build();
 
                 String redisKey = "notification:image:" + memberIdStr;
-                String notificationJson = objectMapper.writeValueAsString(notification);
+
+                String notificationJson = objectMapper.writeValueAsString(dto);
                 redisTemplate.opsForValue().set(redisKey, notificationJson);
 
                 notificationService.publishNotificationToOtherServers(memberIdStr, notificationJson);
-
                 } catch (JsonProcessingException e) {
                     log.error("payload 직렬화 실패", e);
                 }
@@ -222,14 +236,14 @@ public class GeneralImageWebhookProcessor implements WebhookProcessor<WebhookEve
                     notification.setPayload(payloadJson);
 
                     NotificationResponse dto = NotificationResponse.builder()
-                            .id(notification.getId())  // 저장 이후라면 null 일 수 있음
+                            .id(notification.getId())
                             .type(notification.getType())
                             .status(notification.getStatus())
                             .message(notification.getMessage())
                             .isRead(notification.isRead())
-                            .createdAt(notification.getCreatedAt()) // 혹은 LocalDateTime.now()
+                            .createdAt(notification.getCreatedAt())
                             .modifiedAt(notification.getModifiedAt())
-                            .payload(payloadMap) // 또는 payloadJson 그대로
+                            .payload(payloadMap)
                             .build();
                     String redisKey = "notification:image:" + memberIdStr;
 
@@ -281,9 +295,9 @@ public class GeneralImageWebhookProcessor implements WebhookProcessor<WebhookEve
                             .status(notification.getStatus())
                             .message(notification.getMessage())
                             .isRead(notification.isRead())
-                            .createdAt(notification.getCreatedAt()) // 혹은 LocalDateTime.now()
+                            .createdAt(notification.getCreatedAt())
                             .modifiedAt(notification.getModifiedAt())
-                            .payload(payloadMap) // 또는 payloadJson 그대로
+                            .payload(payloadMap)
                             .build();
                     String redisKey = "notification:image:" + memberIdStr;
 
