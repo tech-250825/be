@@ -18,6 +18,9 @@ jobs:
           distribution: temurin
           java-version: 21
 
+      - name: gradlew 실행 권한 부여
+        run: chmod +x ./gradlew
+
       - name: application.yml 파일 만들기
         run: echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/application-secret.yml
 
@@ -34,7 +37,7 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           source: project.jar
-          target: /home/ubuntu/instagram-server/tobe
+          target: /home/ubuntu/hoit-server/tobe
 
       - name: SSH로 EC2에 접속하기
         uses: appleboy/ssh-action@v1.0.3
@@ -44,10 +47,10 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script_stop: true
           script: |
-            rm -rf /home/ubuntu/instagram-server/current
-            mkdir /home/ubuntu/instagram-server/current
-            mv /home/ubuntu/instagram-server/tobe/project.jar /home/ubuntu/instagram-server/current/project.jar
-            cd /home/ubuntu/instagram-server/current
+            rm -rf /home/ubuntu/hoit-server/current
+            mkdir /home/ubuntu/hoit-server/current
+            mv /home/ubuntu/hoit-server/tobe/project.jar /home/ubuntu/instagram-server/current/project.jar
+            cd /home/ubuntu/hoit-server/current
             sudo fuser -k -n tcp 8080 || true
             nohup java -jar project.jar > ./output.log 2>&1 & 
-            rm -rf /home/ubuntu/instagram-server/tobe
+            rm -rf /home/ubuntu/hoit-server/tobe
