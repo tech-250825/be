@@ -1,10 +1,10 @@
 # Dockerfile
-FROM openjdk:21-jre-slim
+FROM eclipse-temurin:21-jre-jammy
 
 # 작업 디렉토리 설정
 WORKDIR /app
 
-# 필요한 패키지 설치
+# 필요한 패키지 설치 (curl for health check)
 RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
 # JAR 파일 복사
