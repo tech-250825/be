@@ -1,4 +1,5 @@
-name: Deploy To EC2
+# GitHub Actions - .github/workflows/deploy.yml
+name: Deploy To EC2 with Docker
 
 on:
   push:
@@ -27,19 +28,21 @@ jobs:
       - name: 테스트 및 빌드하기
         run: ./gradlew clean build
 
-      - name: 빌드된 파일 이름 변경하기
-        run: mv ./build/libs/*SNAPSHOT.jar ./project.jar
+      - name: Docker 이미지 빌드
+        run: |
+          docker build -t hoit-app:latest .
+          docker save hoit-app:latest | gzip > hoit-app.tar.gz
 
-      - name: SCP로 EC2에 빌드된 파일 전송하기
+      - name: Docker 이미지를 EC2에 전송
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
-          source: project.jar
-          target: /home/ubuntu/hoit-server/tobe
+          source: hoit-app.tar.gz,docker-compose.yml
+          target: /home/ubuntu/hoit-server/
 
-      - name: SSH로 EC2에 접속하기
+      - name: SSH로 EC2에 접속하여 배포
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -47,10 +50,20 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script_stop: true
           script: |
-            rm -rf /home/ubuntu/hoit-server/current
-            mkdir /home/ubuntu/hoit-server/current
-            mv /home/ubuntu/hoit-server/tobe/project.jar /home/ubuntu/hoit-server/current/project.jar
-            cd /home/ubuntu/hoit-server/current
-            sudo fuser -k -n tcp 8090 || true
-            nohup java -jar project.jar > ./output.log 2>&1 & 
-            rm -rf /home/ubuntu/hoit-server/tobe
+            cd /home/ubuntu/hoit-server
+            
+            # Docker 이미지 로드
+            docker load < hoit-app.tar.gz
+            
+            # 기존 애플리케이션 컨테이너 중지
+            docker-compose stop hoit-app || true
+            
+            # 새 버전으로 재시작 (데이터베이스는 그대로 유지)
+            docker-compose up -d
+            
+            # 헬스체크
+            sleep 30
+            curl -f http://localhost:8090/health || echo "Health check failed"
+            
+            # 정리
+            rm -f hoit-app.tar.gz

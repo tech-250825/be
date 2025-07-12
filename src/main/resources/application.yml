@@ -21,7 +21,7 @@ spring:
     timeout-per-shutdown-phase: 1h
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://3.39.248.162:3306/midai
+    url: jdbc:mysql://mysql:3306/midai
     username: root
   security:
     oauth2:
