@@ -1,4 +1,4 @@
-name: Deploy To EC2
+name: Deploy To EC2 with Full Docker
 
 on:
   push:
@@ -27,19 +27,24 @@ jobs:
       - name: 테스트 및 빌드하기
         run: ./gradlew clean build
 
-      - name: 빌드된 파일 이름 변경하기
-        run: mv ./build/libs/*SNAPSHOT.jar ./project.jar
+      - name: Docker 이미지 빌드
+        run: |
+          docker build -t hoit-app:latest .
+          docker save hoit-app:latest | gzip > hoit-app.tar.gz
 
-      - name: SCP로 EC2에 빌드된 파일 전송하기
+      - name: Docker 이미지 및 docker-compose.yml 전송
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
-          source: project.jar
-          target: /home/ubuntu/hoit-server/tobe
+          source: |
+            hoit-app.tar.gz
+            docker-compose.yml
+          target: /home/ubuntu/hoit-server/
 
-      - name: SSH로 EC2에 접속하여 배포하기
+
+      - name: SSH로 EC2에 접속하여 배포
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -47,73 +52,68 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script_stop: true
           script: |
-            echo "🚀 배포 시작..."
-            
-            # 데이터베이스 컨테이너들이 실행 중인지 확인하고 시작
             cd /home/ubuntu/hoit-server
-            if ! docker-compose ps | grep -q "Up"; then
-              echo "📊 데이터베이스 컨테이너 시작 중..."
-              docker-compose up -d
-              sleep 30
-            else
-              echo "✅ 데이터베이스 컨테이너들이 이미 실행 중입니다."
+            
+            echo "🚀 완전한 Docker 배포 시작..."
+            
+            # Docker 이미지 로드
+            echo "📦 새 Docker 이미지 로드 중..."
+            docker load < hoit-app.tar.gz
+            
+            # 기존 hoit-app 컨테이너만 중지 (데이터베이스는 유지)
+            echo "🛑 기존 애플리케이션 컨테이너 중지 중..."
+            docker-compose stop hoit-app || true
+            docker-compose rm -f hoit-app || true
+            
+            # midai 데이터베이스 확인 (데이터베이스 컨테이너들이 실행 중인 경우)
+            if docker-compose ps mysql | grep -q "Up"; then
+              echo "🗄️ 데이터베이스 확인 중..."
+              docker exec mysql_1 mysql -u root -phan1000llm -e "CREATE DATABASE IF NOT EXISTS midai;" 2>/dev/null || true
             fi
             
-            # midai 데이터베이스 존재 확인 및 생성
-            echo "🗄️ 데이터베이스 확인 중..."
-            docker exec mysql_1 mysql -u root -phan1000llm -e "CREATE DATABASE IF NOT EXISTS midai;" 2>/dev/null || true
-            
-            # 기존 Spring Boot 애플리케이션 종료
-            echo "🛑 기존 애플리케이션 종료 중..."
-            sudo fuser -k -n tcp 8090 || true
-            sleep 5
-            
-            # 새 애플리케이션 파일 이동
-            echo "📦 새 애플리케이션 배포 중..."
-            rm -rf /home/ubuntu/hoit-server/current
-            mkdir -p /home/ubuntu/hoit-server/current
-            mv /home/ubuntu/hoit-server/tobe/project.jar /home/ubuntu/hoit-server/current/project.jar
-            cd /home/ubuntu/hoit-server/current
-            
-            # 데이터베이스 연결 대기
-            echo "⏳ 데이터베이스 준비 대기 중..."
-            for i in {1..30}; do
-              if docker exec mysql_1 mysql -u root -phan1000llm -e "SELECT 1;" >/dev/null 2>&1; then
-                echo "✅ MySQL 연결 성공!"
-                break
-              fi
-              echo "MySQL 연결 대기 중... ($i/30)"
-              sleep 2
-            done
-            
-            # Spring Boot 애플리케이션 시작
-            echo "🚀 새 애플리케이션 시작 중..."
-            nohup java -jar project.jar > ./output.log 2>&1 & 
+            # 모든 서비스 시작 (데이터베이스들 + 새로운 애플리케이션)
+            echo "🚀 모든 서비스 시작 중..."
+            docker-compose up -d
             
             # 애플리케이션 시작 대기
             echo "⏳ 애플리케이션 시작 대기 중..."
-            sleep 45
+            sleep 60
+            
+            # 컨테이너 상태 확인
+            echo "📊 컨테이너 상태 확인..."
+            docker-compose ps
+            
+            # 애플리케이션 로그 확인
+            echo "📋 애플리케이션 로그 (최근 20줄):"
+            docker-compose logs --tail=20 hoit-app
             
             # 헬스체크
             echo "🔍 애플리케이션 상태 확인..."
-            if curl -f http://localhost:8090/actuator/health >/dev/null 2>&1; then
-              echo "✅ 애플리케이션이 정상적으로 시작되었습니다!"
-            elif curl -f http://localhost:8090 >/dev/null 2>&1; then
-              echo "✅ 애플리케이션이 실행 중입니다! (헬스체크 엔드포인트 없음)"
-            else
-              echo "⚠️ 애플리케이션 상태 확인 실패. 로그를 확인하세요."
-              echo "📋 최근 로그:"
-              tail -20 output.log
-            fi
+            for i in {1..10}; do
+              if curl -f http://localhost:8090/actuator/health >/dev/null 2>&1; then
+                echo "✅ 애플리케이션이 정상적으로 시작되었습니다!"
+                break
+              elif curl -f http://localhost:8090 >/dev/null 2>&1; then
+                echo "✅ 애플리케이션이 실행 중입니다!"
+                break
+              else
+                echo "대기 중... ($i/10)"
+                sleep 10
+              fi
+            done
             
-            # 실행 상태 요약
+            # 최종 상태 요약
             echo ""
-            echo "📊 배포 결과 요약:"
-            echo "   - 데이터베이스: $(docker-compose ps --format 'table {{.Name}}\t{{.Status}}' | grep -E '(mysql|redis|rabbit)' | wc -l)개 서비스 실행 중"
-            echo "   - 애플리케이션: $(ps aux | grep 'java -jar project.jar' | grep -v grep | wc -l)개 프로세스 실행 중"
-            echo "   - 포트 8090: $(netstat -tlnp | grep ':8090 ' | wc -l)개 리스너"
+            echo "🎯 배포 결과 요약:"
+            echo "   - 실행 중인 컨테이너: $(docker-compose ps --services --filter status=running | wc -l)개"
+            echo "   - 포트 8090 상태: $(netstat -tlnp | grep ':8090 ' && echo '열림' || echo '닫힘')"
+            
+            # 모든 컨테이너 상태 출력
+            echo ""
+            echo "📋 전체 컨테이너 상태:"
+            docker-compose ps
             
             # 정리
-            rm -rf /home/ubuntu/hoit-server/tobe
+            rm -f hoit-app.tar.gz
             
-            echo "🎉 배포 완료!"
+            echo "🎉 Docker 배포 완료!"

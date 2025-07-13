@@ -6,7 +6,7 @@ server:
   shutdown: graceful
 spring:
   rabbitmq:
-    host: 172.17.0.1
+    host: rabbit-mq
     port: 5672
   docker:
     compose:
@@ -26,11 +26,11 @@ spring:
     timeout-per-shutdown-phase: 1h
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://172.17.0.1:3306/midai
+    url: jdbc:mysql://mysql:3306/midai
     username: root
   data:
     redis:
-      host: 172.17.0.1
+      host: redis
       port: 6379
   jpa:
     hibernate:
