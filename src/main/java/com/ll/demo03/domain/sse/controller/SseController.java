@@ -16,6 +16,9 @@ import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -91,46 +94,75 @@ public class SseController {
 
     @EventListener(ApplicationReadyEvent.class)
     public void subscribeToNotifications() {
-        redisMessageListenerContainer.addMessageListener((message, pattern) -> {
-            String msgBody = new String(message.getBody(), StandardCharsets.UTF_8);
-            NotificationMessage notificationMessage = parseNotificationMessage(msgBody);
+        System.out.println("=== Redis Connection Debug ===");
 
-            NotificationResponse response;
-            try {
-                response = objectMapper.readValue(notificationMessage.getNotificationJson(), NotificationResponse.class);
-            } catch (JsonProcessingException e) {
-                log.error("NotificationResponse 파싱 실패: {}", e.getMessage());
-                return;
+        try {
+            // Redis 연결 팩토리 정보 출력
+            RedisConnectionFactory connectionFactory = redisMessageListenerContainer.getConnectionFactory();
+            System.out.println("Connection Factory: " + connectionFactory);
+            System.out.println("Connection Factory Class: " + connectionFactory.getClass());
+
+            if (connectionFactory instanceof LettuceConnectionFactory) {
+                LettuceConnectionFactory lettuceFactory = (LettuceConnectionFactory) connectionFactory;
+                System.out.println("Host: " + lettuceFactory.getHostName());
+                System.out.println("Port: " + lettuceFactory.getPort());
+                System.out.println("Password: " + (lettuceFactory.getPassword() != null ? "SET" : "NOT_SET"));
             }
 
-            String sendJson;
-            try {
-                sendJson = objectMapper.writeValueAsString(response);
-            } catch (JsonProcessingException e) {
-                log.error("NotificationResponse 직렬화 실패: {}", e.getMessage());
-                sendJson = notificationMessage.getNotificationJson();
-            }
+            // 실제 연결 테스트
+            RedisConnection connection = connectionFactory.getConnection();
+            System.out.println("Connection SUCCESS: " + connection);
+            connection.close();
 
-            String memberKey = "sse:member:" + notificationMessage.getMemberId();
-            List<String> sessionIds = redisTemplate.opsForList().range(memberKey, 0, -1);
+            // 연결이 성공하면 리스너 등록
+            redisMessageListenerContainer.addMessageListener((message, pattern) -> {
+                String msgBody = new String(message.getBody(), StandardCharsets.UTF_8);
+                NotificationMessage notificationMessage = parseNotificationMessage(msgBody);
 
-            if (sessionIds != null) {
-                for (String sessionId : sessionIds) {
-                    SseEmitter emitter = sseEmitterRepository.get(sessionId);
-                    if (emitter != null) {
-                        try {
-                            emitter.send(SseEmitter.event().data(sendJson));
-                        } catch (Exception e) {
-                            log.error("❌ SSE 전송 실패: sessionId={}, error={}", sessionId, e.getMessage());
-                            sseEmitterRepository.remove(sessionId);
+                NotificationResponse response;
+                try {
+                    response = objectMapper.readValue(notificationMessage.getNotificationJson(), NotificationResponse.class);
+                } catch (JsonProcessingException e) {
+                    log.error("NotificationResponse 파싱 실패: {}", e.getMessage());
+                    return;
+                }
+
+                String sendJson;
+                try {
+                    sendJson = objectMapper.writeValueAsString(response);
+                } catch (JsonProcessingException e) {
+                    log.error("NotificationResponse 직렬화 실패: {}", e.getMessage());
+                    sendJson = notificationMessage.getNotificationJson();
+                }
+
+                String memberKey = "sse:member:" + notificationMessage.getMemberId();
+                List<String> sessionIds = redisTemplate.opsForList().range(memberKey, 0, -1);
+
+                if (sessionIds != null) {
+                    for (String sessionId : sessionIds) {
+                        SseEmitter emitter = sseEmitterRepository.get(sessionId);
+                        if (emitter != null) {
+                            try {
+                                emitter.send(SseEmitter.event().data(sendJson));
+                            } catch (Exception e) {
+                                log.error("❌ SSE 전송 실패: sessionId={}, error={}", sessionId, e.getMessage());
+                                sseEmitterRepository.remove(sessionId);
+                                redisTemplate.opsForList().remove(memberKey, 1, sessionId);
+                            }
+                        } else {
                             redisTemplate.opsForList().remove(memberKey, 1, sessionId);
                         }
-                    } else {
-                        redisTemplate.opsForList().remove(memberKey, 1, sessionId);
                     }
                 }
-            }
-        }, new ChannelTopic("sse-notification-channel"));
+            }, new ChannelTopic("sse-notification-channel"));
+
+            System.out.println("=== Redis Listener 등록 완료 ===");
+
+        } catch (Exception e) {
+            System.out.println("Redis Connection Error: " + e.getMessage());
+            e.printStackTrace();
+            System.out.println("=== Redis 연결 실패로 리스너 등록 건너뜀 ===");
+        }
     }
 
     private NotificationMessage parseNotificationMessage(String message) {

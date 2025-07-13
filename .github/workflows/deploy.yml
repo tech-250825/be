@@ -1,4 +1,4 @@
-name: Deploy To EC2 with Full Docker
+name: Deploy To EC2 with Cloud MySQL
 
 on:
   push:
@@ -51,48 +51,56 @@ jobs:
           script: |
             cd /home/ubuntu/hoit-server
             
-            echo "🚀 Docker 배포 시작..."
+            echo "🚀 배포 시작..."
             
-            # 기존 컨테이너들 중지 (데이터 보존)
-            echo "🛑 기존 컨테이너들 중지 중..."
-            docker-compose stop 2>/dev/null || echo "중지할 컨테이너 없음"
+            # 기존 앱 컨테이너만 중지 (Redis/RabbitMQ는 유지)
+            echo "🛑 기존 애플리케이션 중지 중..."
+            docker-compose stop hoit-app 2>/dev/null || echo "중지할 앱 컨테이너 없음"
+            docker-compose rm -f hoit-app 2>/dev/null || echo "제거할 앱 컨테이너 없음"
             
             # Docker 이미지 로드
             echo "📦 새 Docker 이미지 로드 중..."
             docker load < hoit-app.tar.gz
             
-            # 필요한 디렉토리 생성
+            # 필요한 디렉토리 생성 (Redis/RabbitMQ용)
             echo "📁 디렉토리 생성 중..."
-            mkdir -p mysql/volumes/var/lib/mysql
             mkdir -p dockerProjects/rabbitmq-1/volumes/{etc/rabbitmq,var/lib/rabbitmq,var/log/rabbitmq}
             
-            # 모든 서비스 시작
-            echo "🚀 모든 서비스 시작 중..."
-            docker-compose up -d
+            # Redis/RabbitMQ가 실행 중이 아니면 시작
+            echo "🔄 인프라 서비스 확인 중..."
+            docker-compose up -d redis rabbitmq
             
-            # 시작 대기
-            echo "⏳ 서비스 시작 대기 중..."
-            sleep 60
+            # 인프라 서비스 준비 대기
+            echo "⏳ 인프라 서비스 준비 대기..."
+            sleep 20
             
-            # 데이터베이스 생성
-            echo "🗄️ 데이터베이스 생성 중..."
-            docker-compose exec -T mysql mysql -u root -phan1000llm -e "CREATE DATABASE IF NOT EXISTS midai;" 2>/dev/null || true
+            # 애플리케이션 시작
+            echo "🚀 애플리케이션 시작 중..."
+            docker-compose up -d hoit-app
+            
+            # 애플리케이션 시작 대기
+            echo "⏳ 애플리케이션 시작 대기..."
+            sleep 30
             
             # 상태 확인
             echo "📊 컨테이너 상태:"
             docker-compose ps
             
             # 헬스체크
-            echo "🔍 애플리케이션 확인 중..."
-            for i in {1..10}; do
-              if curl -f http://localhost:8090 >/dev/null 2>&1; then
-                echo "✅ 애플리케이션 실행 중!"
+            echo "🔍 애플리케이션 헬스체크..."
+            for i in {1..12}; do
+              if curl -f http://localhost:8090/actuator/health >/dev/null 2>&1; then
+                echo "✅ 애플리케이션 정상 실행 중!"
                 break
               else
-                echo "대기 중... ($i/10)"
-                sleep 10
+                echo "대기 중... ($i/12)"
+                sleep 5
               fi
             done
+            
+            # 로그 확인 (문제 시 디버깅용)
+            echo "📝 애플리케이션 로그 (마지막 20줄):"
+            docker-compose logs --tail=20 hoit-app
             
             # 정리
             rm -f hoit-app.tar.gz
