@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  # Spring Boot 애플리케이션 추가
+  # Spring Boot 애플리케이션
   hoit-app:
     image: hoit-app:latest
     container_name: hoit-app

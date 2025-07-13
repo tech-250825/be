@@ -27,37 +27,18 @@ jobs:
       - name: 테스트 및 빌드하기
         run: ./gradlew clean build
 
-      - name: 빌드 결과 및 Dockerfile 확인
-        run: |
-          echo "=== 빌드 결과 확인 ==="
-          ls -la build/libs/
-          echo "=== Dockerfile 확인 ==="
-          if [ -f Dockerfile ]; then
-            echo "✅ Dockerfile 존재"
-            cat Dockerfile
-          else
-            echo "❌ Dockerfile이 없습니다!"
-            exit 1
-          fi
-
       - name: Docker 이미지 빌드
         run: |
-          echo "=== Docker 이미지 빌드 시작 ==="
           docker build -t hoit-app:latest .
-          echo "=== 이미지 빌드 완료 ==="
-          docker images | grep hoit-app
-          echo "=== 이미지 저장 시작 ==="
           docker save hoit-app:latest | gzip > hoit-app.tar.gz
-          echo "=== 저장 완료 ==="
-          ls -la hoit-app.tar.gz
 
-      - name: Docker 이미지만 EC2에 전송 (docker-compose.yml 제외)
+      - name: 파일들 EC2에 전송
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
-          source: hoit-app.tar.gz
+          source: hoit-app.tar.gz,docker-compose.yml
           target: /home/ubuntu/hoit-server/
 
       - name: SSH로 EC2에 접속하여 배포
@@ -70,105 +51,50 @@ jobs:
           script: |
             cd /home/ubuntu/hoit-server
             
-            echo "🚀 완전한 Docker 배포 시작..."
+            echo "🚀 Docker 배포 시작..."
             
-            # 전송된 파일 확인
-            echo "📋 전송된 파일 확인:"
-            ls -la hoit-app.tar.gz
+            # 기존 컨테이너들 중지 (데이터 보존)
+            echo "🛑 기존 컨테이너들 중지 중..."
+            docker-compose stop 2>/dev/null || echo "중지할 컨테이너 없음"
             
             # Docker 이미지 로드
             echo "📦 새 Docker 이미지 로드 중..."
-            if docker load < hoit-app.tar.gz; then
-              echo "✅ Docker 이미지 로드 성공"
-            else
-              echo "❌ Docker 이미지 로드 실패"
-              exit 1
-            fi
+            docker load < hoit-app.tar.gz
             
-            # 로드된 이미지 확인
-            echo "🔍 로드된 이미지 확인:"
-            docker images | grep hoit-app
-            
-            # docker-compose.yml 파일 확인
-            echo "📋 docker-compose.yml 확인:"
-            if [ -f docker-compose.yml ]; then
-              echo "✅ docker-compose.yml 존재"
-              # hoit-app 서비스가 정의되어 있는지 확인
-              if grep -q "hoit-app:" docker-compose.yml; then
-                echo "✅ hoit-app 서비스 정의됨"
-              else
-                echo "❌ hoit-app 서비스가 docker-compose.yml에 정의되지 않음!"
-                echo "현재 docker-compose.yml 내용:"
-                cat docker-compose.yml
-                exit 1
-              fi
-            else
-              echo "❌ docker-compose.yml이 없습니다!"
-              exit 1
-            fi
-            
-            # 기존 hoit-app 컨테이너만 중지 (데이터베이스는 유지)
-            echo "🛑 기존 애플리케이션 컨테이너 중지 중..."
-            docker-compose stop hoit-app 2>/dev/null || echo "hoit-app 컨테이너가 실행 중이지 않음"
-            docker-compose rm -f hoit-app 2>/dev/null || echo "제거할 hoit-app 컨테이너 없음"
-            
-            # midai 데이터베이스 확인
-            echo "🗄️ 데이터베이스 확인 중..."
-            if docker ps | grep -q mysql_1; then
-              docker exec mysql_1 mysql -u root -phan1000llm -e "CREATE DATABASE IF NOT EXISTS midai;" 2>/dev/null || true
-              echo "✅ 데이터베이스 확인 완료"
-            else
-              echo "⚠️ MySQL 컨테이너가 실행 중이지 않음"
-            fi
+            # 필요한 디렉토리 생성
+            echo "📁 디렉토리 생성 중..."
+            mkdir -p mysql/volumes/var/lib/mysql
+            mkdir -p dockerProjects/rabbitmq-1/volumes/{etc/rabbitmq,var/lib/rabbitmq,var/log/rabbitmq}
             
             # 모든 서비스 시작
             echo "🚀 모든 서비스 시작 중..."
             docker-compose up -d
             
-            # 애플리케이션 시작 대기
-            echo "⏳ 애플리케이션 시작 대기 중..."
+            # 시작 대기
+            echo "⏳ 서비스 시작 대기 중..."
             sleep 60
             
-            # 컨테이너 상태 확인
-            echo "📊 컨테이너 상태 확인..."
+            # 데이터베이스 생성
+            echo "🗄️ 데이터베이스 생성 중..."
+            docker-compose exec -T mysql mysql -u root -phan1000llm -e "CREATE DATABASE IF NOT EXISTS midai;" 2>/dev/null || true
+            
+            # 상태 확인
+            echo "📊 컨테이너 상태:"
             docker-compose ps
             
-            # 애플리케이션 로그 확인
-            echo "📋 애플리케이션 로그 (최근 30줄):"
-            docker-compose logs --tail=30 hoit-app || echo "hoit-app 로그를 가져올 수 없음"
-            
             # 헬스체크
-            echo "🔍 애플리케이션 상태 확인..."
+            echo "🔍 애플리케이션 확인 중..."
             for i in {1..10}; do
-              if curl -f http://localhost:8090/actuator/health >/dev/null 2>&1; then
-                echo "✅ 애플리케이션이 정상적으로 시작되었습니다!"
-                break
-              elif curl -f http://localhost:8090 >/dev/null 2>&1; then
-                echo "✅ 애플리케이션이 실행 중입니다!"
+              if curl -f http://localhost:8090 >/dev/null 2>&1; then
+                echo "✅ 애플리케이션 실행 중!"
                 break
               else
                 echo "대기 중... ($i/10)"
-                if [ $i -eq 10 ]; then
-                  echo "❌ 애플리케이션 시작 실패"
-                  echo "📋 전체 로그:"
-                  docker-compose logs hoit-app
-                fi
                 sleep 10
               fi
             done
             
-            # 최종 상태 요약
-            echo ""
-            echo "🎯 배포 결과 요약:"
-            echo "   - 실행 중인 컨테이너: $(docker ps | wc -l)개"
-            echo "   - 포트 8090 상태: $(netstat -tlnp | grep ':8090' && echo '열림' || echo '닫힘')"
-            
-            # 모든 컨테이너 상태 출력
-            echo ""
-            echo "📋 전체 컨테이너 상태:"
-            docker-compose ps
-            
             # 정리
             rm -f hoit-app.tar.gz
             
-            echo "🎉 Docker 배포 완료!"
+            echo "🎉 배포 완료!"
