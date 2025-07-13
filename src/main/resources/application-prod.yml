@@ -26,8 +26,8 @@ spring:
     timeout-per-shutdown-phase: 1h
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://solana1000.synology.me:3306/hoit_db
-    username: root
+    url: jdbc:mysql://hoit-database-1.cdogc6048p9x.ap-northeast-2.rds.amazonaws.com:3306/hoit_db
+    username: hoituser
   data:
     redis:
       host: redis
