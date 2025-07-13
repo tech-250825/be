@@ -36,6 +36,16 @@ services:
     networks:
       - hoit-network
     # 볼륨 권한 문제로 임시 제거
+  nginx-proxy-manager:
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    ports:
+      - '80:80'      # HTTP
+      - '443:443'    # HTTPS
+      - '81:81'      # 관리 웹 인터페이스
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
 
 networks:
   hoit-network:
