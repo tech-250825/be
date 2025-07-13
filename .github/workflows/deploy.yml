@@ -27,22 +27,38 @@ jobs:
       - name: 테스트 및 빌드하기
         run: ./gradlew clean build
 
+      - name: 빌드 결과 및 Dockerfile 확인
+        run: |
+          echo "=== 빌드 결과 확인 ==="
+          ls -la build/libs/
+          echo "=== Dockerfile 확인 ==="
+          if [ -f Dockerfile ]; then
+            echo "✅ Dockerfile 존재"
+            cat Dockerfile
+          else
+            echo "❌ Dockerfile이 없습니다!"
+            exit 1
+          fi
+
       - name: Docker 이미지 빌드
         run: |
+          echo "=== Docker 이미지 빌드 시작 ==="
           docker build -t hoit-app:latest .
+          echo "=== 이미지 빌드 완료 ==="
+          docker images | grep hoit-app
+          echo "=== 이미지 저장 시작 ==="
           docker save hoit-app:latest | gzip > hoit-app.tar.gz
+          echo "=== 저장 완료 ==="
+          ls -la hoit-app.tar.gz
 
-      - name: Docker 이미지 및 docker-compose.yml 전송
+      - name: Docker 이미지만 EC2에 전송 (docker-compose.yml 제외)
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
-          source: |
-            hoit-app.tar.gz
-            docker-compose.yml
+          source: hoit-app.tar.gz
           target: /home/ubuntu/hoit-server/
-
 
       - name: SSH로 EC2에 접속하여 배포
         uses: appleboy/ssh-action@v1.0.3
@@ -56,22 +72,56 @@ jobs:
             
             echo "🚀 완전한 Docker 배포 시작..."
             
+            # 전송된 파일 확인
+            echo "📋 전송된 파일 확인:"
+            ls -la hoit-app.tar.gz
+            
             # Docker 이미지 로드
             echo "📦 새 Docker 이미지 로드 중..."
-            docker load < hoit-app.tar.gz
+            if docker load < hoit-app.tar.gz; then
+              echo "✅ Docker 이미지 로드 성공"
+            else
+              echo "❌ Docker 이미지 로드 실패"
+              exit 1
+            fi
+            
+            # 로드된 이미지 확인
+            echo "🔍 로드된 이미지 확인:"
+            docker images | grep hoit-app
+            
+            # docker-compose.yml 파일 확인
+            echo "📋 docker-compose.yml 확인:"
+            if [ -f docker-compose.yml ]; then
+              echo "✅ docker-compose.yml 존재"
+              # hoit-app 서비스가 정의되어 있는지 확인
+              if grep -q "hoit-app:" docker-compose.yml; then
+                echo "✅ hoit-app 서비스 정의됨"
+              else
+                echo "❌ hoit-app 서비스가 docker-compose.yml에 정의되지 않음!"
+                echo "현재 docker-compose.yml 내용:"
+                cat docker-compose.yml
+                exit 1
+              fi
+            else
+              echo "❌ docker-compose.yml이 없습니다!"
+              exit 1
+            fi
             
             # 기존 hoit-app 컨테이너만 중지 (데이터베이스는 유지)
             echo "🛑 기존 애플리케이션 컨테이너 중지 중..."
-            docker-compose stop hoit-app || true
-            docker-compose rm -f hoit-app || true
+            docker-compose stop hoit-app 2>/dev/null || echo "hoit-app 컨테이너가 실행 중이지 않음"
+            docker-compose rm -f hoit-app 2>/dev/null || echo "제거할 hoit-app 컨테이너 없음"
             
-            # midai 데이터베이스 확인 (데이터베이스 컨테이너들이 실행 중인 경우)
-            if docker-compose ps mysql | grep -q "Up"; then
-              echo "🗄️ 데이터베이스 확인 중..."
+            # midai 데이터베이스 확인
+            echo "🗄️ 데이터베이스 확인 중..."
+            if docker ps | grep -q mysql_1; then
               docker exec mysql_1 mysql -u root -phan1000llm -e "CREATE DATABASE IF NOT EXISTS midai;" 2>/dev/null || true
+              echo "✅ 데이터베이스 확인 완료"
+            else
+              echo "⚠️ MySQL 컨테이너가 실행 중이지 않음"
             fi
             
-            # 모든 서비스 시작 (데이터베이스들 + 새로운 애플리케이션)
+            # 모든 서비스 시작
             echo "🚀 모든 서비스 시작 중..."
             docker-compose up -d
             
@@ -84,8 +134,8 @@ jobs:
             docker-compose ps
             
             # 애플리케이션 로그 확인
-            echo "📋 애플리케이션 로그 (최근 20줄):"
-            docker-compose logs --tail=20 hoit-app
+            echo "📋 애플리케이션 로그 (최근 30줄):"
+            docker-compose logs --tail=30 hoit-app || echo "hoit-app 로그를 가져올 수 없음"
             
             # 헬스체크
             echo "🔍 애플리케이션 상태 확인..."
@@ -98,6 +148,11 @@ jobs:
                 break
               else
                 echo "대기 중... ($i/10)"
+                if [ $i -eq 10 ]; then
+                  echo "❌ 애플리케이션 시작 실패"
+                  echo "📋 전체 로그:"
+                  docker-compose logs hoit-app
+                fi
                 sleep 10
               fi
             done
@@ -105,8 +160,8 @@ jobs:
             # 최종 상태 요약
             echo ""
             echo "🎯 배포 결과 요약:"
-            echo "   - 실행 중인 컨테이너: $(docker-compose ps --services --filter status=running | wc -l)개"
-            echo "   - 포트 8090 상태: $(netstat -tlnp | grep ':8090 ' && echo '열림' || echo '닫힘')"
+            echo "   - 실행 중인 컨테이너: $(docker ps | wc -l)개"
+            echo "   - 포트 8090 상태: $(netstat -tlnp | grep ':8090' && echo '열림' || echo '닫힘')"
             
             # 모든 컨테이너 상태 출력
             echo ""
