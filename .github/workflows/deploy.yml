@@ -68,7 +68,7 @@ jobs:
             
             # Redis/RabbitMQ가 실행 중이 아니면 시작
             echo "🔄 인프라 서비스 확인 중..."
-            docker compose up -d redis rabbit-mq
+            docker compose up -d redis rabbit-mq nginx-proxy-manager
             
             # 인프라 서비스 준비 대기
             echo "⏳ 인프라 서비스 준비 대기..."
