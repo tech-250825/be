@@ -1,6 +1,6 @@
 app:
   client:
-    url: https://front.hoit.my:3000
+    url: http://localhost:3000
 server:
   port: 8090
   shutdown: graceful

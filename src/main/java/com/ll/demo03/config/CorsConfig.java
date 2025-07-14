@@ -16,7 +16,7 @@ public class CorsConfig {
     @Primary
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("http://localhost.com:5173", "https://www.hoit.my","https://www.hoit.my", "https://localhost.com:5173" , "https://front.hoit.my:3000")); // 모든 도메인 허용
+        configuration.setAllowedOriginPatterns(List.of("http://localhost.com:5173", "https://www.hoit.my","https://www.hoit.my", "https://localhost.com:5173" , "https://front.hoit.my:3000", "http://localhost:3000")); // 모든 도메인 허용
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 모든 메소드 허용
         configuration.setAllowedHeaders(List.of("*")); // 모든 헤더 허용
         configuration.setExposedHeaders(List.of("Set-Cookie"));

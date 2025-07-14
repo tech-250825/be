@@ -46,6 +46,8 @@ services:
     volumes:
       - ./data:/data
       - ./letsencrypt:/etc/letsencrypt
+    networks:
+      - hoit-network   # 🔧 이 줄 추가!
 
 networks:
   hoit-network:
