@@ -1,24 +1,17 @@
 package com.ll.demo03.domain.taskProcessor;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ll.demo03.domain.member.entity.Member;
 import com.ll.demo03.domain.member.repository.MemberRepository;
-import com.ll.demo03.domain.notification.entity.Notification;
-import com.ll.demo03.domain.notification.entity.NotificationStatus;
-import com.ll.demo03.domain.notification.entity.NotificationType;
 import com.ll.demo03.domain.notification.repository.NotificationRepository;
 import com.ll.demo03.domain.notification.service.NotificationService;
-import com.ll.demo03.domain.imageTask.entity.ImageTask;
-import com.ll.demo03.domain.upscaledTask.entity.UpscaleTask;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
-import java.util.HashMap;
-import java.util.Map;
+
 
 @Component
 @Slf4j

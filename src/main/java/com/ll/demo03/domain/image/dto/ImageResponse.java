@@ -19,7 +19,7 @@ public class ImageResponse {
     private Boolean isLiked;
     private Boolean isShared;
     private Boolean isUpscaled;
-    private String taskId;
+    private Long taskId;
     private int index;
     private LocalDateTime createdAt;
 
@@ -27,19 +27,19 @@ public class ImageResponse {
     public static ImageResponse of(Image image, boolean isLiked) {
         String prompt;
         String ratio = null;
-        String taskId;
+        Long taskId;
 
         if (image.getImageTask() != null) {
-            prompt = image.getImageTask().getRawPrompt();
-            ratio = image.getImageTask().getRatio();
-            taskId = image.getImageTask().getTaskId();
+            prompt = image.getImageTask().getPrompt();
+//            ratio = image.getImageTask().getRatio();
+            taskId = image.getImageTask().getId();
         } else if (image.getVideoTask() != null) {
             prompt = image.getVideoTask().getPrompt();
-            taskId = String.valueOf(image.getVideoTask().getId());
+            taskId = image.getVideoTask().getId();
         } else {
             prompt = "알 수 없음";
             ratio = null;
-            taskId = "unknown";
+            taskId = 0L;
         }
 
         return new ImageResponse(
@@ -50,7 +50,7 @@ public class ImageResponse {
                 ratio,
                 image.getLikeCount(),
                 isLiked,
-                image.getUpscaleTask() != null || Boolean.TRUE.equals(image.getIsShared()),
+                Boolean.TRUE.equals(image.getIsShared()),
                 image.getIsUpscaled(),
                 taskId,
                 image.getImgIndex(),

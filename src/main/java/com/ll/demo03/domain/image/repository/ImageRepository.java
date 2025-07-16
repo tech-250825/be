@@ -13,8 +13,8 @@ import java.util.Optional;
 
 public interface ImageRepository extends JpaRepository<Image, Long>, JpaSpecificationExecutor<Image> {
 
-    @Query("SELECT i FROM Image i WHERE i.task.taskId = :taskId AND i.imgIndex = :index")
-    Optional<Image> getByTaskIdAndIndex(@Param("taskId") String taskId, @Param("index") Integer index);
+//    @Query("SELECT i FROM Image i WHERE i.task.taskId = :taskId AND i.imgIndex = :index")
+//    Optional<Image> getByTaskIdAndIndex(@Param("taskId") Long taskId, @Param("index") Integer index);
 
     boolean existsByIdLessThanAndMemberId(Long id, Long memberId);
 

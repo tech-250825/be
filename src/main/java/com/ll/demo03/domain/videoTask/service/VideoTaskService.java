@@ -52,7 +52,7 @@ public class VideoTaskService {
         }
         """, webhook, taskId, prompt, lora);
 
-            HttpResponse<String> response = Unirest.post("https://api.runpod.ai/v2/xsrpswvmyjpmhw/run")
+            HttpResponse<String> response = Unirest.post("https://api.runpod.ai/v2/vmyn0177mpa0ev/run")
                     .header("accept", "application/json")
                     .header("authorization", runpodApiKey)
                     .header("content-type", "application/json")

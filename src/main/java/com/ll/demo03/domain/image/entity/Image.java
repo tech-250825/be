@@ -2,7 +2,6 @@ package com.ll.demo03.domain.image.entity;
 import com.ll.demo03.domain.member.entity.Member;
 import com.ll.demo03.domain.folder.entity.Folder;
 import com.ll.demo03.domain.imageTask.entity.ImageTask;
-import com.ll.demo03.domain.upscaledTask.entity.UpscaleTask;
 import com.ll.demo03.domain.videoTask.entity.VideoTask;
 import com.ll.demo03.global.base.BaseEntity;
 import jakarta.annotation.Nullable;
@@ -32,11 +31,6 @@ public class Image extends BaseEntity {
 
     private int imgIndex;
 
-    @Nullable
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "upscaleTask_id")
-    private UpscaleTask upscaleTask;
-
     private int likeCount;
 
     @Nullable
@@ -60,15 +54,6 @@ public class Image extends BaseEntity {
                 .url(url)
                 .imageTask(imageTask)
                 .member(imageTask.getMember())
-                .build();
-    }
-
-    public static Image ofUpscale(String url, ImageTask imageTask, UpscaleTask upscaleTask) {
-        return Image.builder()
-                .url(url)
-                .imageTask(imageTask)
-                .upscaleTask(upscaleTask)
-                .member(upscaleTask.getMember())
                 .build();
     }
 

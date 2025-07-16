@@ -76,7 +76,7 @@ logging:
     org.springframework.security.oauth2: DEBUG
     org.springframework.web.client: DEBUG
 custom:
-  webhook-url: https://99f3fc2196bd.ngrok-free.app
+  webhook-url: https://3d51887232ce.ngrok-free.app
   site:
     name: "My Site Prod"
 

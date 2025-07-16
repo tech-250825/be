@@ -7,7 +7,6 @@ import com.ll.demo03.domain.member.dto.MemberDto;
 import com.ll.demo03.domain.notification.repository.NotificationRepository;
 import com.ll.demo03.domain.sharedImage.repository.SharedImageRepository;
 import com.ll.demo03.domain.imageTask.repository.ImageTaskRepository;
-import com.ll.demo03.domain.upscaledTask.repository.UpscaleTaskRepository;
 import com.ll.demo03.domain.videoTask.repository.VideoTaskRepository;
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
@@ -33,7 +32,6 @@ public class MemberService {
     private final ImageRepository imageRepository;
     private final FolderRepository folderRepository;
     private final ImageTaskRepository imageTaskRepository;
-    private final UpscaleTaskRepository upscaleTaskRepository;
     private final VideoTaskRepository videoTaskRepository;
     private final NotificationRepository notificationRepository;
 
@@ -121,8 +119,6 @@ public class MemberService {
         // 3. 알림 삭제 (member를 참조하므로 member 삭제 전에 먼저 삭제)
         notificationRepository.deleteByMemberId(memberId);
 
-        // 4. 업스케일/비디오 태스크 삭제 (이미지를 참조할 수 있음)
-        upscaleTaskRepository.deleteByMemberId(memberId);
         videoTaskRepository.deleteByMemberId(memberId);
 
         // 5. 태스크 삭제 (이미지를 참조할 수 있음)
