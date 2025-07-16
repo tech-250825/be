@@ -1,7 +1,7 @@
 package com.ll.demo03.domain.image.entity;
 import com.ll.demo03.domain.member.entity.Member;
 import com.ll.demo03.domain.folder.entity.Folder;
-import com.ll.demo03.domain.task.entity.Task;
+import com.ll.demo03.domain.imageTask.entity.ImageTask;
 import com.ll.demo03.domain.upscaledTask.entity.UpscaleTask;
 import com.ll.demo03.domain.videoTask.entity.VideoTask;
 import com.ll.demo03.global.base.BaseEntity;
@@ -28,7 +28,7 @@ public class Image extends BaseEntity {
     @Nullable
     @ManyToOne(fetch= FetchType.LAZY)
     @JoinColumn(name = "task_id")
-    private Task task;
+    private ImageTask imageTask;
 
     private int imgIndex;
 
@@ -55,18 +55,18 @@ public class Image extends BaseEntity {
     @Builder.Default
     private Boolean isUpscaled = false;
 
-    public static Image of(String url, Task task) {
+    public static Image of(String url, ImageTask imageTask) {
         return Image.builder()
                 .url(url)
-                .task(task)
-                .member(task.getMember())
+                .imageTask(imageTask)
+                .member(imageTask.getMember())
                 .build();
     }
 
-    public static Image ofUpscale(String url, Task task, UpscaleTask upscaleTask) {
+    public static Image ofUpscale(String url, ImageTask imageTask, UpscaleTask upscaleTask) {
         return Image.builder()
                 .url(url)
-                .task(task)
+                .imageTask(imageTask)
                 .upscaleTask(upscaleTask)
                 .member(upscaleTask.getMember())
                 .build();

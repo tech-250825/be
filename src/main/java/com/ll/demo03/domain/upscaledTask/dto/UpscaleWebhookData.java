@@ -1,7 +1,6 @@
 package com.ll.demo03.domain.upscaledTask.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.ll.demo03.domain.task.dto.*;
 import lombok.Getter;
 import lombok.Setter;
 

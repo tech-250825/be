@@ -29,13 +29,13 @@ public class ImageResponse {
         String ratio = null;
         String taskId;
 
-        if (image.getTask() != null) {
-            prompt = image.getTask().getRawPrompt();
-            ratio = image.getTask().getRatio();
-            taskId = image.getTask().getTaskId();
+        if (image.getImageTask() != null) {
+            prompt = image.getImageTask().getRawPrompt();
+            ratio = image.getImageTask().getRatio();
+            taskId = image.getImageTask().getTaskId();
         } else if (image.getVideoTask() != null) {
             prompt = image.getVideoTask().getPrompt();
-            taskId = image.getVideoTask().getTaskId();
+            taskId = String.valueOf(image.getVideoTask().getId());
         } else {
             prompt = "알 수 없음";
             ratio = null;

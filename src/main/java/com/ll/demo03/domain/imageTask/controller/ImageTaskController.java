@@ -1,13 +1,16 @@
-package com.ll.demo03.domain.videoTask.controller;
+package com.ll.demo03.domain.imageTask.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import com.ll.demo03.domain.imageTask.dto.ImageMessageRequest;
+import com.ll.demo03.domain.imageTask.dto.ImageTaskRequest;
+import com.ll.demo03.domain.imageTask.dto.ImageWebhookEvent;
+import com.ll.demo03.domain.imageTask.service.ImageMessageProducer;
 import com.ll.demo03.domain.member.entity.Member;
 import com.ll.demo03.domain.oauth.entity.PrincipalDetails;
-import com.ll.demo03.domain.imageTask.service.ImageMessageProducer;
-import com.ll.demo03.domain.videoTask.dto.VideoMessageRequest;
-import com.ll.demo03.domain.videoTask.dto.VideoTaskRequest;
 import com.ll.demo03.domain.videoTask.dto.VideoWebhookEvent;
+import com.ll.demo03.domain.webhook.ImageWebhookProcessor;
 import com.ll.demo03.domain.webhook.VideoWebhookProcessor;
 import com.ll.demo03.global.dto.GlobalResponse;
 import com.ll.demo03.global.error.ErrorCode;
@@ -18,9 +21,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -29,11 +36,11 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Transactional
 @RestController
-@RequestMapping("/api/videos")
+@RequestMapping("/api/images")
 @Slf4j
-public class VideoTaskController {
+public class ImageTaskController {
 
-    private final VideoWebhookProcessor videoWebhookProcessor;
+    private final ImageWebhookProcessor imageWebhookProcessor;
     private final ImageMessageProducer imageMessageProducer;
     private final StringRedisTemplate redisTemplate;
     private final ObjectMapper objectMapper;
@@ -45,8 +52,8 @@ public class VideoTaskController {
 
     @PostMapping(value = "/create")
     @PreAuthorize("isAuthenticated()")
-    public GlobalResponse createVideos(
-            @RequestBody VideoTaskRequest videoTaskRequest,
+    public GlobalResponse createImages(
+            @RequestBody ImageTaskRequest imageTaskRequest,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
         Member member = principalDetails.user();
@@ -54,18 +61,18 @@ public class VideoTaskController {
         if (credit <= 0) {
             throw new CustomException(ErrorCode.NO_CREDIT);
         }
-        String prompt = videoTaskRequest.getPrompt();
-        String newPrompt = modifyPrompt(videoTaskRequest.getPrompt());
+        String prompt = imageTaskRequest.getPrompt();
+        String newPrompt = modifyPrompt(imageTaskRequest.getPrompt());
 
         String finalPrompt = (newPrompt == null || newPrompt.isBlank()) ? prompt : newPrompt;
 
-        VideoMessageRequest videoMessageRequest = new VideoMessageRequest();
-        videoMessageRequest.setMemberId(member.getId());
-        videoMessageRequest.setLora(videoTaskRequest.getLora());
-        videoMessageRequest.setPrompt(finalPrompt);
+        ImageMessageRequest imageMessageRequest = new ImageMessageRequest();
+        imageMessageRequest.setMemberId(member.getId());
+        imageMessageRequest.setLora(imageTaskRequest.getLora());
+        imageMessageRequest.setPrompt(finalPrompt);
 
         try {
-            imageMessageProducer.sendVideoCreationMessage(videoMessageRequest);
+            imageMessageProducer.sendImageCreationMessage(imageMessageRequest);
 
             log.info("영상 생성 요청을 메시지 큐에 전송했습니다. MemberId: {}", member.getId());
             return GlobalResponse.success();
@@ -122,11 +129,11 @@ public class VideoTaskController {
 
     @PostMapping("/webhook")
     public GlobalResponse handleWebhook(
-            @RequestBody VideoWebhookEvent event) {
+            @RequestBody ImageWebhookEvent event) {
 
         try {
             log.info("Received webhook event: {}", event);
-            videoWebhookProcessor.processWebhookEvent(event);
+            imageWebhookProcessor.processWebhookEvent(event);
 
             return GlobalResponse.success();
         } catch (Exception e) {

@@ -1,7 +1,7 @@
-package com.ll.demo03.domain.task.service;
+package com.ll.demo03.domain.imageTask.service;
 
-import com.ll.demo03.domain.task.dto.ImageRequestMessage;
 import com.ll.demo03.config.RabbitMQConfig;
+import com.ll.demo03.domain.imageTask.dto.ImageMessageRequest;
 import com.ll.demo03.domain.upscaledTask.dto.UpscaleTaskRequestMessage;
 import com.ll.demo03.domain.videoTask.dto.VideoMessageRequest;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ public class ImageMessageProducer {
 
     private final RabbitTemplate rabbitTemplate;
 
-    public void sendImageCreationMessage(ImageRequestMessage message) {
+    public void sendImageCreationMessage(ImageMessageRequest message) {
         rabbitTemplate.convertAndSend(
                 RabbitMQConfig.IMAGE_EXCHANGE,
                 RabbitMQConfig.IMAGE_CREATE_ROUTING_KEY,

@@ -1,10 +1,8 @@
-package com.ll.demo03.domain.videoTask.entity;
+package com.ll.demo03.domain.imageTask.entity;
 
 import com.ll.demo03.domain.member.entity.Member;
 import com.ll.demo03.global.base.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,7 +11,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @Entity
-public class VideoTask extends BaseEntity {
+public class ImageTask extends BaseEntity {
 
     private String prompt;
 

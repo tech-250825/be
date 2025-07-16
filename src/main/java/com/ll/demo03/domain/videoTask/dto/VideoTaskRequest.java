@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VideoTaskRequest {
+    private String lora;
     private String prompt;
-    private String imageUrl;
 }

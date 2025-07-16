@@ -28,9 +28,9 @@ public class SharedImagesResponse {
         String rawPrompt = null;
         String ratio = null;
 
-        if (image.getTask() != null) {
-            rawPrompt = image.getTask().getRawPrompt();
-            ratio = image.getTask().getRatio();
+        if (image.getImageTask() != null) {
+            rawPrompt = image.getImageTask().getRawPrompt();
+            ratio = image.getImageTask().getRatio();
         }
 
         return new SharedImagesResponse(

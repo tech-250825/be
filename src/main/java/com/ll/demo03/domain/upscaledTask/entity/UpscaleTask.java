@@ -1,7 +1,7 @@
 package com.ll.demo03.domain.upscaledTask.entity;
 
 import com.ll.demo03.domain.member.entity.Member;
-import com.ll.demo03.domain.task.entity.Task;
+import com.ll.demo03.domain.imageTask.entity.ImageTask;
 import com.ll.demo03.global.base.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -23,7 +23,7 @@ public class UpscaleTask extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "task_id")
-    private Task task;
+    private ImageTask imageTask;
 
     private String newTaskId;
 

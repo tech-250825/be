@@ -10,7 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VideoMessageRequest {
+    private String lora;
     private String prompt;
-    private String imageUrl;
     private Long memberId;
 }

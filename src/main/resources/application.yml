@@ -1,6 +1,6 @@
 app:
   client:
-    url: http://localhost:3000/home
+    url: http://localhost:8090
 server:
   port: 8090
   shutdown: graceful
@@ -20,6 +20,7 @@ spring:
   lifecycle:
     timeout-per-shutdown-phase: 1h
   datasource:
+    maximum-pool-size: 5
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://hoit-database-1.cdogc6048p9x.ap-northeast-2.rds.amazonaws.com:3306/hoit_db
     username: hoituser
@@ -29,6 +30,9 @@ spring:
         registration:
           google:
             redirect-uri: http://localhost:8090/auth/google/redirect
+  rabbitmq:
+    host: localhost
+    port: 5672
   data:
     redis:
       host: localhost
@@ -72,7 +76,7 @@ logging:
     org.springframework.security.oauth2: DEBUG
     org.springframework.web.client: DEBUG
 custom:
-  webhook-url: https://api.hoit.my
+  webhook-url: https://99f3fc2196bd.ngrok-free.app
   site:
     name: "My Site Prod"
 

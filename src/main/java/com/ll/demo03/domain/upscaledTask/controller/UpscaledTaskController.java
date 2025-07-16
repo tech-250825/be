@@ -1,14 +1,11 @@
 package com.ll.demo03.domain.upscaledTask.controller;
 
 import com.ll.demo03.domain.member.entity.Member;
-import com.ll.demo03.domain.member.repository.MemberRepository;
 import com.ll.demo03.domain.oauth.entity.PrincipalDetails;
-import com.ll.demo03.domain.task.service.ImageMessageProducer;
+import com.ll.demo03.domain.imageTask.service.ImageMessageProducer;
 import com.ll.demo03.domain.upscaledTask.dto.UpscaleTaskRequest;
-import com.ll.demo03.config.RabbitMQConfig;
 import com.ll.demo03.domain.upscaledTask.dto.UpscaleTaskRequestMessage;
 import com.ll.demo03.domain.upscaledTask.dto.UpscaleWebhookEvent;
-import com.ll.demo03.domain.upscaledTask.service.UpscaleTaskService;
 import com.ll.demo03.domain.webhook.UpscaleWebhookProcessor;
 import com.ll.demo03.global.dto.GlobalResponse;
 import com.ll.demo03.global.error.ErrorCode;
@@ -16,15 +13,11 @@ import com.ll.demo03.global.exception.CustomException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 
 @RequiredArgsConstructor

@@ -6,13 +6,12 @@ import com.ll.demo03.domain.like.repository.LikeRepository;
 import com.ll.demo03.domain.member.dto.MemberDto;
 import com.ll.demo03.domain.notification.repository.NotificationRepository;
 import com.ll.demo03.domain.sharedImage.repository.SharedImageRepository;
-import com.ll.demo03.domain.task.repository.TaskRepository;
+import com.ll.demo03.domain.imageTask.repository.ImageTaskRepository;
 import com.ll.demo03.domain.upscaledTask.repository.UpscaleTaskRepository;
 import com.ll.demo03.domain.videoTask.repository.VideoTaskRepository;
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import com.ll.demo03.domain.member.entity.Member;
 import com.ll.demo03.domain.member.repository.MemberRepository;
@@ -33,7 +32,7 @@ public class MemberService {
     private final LikeRepository likeRepository;
     private final ImageRepository imageRepository;
     private final FolderRepository folderRepository;
-    private final TaskRepository taskRepository;
+    private final ImageTaskRepository imageTaskRepository;
     private final UpscaleTaskRepository upscaleTaskRepository;
     private final VideoTaskRepository videoTaskRepository;
     private final NotificationRepository notificationRepository;
@@ -127,7 +126,7 @@ public class MemberService {
         videoTaskRepository.deleteByMemberId(memberId);
 
         // 5. 태스크 삭제 (이미지를 참조할 수 있음)
-        taskRepository.deleteByMemberId(memberId);
+        imageTaskRepository.deleteByMemberId(memberId);
 
         // 6. 이미지 삭제 (폴더를 참조하므로 폴더 삭제 전에 먼저 삭제)
         imageRepository.deleteByMemberId(memberId);

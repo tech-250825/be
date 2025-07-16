@@ -10,8 +10,8 @@ import com.ll.demo03.domain.notification.entity.NotificationStatus;
 import com.ll.demo03.domain.notification.entity.NotificationType;
 import com.ll.demo03.domain.notification.repository.NotificationRepository;
 import com.ll.demo03.domain.notification.service.NotificationService;
-import com.ll.demo03.domain.task.entity.Task;
-import com.ll.demo03.domain.task.repository.TaskRepository;
+import com.ll.demo03.domain.imageTask.entity.ImageTask;
+import com.ll.demo03.domain.imageTask.repository.ImageTaskRepository;
 import com.ll.demo03.domain.upscaledTask.dto.UpscaleWebhookEvent;
 import com.ll.demo03.domain.upscaledTask.entity.UpscaleTask;
 import com.ll.demo03.domain.upscaledTask.repository.UpscaleTaskRepository;
@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -32,7 +31,7 @@ import java.util.Map;
 public class UpscaleWebhookProcessor implements WebhookProcessor<UpscaleWebhookEvent> {
 
     private final UpscaleTaskRepository upscaleTaskRepository;
-    private final TaskRepository taskRepository;
+    private final ImageTaskRepository imageTaskRepository;
     private final ImageRepository imageRepository;
     private final NotificationRepository notificationRepository;
     private final NotificationService notificationService;
@@ -69,7 +68,6 @@ public class UpscaleWebhookProcessor implements WebhookProcessor<UpscaleWebhookE
         }
     }
 
-    @Override
     public String getTaskId(UpscaleWebhookEvent event) {
         return event.getData().getTask_id();
     }
@@ -100,11 +98,6 @@ public class UpscaleWebhookProcessor implements WebhookProcessor<UpscaleWebhookE
         return url == null || url.isEmpty();
     }
 
-    @Override
-    public void saveToDatabase(String taskId, Object resourceData) {
-        // This method signature is required by interface but not used
-        // Use the overloaded version below
-    }
 
     public void saveToDatabase(String taskId, String originTaskId, Object resourceData) {
         try {
@@ -113,10 +106,10 @@ public class UpscaleWebhookProcessor implements WebhookProcessor<UpscaleWebhookE
             UpscaleTask upscaleTask = upscaleTaskRepository.findByNewTaskId(taskId)
                     .orElseThrow(() -> new EntityNotFoundException("Upscale task not found"));
 
-            Task task = taskRepository.findByTaskId(originTaskId)
+            ImageTask imageTask = imageTaskRepository.findByTaskId(originTaskId)
                     .orElseThrow(() -> new EntityNotFoundException("Task not found"));
 
-            Image image = Image.ofUpscale(imageUrl, task, upscaleTask);
+            Image image = Image.ofUpscale(imageUrl, imageTask, upscaleTask);
             image.setImgIndex(0);
             imageRepository.save(image);
 

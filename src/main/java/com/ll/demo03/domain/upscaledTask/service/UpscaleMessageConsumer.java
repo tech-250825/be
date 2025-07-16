@@ -5,10 +5,9 @@ import com.ll.demo03.domain.image.entity.Image;
 import com.ll.demo03.domain.image.repository.ImageRepository;
 import com.ll.demo03.domain.member.entity.Member;
 import com.ll.demo03.domain.member.repository.MemberRepository;
-import com.ll.demo03.domain.task.entity.Task;
-import com.ll.demo03.domain.task.repository.TaskRepository;
+import com.ll.demo03.domain.imageTask.entity.ImageTask;
+import com.ll.demo03.domain.imageTask.repository.ImageTaskRepository;
 import com.ll.demo03.domain.taskProcessor.TaskProcessingService;
-import com.ll.demo03.domain.upscaledTask.dto.UpscaleTaskRequest;
 import com.ll.demo03.domain.upscaledTask.dto.UpscaleTaskRequestMessage;
 import com.ll.demo03.domain.upscaledTask.entity.UpscaleTask;
 import com.ll.demo03.domain.upscaledTask.repository.UpscaleTaskRepository;
@@ -16,7 +15,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +27,7 @@ public class UpscaleMessageConsumer {
     private final ImageRepository imageRepository;
     private final TaskProcessingService taskProcessingService;
     private final UpscaleTaskRepository upscaleTaskRepository;
-    private final TaskRepository taskRepository;
+    private final ImageTaskRepository imageTaskRepository;
     private final MemberRepository memberRepository;
     private final StringRedisTemplate redisTemplate;
 
@@ -74,12 +72,12 @@ public class UpscaleMessageConsumer {
     private UpscaleTask saveUpscaleTask(String taskId, UpscaleTaskRequestMessage message) {
         Member member = taskProcessingService.getMember(message.getMemberId());
 
-        Task task = taskRepository.findByTaskId(message.getTaskId())
+        ImageTask imageTask = imageTaskRepository.findByTaskId(message.getTaskId())
                 .orElseThrow(() -> new RuntimeException("Task not found"));
 
         UpscaleTask upscaleTask = new UpscaleTask();
         upscaleTask.setImageIndex(message.getIndex());
-        upscaleTask.setTask(task);
+        upscaleTask.setImageTask(imageTask);
         upscaleTask.setNewTaskId(taskId);
         upscaleTask.setMember(member);
 
