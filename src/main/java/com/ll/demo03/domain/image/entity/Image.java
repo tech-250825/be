@@ -46,8 +46,8 @@ public class Image extends BaseEntity {
     @Builder.Default
     private Boolean isShared = false;
 
-    @Builder.Default
-    private Boolean isUpscaled = false;
+//    @Builder.Default
+//    private Boolean isUpscaled = false;
 
     public static Image of(String url, ImageTask imageTask) {
         return Image.builder()
