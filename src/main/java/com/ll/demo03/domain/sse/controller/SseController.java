@@ -42,7 +42,7 @@ public class SseController {
     }
 
     @GetMapping("/{memberId}")
-    public SseEmitter connect(HttpServletRequest request, @PathVariable String memberId) throws IOException {
+    public SseEmitter connect(HttpServletRequest request, @PathVariable("memberId") String memberId) throws IOException {
         String sessionId = request.getSession(true).getId();
         SseEmitter emitter = new SseEmitter(60 * 60 * 1000L);
 
