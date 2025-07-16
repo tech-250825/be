@@ -22,7 +22,7 @@ public class ImageMessageConsumer {
     @RabbitListener(queues = RabbitMQConfig.VIDEO_QUEUE)
     public void processVideoCreation(VideoMessageRequest message) {
         try {
-            imageTaskService.processVideoCreationTransactional(message, webhookUrl);
+            imageTaskService.processImageCreationTransactional(message, webhookUrl);
             log.info("영상 생성 요청 처리 완료");
         } catch (Exception e) {
             log.error("영상 생성 처리 중 오류 발생: {}", e.getMessage(), e);

@@ -1,6 +1,7 @@
 package com.ll.demo03.domain.videoTask.service;
 
 import com.ll.demo03.config.RabbitMQConfig;
+import com.ll.demo03.domain.imageTask.service.VideoTaskService;
 import com.ll.demo03.domain.member.entity.Member;
 import com.ll.demo03.domain.member.repository.MemberRepository;
 import com.ll.demo03.domain.taskProcessor.TaskProcessingService;
@@ -21,9 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class VideoMessageConsumer {
 
     private final VideoTaskService videoTaskService;
-    private final TaskProcessingService taskProcessingService;
-    private final MemberRepository memberRepository;
-    private final StringRedisTemplate redisTemplate;
 
     @Value("${custom.webhook-url}")
     private String webhookUrl;
