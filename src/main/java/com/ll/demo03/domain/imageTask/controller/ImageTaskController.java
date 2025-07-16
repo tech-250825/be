@@ -6,15 +6,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ll.demo03.domain.imageTask.dto.ImageMessageRequest;
 import com.ll.demo03.domain.imageTask.dto.ImageTaskRequest;
 import com.ll.demo03.domain.imageTask.dto.ImageWebhookEvent;
+import com.ll.demo03.domain.imageTask.dto.TaskOrImageResponse;
 import com.ll.demo03.domain.imageTask.service.ImageMessageProducer;
+import com.ll.demo03.domain.imageTask.service.ImageTaskService;
 import com.ll.demo03.domain.member.entity.Member;
 import com.ll.demo03.domain.oauth.entity.PrincipalDetails;
-import com.ll.demo03.domain.videoTask.dto.VideoWebhookEvent;
 import com.ll.demo03.domain.webhook.ImageWebhookProcessor;
-import com.ll.demo03.domain.webhook.VideoWebhookProcessor;
 import com.ll.demo03.global.dto.GlobalResponse;
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
+import com.ll.demo03.global.util.CursorBasedPageable;
+import com.ll.demo03.global.util.PageResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +44,7 @@ public class ImageTaskController {
 
     private final ImageWebhookProcessor imageWebhookProcessor;
     private final ImageMessageProducer imageMessageProducer;
+    private final ImageTaskService imageTaskService;
     private final StringRedisTemplate redisTemplate;
     private final ObjectMapper objectMapper;
     private final RestTemplate restTemplate;
@@ -136,6 +139,22 @@ public class ImageTaskController {
             imageWebhookProcessor.processWebhookEvent(event);
 
             return GlobalResponse.success();
+        } catch (Exception e) {
+            log.error("Error processing webhook: ", e);
+            return GlobalResponse.error(ErrorCode.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/task")
+    public GlobalResponse handle(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            CursorBasedPageable cursorBasedPageable) {
+        try {
+
+            Member member = principalDetails.user();
+            PageResponse<List<TaskOrImageResponse>> result = imageTaskService.getMyTasks(member, cursorBasedPageable);
+
+            return GlobalResponse.success(result);
         } catch (Exception e) {
             log.error("Error processing webhook: ", e);
             return GlobalResponse.error(ErrorCode.INTERNAL_SERVER_ERROR);

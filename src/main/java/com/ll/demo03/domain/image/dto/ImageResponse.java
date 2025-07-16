@@ -18,7 +18,7 @@ public class ImageResponse {
     private int likeCount;
     private Boolean isLiked;
     private Boolean isShared;
-    private Boolean isUpscaled;
+//    private Boolean isUpscaled;
     private Long taskId;
     private int index;
     private LocalDateTime createdAt;
@@ -51,7 +51,7 @@ public class ImageResponse {
                 image.getLikeCount(),
                 isLiked,
                 Boolean.TRUE.equals(image.getIsShared()),
-                image.getIsUpscaled(),
+//                image.getIsUpscaled(),
                 taskId,
                 image.getImgIndex(),
                 image.getCreatedAt()

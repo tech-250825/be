@@ -1,7 +1,7 @@
 package com.ll.demo03.domain.imageTask.service;
 
 import com.ll.demo03.config.RabbitMQConfig;
-import com.ll.demo03.domain.videoTask.dto.VideoMessageRequest;
+import com.ll.demo03.domain.imageTask.dto.ImageMessageRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -19,8 +19,8 @@ public class ImageMessageConsumer {
     @Value("${custom.webhook-url}")
     private String webhookUrl;
 
-    @RabbitListener(queues = RabbitMQConfig.VIDEO_QUEUE)
-    public void processVideoCreation(VideoMessageRequest message) {
+    @RabbitListener(queues = RabbitMQConfig.IMAGE_QUEUE)
+    public void processImageCreation(ImageMessageRequest message) {
         try {
             imageTaskService.processImageCreationTransactional(message, webhookUrl);
             log.info("영상 생성 요청 처리 완료");

@@ -1,6 +1,8 @@
 package com.ll.demo03.domain.image.repository;
 
 import com.ll.demo03.domain.image.entity.Image;
+import com.ll.demo03.domain.imageTask.entity.ImageTask;
+import com.ll.demo03.domain.videoTask.entity.VideoTask;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -9,6 +11,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ImageRepository extends JpaRepository<Image, Long>, JpaSpecificationExecutor<Image> {
@@ -57,4 +60,8 @@ public interface ImageRepository extends JpaRepository<Image, Long>, JpaSpecific
     boolean existsByIdLessThanAndMemberIdAndVideoTaskIsNull(Long id, Long id1);
 
     void deleteByMemberId(Long memberId);
+
+    List<Image> findByImageTask(ImageTask task);
+
+    List<Image> findByVideoTask(VideoTask task);
 }
