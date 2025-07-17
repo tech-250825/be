@@ -197,7 +197,7 @@ public class ImageWebhookProcessor implements WebhookProcessor<ImageWebhookEvent
             ImageTask imageTask = imageTaskRepository.findById(taskIdLong)
                     .orElseThrow(() -> new EntityNotFoundException("Video task not found"));
 
-            imageTask.setStatus("SUCCEDED");
+            imageTask.setStatus("COMPLETED");
 
             Long memberId = imageTask.getMember().getId();
             String memberIdStr = String.valueOf(memberId);

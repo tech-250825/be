@@ -175,7 +175,7 @@ public class VideoTaskService {
         for (VideoTask task : taskList) {
             if ("IN_PROGRESS".equals(task.getStatus())) {
                 responseList.add(TaskOrVideoResponse.fromTask(task));
-            } else if ("SUCCEDED".equals(task.getStatus())) {
+            } else if ("COMPLETED".equals(task.getStatus())) {
                 // N+1 발생 가능 → 성능 중요시하면 batch 조회 방식 추천
                 List<Image> images = imageRepository.findByVideoTask(task);
                 for (Image image : images) {
