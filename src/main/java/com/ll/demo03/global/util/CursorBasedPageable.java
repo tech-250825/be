@@ -1,8 +1,8 @@
 package com.ll.demo03.global.util;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
 import java.util.Base64;
@@ -12,11 +12,25 @@ import static org.apache.commons.lang3.StringUtils.substringBetween;
 
 @Data
 @Slf4j
-@AllArgsConstructor
 public class CursorBasedPageable {
     private int size = 5;
     private final String nextPageCursor;
     private final String prevPageCursor;
+
+    // 기본 생성자
+    public CursorBasedPageable() {
+        this.nextPageCursor = null;
+        this.prevPageCursor = null;
+    }
+
+    // @RequestParam 어노테이션으로 파라미터 이름 명시
+    public CursorBasedPageable(@RequestParam(value = "size", defaultValue = "5") int size,
+                               @RequestParam(value = "nextPageCursor", required = false) String nextPageCursor,
+                               @RequestParam(value = "prevPageCursor", required = false) String prevPageCursor) {
+        this.size = size;
+        this.nextPageCursor = nextPageCursor;
+        this.prevPageCursor = prevPageCursor;
+    }
 
     public boolean hasNextPageCursor() {
         return nextPageCursor != null && !nextPageCursor.isEmpty();
