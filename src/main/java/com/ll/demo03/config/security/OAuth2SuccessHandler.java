@@ -1,13 +1,13 @@
 package com.ll.demo03.config.security;
 
-import com.ll.demo03.domain.oauth.HttpCookieOAuth2AuthorizationRequestRepository;
+import com.ll.demo03.oauth.HttpCookieOAuth2AuthorizationRequestRepository;
 import com.ll.demo03.global.util.CookieUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import com.ll.demo03.domain.oauth.token.TokenProvider;
+import com.ll.demo03.oauth.token.TokenProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;

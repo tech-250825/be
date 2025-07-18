@@ -1,0 +1,35 @@
+package com.ll.demo03.UGC.controller;
+
+import com.ll.demo03.UGC.controller.request.UGCListRequest;
+import com.ll.demo03.UGC.controller.response.UGCResponse;
+import com.ll.demo03.member.domain.Member;
+import com.ll.demo03.UGC.service.UGCServiceImpl;
+import com.ll.demo03.oauth.entity.PrincipalDetails;
+import com.ll.demo03.global.util.CursorBasedPageable;
+import com.ll.demo03.global.util.PageResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+
+@Tag(name = " 회원 API", description = "User")
+@RestController
+@RequestMapping("/api/images")
+@RequiredArgsConstructor
+public class UGCController {
+    private final UGCServiceImpl UGCService;
+
+    @GetMapping("/mypage")
+    public ResponseEntity<PageResponse<List<UGCResponse>>> getMyImages(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            CursorBasedPageable cursorBasedPageable
+    ) {
+        Member member = principalDetails.user();
+        PageResponse<List<UGCResponse>> mypage= UGCService.getMyImages(member, cursorBasedPageable);
+        return ResponseEntity.ok( mypage);
+    }
+}

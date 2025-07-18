@@ -1,7 +1,7 @@
 package com.ll.demo03.global.dto;
 
-import lombok.Getter;
 import com.ll.demo03.global.error.ErrorCode;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 

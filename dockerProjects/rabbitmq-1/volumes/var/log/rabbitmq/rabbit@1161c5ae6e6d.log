@@ -651,7 +651,7 @@
 2025-03-28 18:22:38.454877+00:00 [info] <0.3317.0> accepting AMQP connection 172.21.0.1:48172 -> 172.21.0.2:5672
 2025-03-28 18:22:38.516433+00:00 [info] <0.3317.0> connection 172.21.0.1:48172 -> 172.21.0.2:5672 has a client-provided name: rabbitConnectionFactory#7e3ed5bc:0
 2025-03-28 18:22:38.525363+00:00 [info] <0.3317.0> connection 172.21.0.1:48172 -> 172.21.0.2:5672 - rabbitConnectionFactory#7e3ed5bc:0: user 'admin' authenticated and granted access to vhost '/'
-2025-03-28 18:53:38.523712+00:00 [warning] <0.3326.0> Consumer 'amq.ctag-m_u8cEcDlNUkPY95Ha_SjQ' on channel 1 and queue 'image.queue' in vhost '/' has timed out waiting for a consumer acknowledgement of a delivery with delivery tag = 1. Timeout used: 1800000 ms. This timeout value can be configured, see consumers doc guide to learn more
+2025-03-28 18:53:38.523712+00:00 [warning] <0.3326.0> Consumer 'amq.ctag-m_u8cEcDlNUkPY95Ha_SjQ' on channel 1 and queue 'UGC.queue' in vhost '/' has timed out waiting for a consumer acknowledgement of a delivery with delivery tag = 1. Timeout used: 1800000 ms. This timeout value can be configured, see consumers doc guide to learn more
 2025-03-28 18:53:38.528460+00:00 [error] <0.3326.0> Channel error on connection <0.3317.0> (172.21.0.1:48172 -> 172.21.0.2:5672, vhost: '/', user: 'admin'), channel 1:
 2025-03-28 18:53:38.528460+00:00 [error] <0.3326.0> operation none caused a channel exception precondition_failed: delivery acknowledgement on channel 1 timed out. Timeout value used: 1800000 ms. This timeout value can be configured, see consumers doc guide to learn more
 2025-03-28 19:14:05.563449+00:00 [info] <0.3317.0> closing AMQP connection (172.21.0.1:48172 -> 172.21.0.2:5672 - rabbitConnectionFactory#7e3ed5bc:0, vhost: '/', user: 'admin', duration: '51M, 27s')
@@ -760,7 +760,7 @@
 2025-03-31 07:54:45.572235+00:00 [info] <0.430.0> Started message store of type transient for vhost '/'
 2025-03-31 07:54:45.577896+00:00 [warning] <0.444.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
 2025-03-31 07:54:45.619289+00:00 [info] <0.430.0> Started message store of type persistent for vhost '/'
-2025-03-31 07:54:45.657107+00:00 [warning] <0.454.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-03-31 07:54:45.657107+00:00 [warning] <0.454.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-03-31 07:54:45.663155+00:00 [info] <0.430.0> Recovering 1 queues of type rabbit_classic_queue took 223ms
 2025-03-31 07:54:45.663238+00:00 [info] <0.430.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
 2025-03-31 07:54:45.663330+00:00 [info] <0.430.0> Recovering 0 queues of type rabbit_stream_queue took 0ms
@@ -911,7 +911,7 @@
 2025-03-31 12:39:05.058708+00:00 [info] <0.422.0> Started message store of type transient for vhost '/'
 2025-03-31 12:39:05.062451+00:00 [warning] <0.436.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
 2025-03-31 12:39:05.081916+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
-2025-03-31 12:39:05.102070+00:00 [warning] <0.446.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-03-31 12:39:05.102070+00:00 [warning] <0.446.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-03-31 12:39:05.107590+00:00 [info] <0.422.0> Recovering 1 queues of type rabbit_classic_queue took 138ms
 2025-03-31 12:39:05.107644+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
 2025-03-31 12:39:05.107754+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_stream_queue took 0ms
@@ -1062,7 +1062,7 @@
 2025-04-01 00:29:01.049871+00:00 [info] <0.422.0> Started message store of type transient for vhost '/'
 2025-04-01 00:29:01.055071+00:00 [warning] <0.436.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
 2025-04-01 00:29:01.095388+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
-2025-04-01 00:29:01.146690+00:00 [warning] <0.446.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-01 00:29:01.146690+00:00 [warning] <0.446.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-01 00:29:01.151637+00:00 [info] <0.422.0> Recovering 1 queues of type rabbit_classic_queue took 213ms
 2025-04-01 00:29:01.151756+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
 2025-04-01 00:29:01.151828+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_stream_queue took 0ms
@@ -1159,10 +1159,10 @@
 2025-04-01 04:21:23.936965+00:00 [info] <0.1889.0> accepting AMQP connection 172.21.0.1:56226 -> 172.21.0.2:5672
 2025-04-01 04:21:23.978139+00:00 [info] <0.1889.0> connection 172.21.0.1:56226 -> 172.21.0.2:5672 has a client-provided name: rabbitConnectionFactory#6f66cce8:0
 2025-04-01 04:21:23.982833+00:00 [info] <0.1889.0> connection 172.21.0.1:56226 -> 172.21.0.2:5672 - rabbitConnectionFactory#6f66cce8:0: user 'admin' authenticated and granted access to vhost '/'
-2025-04-01 04:52:23.956374+00:00 [warning] <0.1898.0> Consumer 'amq.ctag-4omuJCJsHNF7i8gjKR81hg' on channel 1 and queue 'image.queue' in vhost '/' has timed out waiting for a consumer acknowledgement of a delivery with delivery tag = 1. Timeout used: 1800000 ms. This timeout value can be configured, see consumers doc guide to learn more
+2025-04-01 04:52:23.956374+00:00 [warning] <0.1898.0> Consumer 'amq.ctag-4omuJCJsHNF7i8gjKR81hg' on channel 1 and queue 'UGC.queue' in vhost '/' has timed out waiting for a consumer acknowledgement of a delivery with delivery tag = 1. Timeout used: 1800000 ms. This timeout value can be configured, see consumers doc guide to learn more
 2025-04-01 04:52:23.967661+00:00 [error] <0.1898.0> Channel error on connection <0.1889.0> (172.21.0.1:56226 -> 172.21.0.2:5672, vhost: '/', user: 'admin'), channel 1:
 2025-04-01 04:52:23.967661+00:00 [error] <0.1898.0> operation none caused a channel exception precondition_failed: delivery acknowledgement on channel 1 timed out. Timeout value used: 1800000 ms. This timeout value can be configured, see consumers doc guide to learn more
-2025-04-01 05:22:24.425669+00:00 [warning] <0.1918.0> Consumer 'amq.ctag-G24eddMIPTvb1lbgetIpcg' on channel 3 and queue 'image.queue' in vhost '/' has timed out waiting for a consumer acknowledgement of a delivery with delivery tag = 1. Timeout used: 1800000 ms. This timeout value can be configured, see consumers doc guide to learn more
+2025-04-01 05:22:24.425669+00:00 [warning] <0.1918.0> Consumer 'amq.ctag-G24eddMIPTvb1lbgetIpcg' on channel 3 and queue 'UGC.queue' in vhost '/' has timed out waiting for a consumer acknowledgement of a delivery with delivery tag = 1. Timeout used: 1800000 ms. This timeout value can be configured, see consumers doc guide to learn more
 2025-04-01 05:22:24.426210+00:00 [error] <0.1918.0> Channel error on connection <0.1889.0> (172.21.0.1:56226 -> 172.21.0.2:5672, vhost: '/', user: 'admin'), channel 3:
 2025-04-01 05:22:24.426210+00:00 [error] <0.1918.0> operation none caused a channel exception precondition_failed: delivery acknowledgement on channel 3 timed out. Timeout value used: 1800000 ms. This timeout value can be configured, see consumers doc guide to learn more
 2025-04-01 05:24:36.114345+00:00 [warning] <0.1889.0> closing AMQP connection <0.1889.0> (172.21.0.1:56226 -> 172.21.0.2:5672 - rabbitConnectionFactory#6f66cce8:0, vhost: '/', user: 'admin', duration: '1H, 3M, 12s'):
@@ -1192,7 +1192,7 @@
 2025-04-01 06:23:17.534218+00:00 [warning] <0.2781.0> Consumer 'amq.ctag-Am5lS4i2yRvfrLtjc2BubQ' on channel 3 and queue 'video.queue' in vhost '/' has timed out waiting for a consumer acknowledgement of a delivery with delivery tag = 1. Timeout used: 1800000 ms. This timeout value can be configured, see consumers doc guide to learn more
 2025-04-01 06:23:17.535323+00:00 [error] <0.2781.0> Channel error on connection <0.2759.0> (172.21.0.1:44340 -> 172.21.0.2:5672, vhost: '/', user: 'admin'), channel 3:
 2025-04-01 06:23:17.535323+00:00 [error] <0.2781.0> operation none caused a channel exception precondition_failed: delivery acknowledgement on channel 3 timed out. Timeout value used: 1800000 ms. This timeout value can be configured, see consumers doc guide to learn more
-2025-04-01 06:24:17.469429+00:00 [warning] <0.2768.0> Consumer 'amq.ctag-GDNBTgYvVY3KnZVRmy76Zg' on channel 1 and queue 'image.queue' in vhost '/' has timed out waiting for a consumer acknowledgement of a delivery with delivery tag = 1. Timeout used: 1800000 ms. This timeout value can be configured, see consumers doc guide to learn more
+2025-04-01 06:24:17.469429+00:00 [warning] <0.2768.0> Consumer 'amq.ctag-GDNBTgYvVY3KnZVRmy76Zg' on channel 1 and queue 'UGC.queue' in vhost '/' has timed out waiting for a consumer acknowledgement of a delivery with delivery tag = 1. Timeout used: 1800000 ms. This timeout value can be configured, see consumers doc guide to learn more
 2025-04-01 06:24:17.469894+00:00 [error] <0.2768.0> Channel error on connection <0.2759.0> (172.21.0.1:44340 -> 172.21.0.2:5672, vhost: '/', user: 'admin'), channel 1:
 2025-04-01 06:24:17.469894+00:00 [error] <0.2768.0> operation none caused a channel exception precondition_failed: delivery acknowledgement on channel 1 timed out. Timeout value used: 1800000 ms. This timeout value can be configured, see consumers doc guide to learn more
 2025-04-01 06:50:44.133482+00:00 [warning] <0.2759.0> closing AMQP connection <0.2759.0> (172.21.0.1:44340 -> 172.21.0.2:5672 - rabbitConnectionFactory#519d09ea:0, vhost: '/', user: 'admin', duration: '57M, 26s'):
@@ -1313,7 +1313,7 @@
 2025-04-04 17:46:04.416923+00:00 [info] <0.426.0> Started message store of type persistent for vhost '/'
 2025-04-04 17:46:04.425684+00:00 [warning] <0.450.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-04 17:46:04.438438+00:00 [warning] <0.453.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-04-04 17:46:04.445480+00:00 [warning] <0.456.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-04 17:46:04.445480+00:00 [warning] <0.456.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-04 17:46:04.447397+00:00 [info] <0.426.0> Recovering 3 queues of type rabbit_classic_queue took 96ms
 2025-04-04 17:46:04.447476+00:00 [info] <0.426.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
 2025-04-04 17:46:04.447510+00:00 [info] <0.426.0> Recovering 0 queues of type rabbit_stream_queue took 0ms
@@ -1363,7 +1363,7 @@
 2025-04-04 17:46:05.267980+00:00 [info] <0.667.0> connection 172.21.0.1:54320 -> 172.21.0.2:5672 has a client-provided name: rabbitConnectionFactory#1158bf66:39
 2025-04-04 17:46:05.272582+00:00 [info] <0.667.0> connection 172.21.0.1:54320 -> 172.21.0.2:5672 - rabbitConnectionFactory#1158bf66:39: user 'admin' authenticated and granted access to vhost '/'
 2025-04-04 17:47:32.144181+00:00 [error] <0.924.0> Channel error on connection <0.667.0> (172.21.0.1:54320 -> 172.21.0.2:5672, vhost: '/', user: 'admin'), channel 4:
-2025-04-04 17:47:32.144181+00:00 [error] <0.924.0> operation queue.declare caused a channel exception not_found: no queue 'image.queue' in vhost '/'
+2025-04-04 17:47:32.144181+00:00 [error] <0.924.0> operation queue.declare caused a channel exception not_found: no queue 'UGC.queue' in vhost '/'
 2025-04-04 17:47:38.155235+00:00 [error] <0.987.0> Channel error on connection <0.667.0> (172.21.0.1:54320 -> 172.21.0.2:5672, vhost: '/', user: 'admin'), channel 5:
 2025-04-04 17:47:38.155235+00:00 [error] <0.987.0> operation queue.declare caused a channel exception not_found: no queue 'upscale.queue' in vhost '/'
 2025-04-04 17:47:44.211228+00:00 [error] <0.1031.0> Channel error on connection <0.667.0> (172.21.0.1:54320 -> 172.21.0.2:5672, vhost: '/', user: 'admin'), channel 6:
@@ -1477,7 +1477,7 @@
 2025-04-06 11:06:44.351844+00:00 [info] <0.422.0> Started message store of type transient for vhost '/'
 2025-04-06 11:06:44.354211+00:00 [warning] <0.436.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
 2025-04-06 11:06:44.366877+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
-2025-04-06 11:06:44.382290+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-06 11:06:44.382290+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-06 11:06:44.383293+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-06 11:06:44.383908+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-06 11:06:44.384277+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 88ms
@@ -1682,7 +1682,7 @@
 2025-04-06 15:41:47.329112+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
 2025-04-06 15:41:47.354450+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-06 15:41:47.354807+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-04-06 15:41:47.355448+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-06 15:41:47.355448+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-06 15:41:47.355698+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 136ms
 2025-04-06 15:41:47.355756+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
 2025-04-06 15:41:47.355881+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_stream_queue took 0ms
@@ -1836,7 +1836,7 @@
 2025-04-10 06:47:31.096755+00:00 [info] <0.422.0> Started message store of type transient for vhost '/'
 2025-04-10 06:47:31.102833+00:00 [warning] <0.436.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
 2025-04-10 06:47:31.135234+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
-2025-04-10 06:47:31.150107+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-10 06:47:31.150107+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-10 06:47:31.151865+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-10 06:47:31.152513+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-10 06:47:31.152812+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 187ms
@@ -1989,7 +1989,7 @@
 2025-04-10 06:51:00.038149+00:00 [info] <0.426.0> Started message store of type transient for vhost '/'
 2025-04-10 06:51:00.042690+00:00 [warning] <0.440.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
 2025-04-10 06:51:00.064565+00:00 [info] <0.426.0> Started message store of type persistent for vhost '/'
-2025-04-10 06:51:00.083114+00:00 [warning] <0.456.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-10 06:51:00.083114+00:00 [warning] <0.456.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-10 06:51:00.083529+00:00 [warning] <0.450.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-10 06:51:00.083615+00:00 [warning] <0.453.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-10 06:51:00.083947+00:00 [info] <0.426.0> Recovering 3 queues of type rabbit_classic_queue took 146ms
@@ -2147,7 +2147,7 @@
 2025-04-11 16:42:44.467069+00:00 [warning] <0.436.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
 2025-04-11 16:42:44.475703+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
 2025-04-11 16:42:44.483411+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-04-11 16:42:44.483520+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-11 16:42:44.483520+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-11 16:42:44.483866+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-11 16:42:44.484004+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 58ms
 2025-04-11 16:42:44.484061+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
@@ -2301,7 +2301,7 @@
 2025-04-11 16:44:02.337256+00:00 [info] <0.426.0> Started message store of type persistent for vhost '/'
 2025-04-11 16:44:02.350528+00:00 [warning] <0.453.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-11 16:44:02.351135+00:00 [warning] <0.450.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-04-11 16:44:02.351355+00:00 [warning] <0.456.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-11 16:44:02.351355+00:00 [warning] <0.456.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-11 16:44:02.351535+00:00 [info] <0.426.0> Recovering 3 queues of type rabbit_classic_queue took 97ms
 2025-04-11 16:44:02.351596+00:00 [info] <0.426.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
 2025-04-11 16:44:02.351768+00:00 [info] <0.426.0> Recovering 0 queues of type rabbit_stream_queue took 0ms
@@ -2458,7 +2458,7 @@
 2025-04-11 16:55:14.534738+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
 2025-04-11 16:55:14.543639+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-11 16:55:14.543853+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-04-11 16:55:14.543861+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-11 16:55:14.543861+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-11 16:55:14.544184+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 59ms
 2025-04-11 16:55:14.544217+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
 2025-04-11 16:55:14.544317+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_stream_queue took 0ms
@@ -2613,7 +2613,7 @@
 2025-04-11 17:08:19.536683+00:00 [info] <0.422.0> Started message store of type transient for vhost '/'
 2025-04-11 17:08:19.541525+00:00 [warning] <0.436.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
 2025-04-11 17:08:19.561649+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
-2025-04-11 17:08:19.577974+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-11 17:08:19.577974+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-11 17:08:19.577974+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-11 17:08:19.578302+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-11 17:08:19.578595+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 137ms
@@ -2788,7 +2788,7 @@
 2025-04-15 09:40:25.003703+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
 2025-04-15 09:40:25.013080+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-15 09:40:25.013071+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-04-15 09:40:25.013278+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-15 09:40:25.013278+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-15 09:40:25.013413+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 81ms
 2025-04-15 09:40:25.013455+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
 2025-04-15 09:40:25.013525+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_stream_queue took 0ms
@@ -2941,7 +2941,7 @@
 2025-04-15 09:48:39.427879+00:00 [info] <0.426.0> Started message store of type persistent for vhost '/'
 2025-04-15 09:48:39.436052+00:00 [warning] <0.450.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-15 09:48:39.436348+00:00 [warning] <0.453.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-04-15 09:48:39.436491+00:00 [warning] <0.456.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-15 09:48:39.436491+00:00 [warning] <0.456.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-15 09:48:39.436723+00:00 [info] <0.426.0> Recovering 3 queues of type rabbit_classic_queue took 95ms
 2025-04-15 09:48:39.436802+00:00 [info] <0.426.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
 2025-04-15 09:48:39.436851+00:00 [info] <0.426.0> Recovering 0 queues of type rabbit_stream_queue took 0ms
@@ -3094,7 +3094,7 @@
 2025-04-15 09:49:14.046865+00:00 [info] <0.426.0> Started message store of type persistent for vhost '/'
 2025-04-15 09:49:14.054592+00:00 [warning] <0.453.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-15 09:49:14.054805+00:00 [warning] <0.450.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-04-15 09:49:14.054943+00:00 [warning] <0.456.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-15 09:49:14.054943+00:00 [warning] <0.456.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-15 09:49:14.055084+00:00 [info] <0.426.0> Recovering 3 queues of type rabbit_classic_queue took 64ms
 2025-04-15 09:49:14.055124+00:00 [info] <0.426.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
 2025-04-15 09:49:14.055155+00:00 [info] <0.426.0> Recovering 0 queues of type rabbit_stream_queue took 0ms
@@ -3251,7 +3251,7 @@
 2025-04-15 10:39:55.988475+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
 2025-04-15 10:39:56.005018+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-15 10:39:56.005347+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-04-15 10:39:56.006697+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-15 10:39:56.006697+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-15 10:39:56.006949+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 174ms
 2025-04-15 10:39:56.007061+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
 2025-04-15 10:39:56.007231+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_stream_queue took 0ms
@@ -3404,7 +3404,7 @@
 2025-04-15 10:40:57.238053+00:00 [info] <0.426.0> Started message store of type persistent for vhost '/'
 2025-04-15 10:40:57.257226+00:00 [warning] <0.450.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-15 10:40:57.257245+00:00 [warning] <0.453.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-04-15 10:40:57.257593+00:00 [warning] <0.456.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-15 10:40:57.257593+00:00 [warning] <0.456.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-15 10:40:57.257833+00:00 [info] <0.426.0> Recovering 3 queues of type rabbit_classic_queue took 162ms
 2025-04-15 10:40:57.257906+00:00 [info] <0.426.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
 2025-04-15 10:40:57.258174+00:00 [info] <0.426.0> Recovering 0 queues of type rabbit_stream_queue took 0ms
@@ -3561,7 +3561,7 @@
 2025-04-15 11:05:54.945472+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
 2025-04-15 11:05:54.960433+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-15 11:05:54.960657+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-04-15 11:05:54.961836+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-15 11:05:54.961836+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-15 11:05:54.962078+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 146ms
 2025-04-15 11:05:54.962195+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
 2025-04-15 11:05:54.962257+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_stream_queue took 0ms
@@ -3718,7 +3718,7 @@
 2025-04-15 11:09:12.090818+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
 2025-04-15 11:09:12.106205+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-15 11:09:12.108530+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-04-15 11:09:12.109050+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-15 11:09:12.109050+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-15 11:09:12.109472+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 137ms
 2025-04-15 11:09:12.109589+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
 2025-04-15 11:09:12.109765+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_stream_queue took 0ms
@@ -3874,7 +3874,7 @@
 2025-04-15 11:10:41.843267+00:00 [warning] <0.440.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
 2025-04-15 11:10:41.865800+00:00 [info] <0.426.0> Started message store of type persistent for vhost '/'
 2025-04-15 11:10:41.883506+00:00 [warning] <0.450.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-04-15 11:10:41.883916+00:00 [warning] <0.456.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-15 11:10:41.883916+00:00 [warning] <0.456.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-15 11:10:41.884449+00:00 [warning] <0.453.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-15 11:10:41.884816+00:00 [info] <0.426.0> Recovering 3 queues of type rabbit_classic_queue took 163ms
 2025-04-15 11:10:41.884939+00:00 [info] <0.426.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
@@ -4031,7 +4031,7 @@
 2025-04-15 11:13:01.873619+00:00 [warning] <0.436.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
 2025-04-15 11:13:01.897175+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
 2025-04-15 11:13:01.914848+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-04-15 11:13:01.916039+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-15 11:13:01.916039+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-15 11:13:01.916637+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-15 11:13:01.916837+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 161ms
 2025-04-15 11:13:01.916935+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
@@ -4188,7 +4188,7 @@
 2025-04-15 11:24:32.349817+00:00 [warning] <0.436.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
 2025-04-15 11:24:32.373299+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
 2025-04-15 11:24:32.392006+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-04-15 11:24:32.392320+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-15 11:24:32.392320+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-15 11:24:32.392361+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-15 11:24:32.392952+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 172ms
 2025-04-15 11:24:32.393020+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
@@ -4346,7 +4346,7 @@
 2025-04-15 11:46:51.462786+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
 2025-04-15 11:46:51.482498+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-15 11:46:51.483695+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-04-15 11:46:51.484790+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-15 11:46:51.484790+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-15 11:46:51.485230+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 174ms
 2025-04-15 11:46:51.485298+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
 2025-04-15 11:46:51.485418+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_stream_queue took 0ms
@@ -4502,7 +4502,7 @@
 2025-04-15 11:54:36.764423+00:00 [warning] <0.436.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
 2025-04-15 11:54:36.781379+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
 2025-04-15 11:54:36.796670+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-04-15 11:54:36.796647+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-15 11:54:36.796647+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-15 11:54:36.796857+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-15 11:54:36.797089+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 109ms
 2025-04-15 11:54:36.797161+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
@@ -4659,7 +4659,7 @@
 2025-04-15 12:01:46.564617+00:00 [warning] <0.436.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
 2025-04-15 12:01:46.587095+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
 2025-04-15 12:01:46.605839+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-04-15 12:01:46.606426+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-15 12:01:46.606426+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-15 12:01:46.607701+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-15 12:01:46.607975+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 173ms
 2025-04-15 12:01:46.608085+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
@@ -4816,7 +4816,7 @@
 2025-04-18 11:38:17.478103+00:00 [warning] <0.436.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
 2025-04-18 11:38:17.499516+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
 2025-04-18 11:38:17.519876+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-04-18 11:38:17.521284+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-18 11:38:17.521284+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-18 11:38:17.522338+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-18 11:38:17.522602+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 161ms
 2025-04-18 11:38:17.522708+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
@@ -4968,7 +4968,7 @@
 2025-04-18 11:57:02.674485+00:00 [info] <0.426.0> Started message store of type transient for vhost '/'
 2025-04-18 11:57:02.677891+00:00 [warning] <0.440.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
 2025-04-18 11:57:02.696582+00:00 [info] <0.426.0> Started message store of type persistent for vhost '/'
-2025-04-18 11:57:02.713125+00:00 [warning] <0.456.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-18 11:57:02.713125+00:00 [warning] <0.456.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-18 11:57:02.713354+00:00 [warning] <0.450.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-18 11:57:02.713891+00:00 [warning] <0.453.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-18 11:57:02.714113+00:00 [info] <0.426.0> Recovering 3 queues of type rabbit_classic_queue took 123ms
@@ -5122,7 +5122,7 @@
 2025-04-18 12:02:25.017469+00:00 [warning] <0.440.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
 2025-04-18 12:02:25.038464+00:00 [info] <0.426.0> Started message store of type persistent for vhost '/'
 2025-04-18 12:02:25.069711+00:00 [warning] <0.450.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-04-18 12:02:25.073200+00:00 [warning] <0.456.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-18 12:02:25.073200+00:00 [warning] <0.456.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-18 12:02:25.077408+00:00 [warning] <0.453.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-18 12:02:25.077851+00:00 [info] <0.426.0> Recovering 3 queues of type rabbit_classic_queue took 195ms
 2025-04-18 12:02:25.077955+00:00 [info] <0.426.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
@@ -5275,7 +5275,7 @@
 2025-04-18 12:04:23.347948+00:00 [warning] <0.440.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
 2025-04-18 12:04:23.373173+00:00 [info] <0.426.0> Started message store of type persistent for vhost '/'
 2025-04-18 12:04:23.395519+00:00 [warning] <0.450.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-04-18 12:04:23.395863+00:00 [warning] <0.456.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-18 12:04:23.395863+00:00 [warning] <0.456.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-18 12:04:23.397069+00:00 [warning] <0.453.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-18 12:04:23.397317+00:00 [info] <0.426.0> Recovering 3 queues of type rabbit_classic_queue took 189ms
 2025-04-18 12:04:23.397369+00:00 [info] <0.426.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
@@ -5433,7 +5433,7 @@
 2025-04-18 12:11:54.014441+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
 2025-04-18 12:11:54.036169+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-18 12:11:54.036215+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-04-18 12:11:54.036565+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-18 12:11:54.036565+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-18 12:11:54.036927+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 167ms
 2025-04-18 12:11:54.036993+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
 2025-04-18 12:11:54.037323+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_stream_queue took 0ms
@@ -5584,7 +5584,7 @@
 2025-04-18 12:14:33.943685+00:00 [info] <0.426.0> Started message store of type transient for vhost '/'
 2025-04-18 12:14:33.948063+00:00 [warning] <0.440.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
 2025-04-18 12:14:33.973392+00:00 [info] <0.426.0> Started message store of type persistent for vhost '/'
-2025-04-18 12:14:33.992790+00:00 [warning] <0.456.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-18 12:14:33.992790+00:00 [warning] <0.456.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-18 12:14:33.993161+00:00 [warning] <0.453.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-18 12:14:33.993482+00:00 [warning] <0.450.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-18 12:14:33.993680+00:00 [info] <0.426.0> Recovering 3 queues of type rabbit_classic_queue took 166ms
@@ -5742,7 +5742,7 @@
 2025-04-19 03:16:34.532731+00:00 [warning] <0.436.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
 2025-04-19 03:16:34.542103+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
 2025-04-19 03:16:34.551100+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-04-19 03:16:34.551359+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-19 03:16:34.551359+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-19 03:16:34.551381+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-19 03:16:34.551516+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 70ms
 2025-04-19 03:16:34.551614+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
@@ -5895,7 +5895,7 @@
 2025-04-19 03:17:51.969844+00:00 [warning] <0.440.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
 2025-04-19 03:17:51.978829+00:00 [info] <0.426.0> Started message store of type persistent for vhost '/'
 2025-04-19 03:17:51.986990+00:00 [warning] <0.453.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-04-19 03:17:51.987005+00:00 [warning] <0.456.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-19 03:17:51.987005+00:00 [warning] <0.456.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-19 03:17:51.987082+00:00 [warning] <0.450.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-19 03:17:51.987202+00:00 [info] <0.426.0> Recovering 3 queues of type rabbit_classic_queue took 54ms
 2025-04-19 03:17:51.987251+00:00 [info] <0.426.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
@@ -6053,7 +6053,7 @@
 2025-04-21 16:08:20.826524+00:00 [warning] <0.436.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
 2025-04-21 16:08:20.836815+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
 2025-04-21 16:08:20.845295+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-04-21 16:08:20.845504+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-21 16:08:20.845504+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-21 16:08:20.845688+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-21 16:08:20.845898+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 62ms
 2025-04-21 16:08:20.845955+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
@@ -6205,7 +6205,7 @@
 2025-04-21 16:14:13.542251+00:00 [info] <0.426.0> Started message store of type transient for vhost '/'
 2025-04-21 16:14:13.544037+00:00 [warning] <0.440.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
 2025-04-21 16:14:13.557272+00:00 [info] <0.426.0> Started message store of type persistent for vhost '/'
-2025-04-21 16:14:13.570781+00:00 [warning] <0.456.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-21 16:14:13.570781+00:00 [warning] <0.456.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-21 16:14:13.571066+00:00 [warning] <0.453.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-21 16:14:13.571299+00:00 [warning] <0.450.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-21 16:14:13.571503+00:00 [info] <0.426.0> Recovering 3 queues of type rabbit_classic_queue took 82ms
@@ -6364,7 +6364,7 @@
 2025-04-23 12:06:34.597881+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
 2025-04-23 12:06:34.621747+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-23 12:06:34.622190+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-04-23 12:06:34.623961+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-23 12:06:34.623961+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-23 12:06:34.624359+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 241ms
 2025-04-23 12:06:34.624484+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
 2025-04-23 12:06:34.624627+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_stream_queue took 0ms
@@ -6516,7 +6516,7 @@
 2025-04-27 11:26:08.627302+00:00 [warning] <0.436.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
 2025-04-27 11:26:08.657038+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
 2025-04-27 11:26:08.674221+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-04-27 11:26:08.674580+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-27 11:26:08.674580+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-27 11:26:08.675009+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-27 11:26:08.675366+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 182ms
 2025-04-27 11:26:08.675474+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
@@ -6669,7 +6669,7 @@
 2025-04-27 11:35:06.975357+00:00 [warning] <0.440.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
 2025-04-27 11:35:06.987549+00:00 [info] <0.426.0> Started message store of type persistent for vhost '/'
 2025-04-27 11:35:06.997883+00:00 [warning] <0.450.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-04-27 11:35:06.999389+00:00 [warning] <0.456.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-27 11:35:06.999389+00:00 [warning] <0.456.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-27 11:35:06.999820+00:00 [warning] <0.453.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-27 11:35:07.000117+00:00 [info] <0.426.0> Recovering 3 queues of type rabbit_classic_queue took 81ms
 2025-04-27 11:35:07.000188+00:00 [info] <0.426.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
@@ -6826,7 +6826,7 @@
 2025-04-27 12:00:34.107466+00:00 [warning] <0.436.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
 2025-04-27 12:00:34.128873+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
 2025-04-27 12:00:34.148077+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-04-27 12:00:34.148502+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-27 12:00:34.148502+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-27 12:00:34.149174+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-27 12:00:34.149647+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 137ms
 2025-04-27 12:00:34.149753+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
@@ -6982,7 +6982,7 @@
 2025-04-27 17:09:53.632866+00:00 [info] <0.422.0> Started message store of type transient for vhost '/'
 2025-04-27 17:09:53.634701+00:00 [warning] <0.436.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
 2025-04-27 17:09:53.645236+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
-2025-04-27 17:09:53.654209+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-27 17:09:53.654209+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-27 17:09:53.654193+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-27 17:09:53.654391+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-27 17:09:53.654513+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 65ms
@@ -7141,7 +7141,7 @@
 2025-04-27 17:49:37.063955+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
 2025-04-27 17:49:37.074362+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-27 17:49:37.074656+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-04-27 17:49:37.074669+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-27 17:49:37.074669+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-27 17:49:37.074861+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 71ms
 2025-04-27 17:49:37.074898+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
 2025-04-27 17:49:37.074974+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_stream_queue took 0ms
@@ -7297,7 +7297,7 @@
 2025-04-27 17:53:23.103534+00:00 [warning] <0.436.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
 2025-04-27 17:53:23.116053+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
 2025-04-27 17:53:23.126860+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-04-27 17:53:23.126921+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-27 17:53:23.126921+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-27 17:53:23.127150+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-27 17:53:23.127289+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 83ms
 2025-04-27 17:53:23.127344+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
@@ -7455,7 +7455,7 @@
 2025-04-27 17:58:08.951847+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
 2025-04-27 17:58:08.965714+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-27 17:58:08.965832+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-04-27 17:58:08.965968+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-27 17:58:08.965968+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-27 17:58:08.966172+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 105ms
 2025-04-27 17:58:08.966216+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
 2025-04-27 17:58:08.966294+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_stream_queue took 0ms
@@ -7612,7 +7612,7 @@
 2025-04-27 18:03:56.355978+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
 2025-04-27 18:03:56.366992+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-27 18:03:56.367216+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-04-27 18:03:56.367357+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-27 18:03:56.367357+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-27 18:03:56.367573+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 84ms
 2025-04-27 18:03:56.367658+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
 2025-04-27 18:03:56.367739+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_stream_queue took 0ms
@@ -7767,7 +7767,7 @@
 2025-04-27 18:07:34.773151+00:00 [info] <0.422.0> Started message store of type transient for vhost '/'
 2025-04-27 18:07:34.775867+00:00 [warning] <0.436.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
 2025-04-27 18:07:34.788773+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
-2025-04-27 18:07:34.800789+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-04-27 18:07:34.800789+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-27 18:07:34.800809+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-27 18:07:34.800937+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-04-27 18:07:34.801151+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 90ms
@@ -7924,7 +7924,7 @@
 2025-05-06 04:37:38.502672+00:00 [info] <0.426.0> Started message store of type transient for vhost '/'
 2025-05-06 04:37:38.508713+00:00 [warning] <0.440.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
 2025-05-06 04:37:38.536017+00:00 [info] <0.426.0> Started message store of type persistent for vhost '/'
-2025-05-06 04:37:38.555813+00:00 [warning] <0.456.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-05-06 04:37:38.555813+00:00 [warning] <0.456.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-05-06 04:37:38.556181+00:00 [warning] <0.450.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-05-06 04:37:38.556826+00:00 [warning] <0.453.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-05-06 04:37:38.557212+00:00 [info] <0.426.0> Recovering 3 queues of type rabbit_classic_queue took 179ms
@@ -8079,7 +8079,7 @@
 2025-05-06 04:38:53.405002+00:00 [info] <0.426.0> Started message store of type persistent for vhost '/'
 2025-05-06 04:38:53.419166+00:00 [warning] <0.450.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-05-06 04:38:53.419150+00:00 [warning] <0.453.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-05-06 04:38:53.419698+00:00 [warning] <0.456.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-05-06 04:38:53.419698+00:00 [warning] <0.456.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-05-06 04:38:53.419918+00:00 [info] <0.426.0> Recovering 3 queues of type rabbit_classic_queue took 146ms
 2025-05-06 04:38:53.420001+00:00 [info] <0.426.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
 2025-05-06 04:38:53.420163+00:00 [info] <0.426.0> Recovering 0 queues of type rabbit_stream_queue took 0ms
@@ -8235,7 +8235,7 @@
 2025-05-07 08:16:03.117651+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
 2025-05-07 08:16:03.135899+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-05-07 08:16:03.135899+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-05-07 08:16:03.136262+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-05-07 08:16:03.136262+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-05-07 08:16:03.136617+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 146ms
 2025-05-07 08:16:03.136728+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
 2025-05-07 08:16:03.137031+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_stream_queue took 0ms
@@ -8392,7 +8392,7 @@
 2025-05-13 12:29:43.042015+00:00 [warning] <0.436.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
 2025-05-13 12:29:43.053292+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
 2025-05-13 12:29:43.062970+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-05-13 12:29:43.063255+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-05-13 12:29:43.063255+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-05-13 12:29:43.063517+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-05-13 12:29:43.063743+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 74ms
 2025-05-13 12:29:43.063806+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
@@ -8554,7 +8554,7 @@
 2025-05-14 00:48:48.082890+00:00 [info] <0.422.0> Started message store of type transient for vhost '/'
 2025-05-14 00:48:48.089344+00:00 [warning] <0.436.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
 2025-05-14 00:48:48.116524+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
-2025-05-14 00:48:48.133955+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-05-14 00:48:48.133955+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-05-14 00:48:48.134983+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-05-14 00:48:48.135340+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-05-14 00:48:48.135653+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 178ms
@@ -8802,7 +8802,7 @@
 2025-05-17 16:40:56.622919+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
 2025-05-17 16:40:56.633878+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-05-17 16:40:56.633878+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-05-17 16:40:56.634142+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-05-17 16:40:56.634142+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-05-17 16:40:56.634265+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 95ms
 2025-05-17 16:40:56.634316+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
 2025-05-17 16:40:56.634513+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_stream_queue took 0ms
@@ -8983,7 +8983,7 @@
 2025-05-21 03:39:21.656370+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
 2025-05-21 03:39:21.675695+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-05-21 03:39:21.678580+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-05-21 03:39:21.679890+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-05-21 03:39:21.679890+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-05-21 03:39:21.680236+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 133ms
 2025-05-21 03:39:21.680326+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
 2025-05-21 03:39:21.680448+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_stream_queue took 0ms
@@ -9146,7 +9146,7 @@
 2025-05-26 02:11:23.987415+00:00 [warning] <0.436.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
 2025-05-26 02:11:23.997344+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
 2025-05-26 02:11:24.006429+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-05-26 02:11:24.006650+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-05-26 02:11:24.006650+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-05-26 02:11:24.006664+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-05-26 02:11:24.006841+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 65ms
 2025-05-26 02:11:24.006874+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
@@ -9300,7 +9300,7 @@
 2025-05-28 00:36:29.839908+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
 2025-05-28 00:36:29.867238+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-05-28 00:36:29.867694+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-05-28 00:36:29.868365+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-05-28 00:36:29.868365+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-05-28 00:36:29.868996+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 263ms
 2025-05-28 00:36:29.869084+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
 2025-05-28 00:36:29.869305+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_stream_queue took 0ms
@@ -9452,7 +9452,7 @@
 2025-05-29 06:05:13.363733+00:00 [warning] <0.436.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
 2025-05-29 06:05:13.379615+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
 2025-05-29 06:05:13.395069+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-05-29 06:05:13.395069+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-05-29 06:05:13.395069+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-05-29 06:05:13.395349+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-05-29 06:05:13.395616+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 115ms
 2025-05-29 06:05:13.395706+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
@@ -9674,7 +9674,7 @@
 2025-05-30 15:15:31.314932+00:00 [info] <0.422.0> Started message store of type transient for vhost '/'
 2025-05-30 15:15:31.317187+00:00 [warning] <0.436.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
 2025-05-30 15:15:31.329919+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
-2025-05-30 15:15:31.339801+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-05-30 15:15:31.339801+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-05-30 15:15:31.340444+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-05-30 15:15:31.340628+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-05-30 15:15:31.340827+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 76ms
@@ -9859,7 +9859,7 @@
 2025-06-07 03:05:43.185962+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
 2025-06-07 03:05:43.199062+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-06-07 03:05:43.199062+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-06-07 03:05:43.199376+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-06-07 03:05:43.199376+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-06-07 03:05:43.199574+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 112ms
 2025-06-07 03:05:43.199618+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
 2025-06-07 03:05:43.199712+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_stream_queue took 0ms
@@ -10019,7 +10019,7 @@
 2025-06-18 14:49:50.660424+00:00 [warning] <0.437.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
 2025-06-18 14:49:50.680384+00:00 [info] <0.423.0> Started message store of type persistent for vhost '/'
 2025-06-18 14:49:50.694295+00:00 [warning] <0.447.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-06-18 14:49:50.694724+00:00 [warning] <0.453.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-06-18 14:49:50.694724+00:00 [warning] <0.453.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-06-18 14:49:50.695404+00:00 [warning] <0.450.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-06-18 14:49:50.695630+00:00 [info] <0.423.0> Recovering 3 queues of type rabbit_classic_queue took 110ms
 2025-06-18 14:49:50.695674+00:00 [info] <0.423.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
@@ -10216,7 +10216,7 @@
 2025-06-19 17:31:52.397745+00:00 [warning] <0.436.0> Message store "628WB79CIFDYO9LJI6DKMI09L/msg_store_persistent": rebuilding indices from scratch
 2025-06-19 17:31:52.437311+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
 2025-06-19 17:31:52.465347+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-06-19 17:31:52.466270+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-06-19 17:31:52.466270+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-06-19 17:31:52.467546+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-06-19 17:31:52.467918+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 256ms
 2025-06-19 17:31:52.468222+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
@@ -10370,7 +10370,7 @@
 2025-06-21 07:17:33.177638+00:00 [info] <0.422.0> Started message store of type persistent for vhost '/'
 2025-06-21 07:17:33.195855+00:00 [warning] <0.449.0> Queue video.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-06-21 07:17:33.197013+00:00 [warning] <0.446.0> Queue upscale.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
-2025-06-21 07:17:33.203291+00:00 [warning] <0.452.0> Queue image.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
+2025-06-21 07:17:33.203291+00:00 [warning] <0.452.0> Queue UGC.queue in vhost / dropped 0/0/0 persistent messages and 0 transient messages after unclean shutdown
 2025-06-21 07:17:33.203607+00:00 [info] <0.422.0> Recovering 3 queues of type rabbit_classic_queue took 136ms
 2025-06-21 07:17:33.203693+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_quorum_queue took 0ms
 2025-06-21 07:17:33.203772+00:00 [info] <0.422.0> Recovering 0 queues of type rabbit_stream_queue took 0ms

@@ -1,3 +1,3 @@
 VHOST: /
-QUEUE: image.queue
+QUEUE: UGC.queue
 INDEX: v2
