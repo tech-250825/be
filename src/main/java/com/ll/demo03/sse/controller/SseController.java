@@ -59,19 +59,6 @@ public class SseController {
             redisTemplate.opsForList().remove("sse:member:" + memberId, 1, sessionId);
         });
 
-        String imageJson = redisTemplate.opsForValue().get("notification:image:" + memberId);
-        String upscaleJson = redisTemplate.opsForValue().get("notification:upscale:" + memberId);
-        String videoJson = redisTemplate.opsForValue().get("notification:video:" + memberId);
-
-        NotificationResponse image = imageJson != null ? convertToNotificationResponse(imageJson) : new NotificationResponse();
-        NotificationResponse upscale = upscaleJson != null ? convertToNotificationResponse(upscaleJson) : new NotificationResponse();
-        NotificationResponse video = videoJson != null ? convertToNotificationResponse(videoJson) : new NotificationResponse();
-
-        Map<String, Object> notificationData = new HashMap<>();
-        notificationData.put("image", image);
-        notificationData.put("upscale", upscale);
-        notificationData.put("video", video);
-
         try {
             emitter.send(SseEmitter.event()
                     .name("notification")
@@ -83,14 +70,6 @@ public class SseController {
         return emitter;
     }
 
-    private NotificationResponse convertToNotificationResponse(String json) {
-        try {
-            return objectMapper.readValue(json, NotificationResponse.class);
-        } catch (JsonProcessingException e) {
-            log.error("NotificationResponse 파싱 실패: {}", e.getMessage());
-            return new NotificationResponse();
-        }
-    }
 
     @EventListener(ApplicationReadyEvent.class)
     public void subscribeToNotifications() {

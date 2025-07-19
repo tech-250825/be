@@ -1,17 +1,16 @@
 package com.ll.demo03.videoTask.controller;
 
+import com.ll.demo03.global.controller.request.WebhookEvent;
 import com.ll.demo03.global.dto.GlobalResponse;
-import com.ll.demo03.imageTask.controller.response.TaskOrImageResponse;
 import com.ll.demo03.member.domain.Member;
+import com.ll.demo03.videoTask.controller.port.VideoTaskService;
 import com.ll.demo03.videoTask.controller.response.TaskOrVideoResponse;
-import com.ll.demo03.videoTask.service.VideoTaskServiceImpl;
 import com.ll.demo03.oauth.entity.PrincipalDetails;
 import com.ll.demo03.videoTask.controller.request.VideoTaskRequest;
-import com.ll.demo03.videoTask.controller.request.VideoWebhookEvent;
-import com.ll.demo03.webhook.VideoWebhookProcessor;
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.util.CursorBasedPageable;
 import com.ll.demo03.global.util.PageResponse;
+import com.ll.demo03.webhook.VideoWebhookProcessorImpl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,8 +27,8 @@ import java.util.List;
 @Slf4j
 public class VideoTaskController {
 
-    private final VideoWebhookProcessor videoWebhookProcessor;
-    private final VideoTaskServiceImpl videoTaskService;
+    private final VideoWebhookProcessorImpl videoWebhookProcessor;
+    private final VideoTaskService videoTaskService;
 
     @PostMapping(value = "/create")
     @PreAuthorize("isAuthenticated()")
@@ -50,7 +49,7 @@ public class VideoTaskController {
 
     @PostMapping("/webhook")
     public GlobalResponse handleWebhook(
-            @RequestBody VideoWebhookEvent event) {
+            @RequestBody WebhookEvent event) {
 
         try {
             log.info("Received webhook event: {}", event);

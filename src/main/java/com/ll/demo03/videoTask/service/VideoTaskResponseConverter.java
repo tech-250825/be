@@ -40,7 +40,7 @@ public class VideoTaskResponseConverter implements ResponseConverter<VideoTask, 
             } else if ("COMPLETED".equals(task.getStatus())) {
                 List<UGC> videos = taskVideoMap.getOrDefault(task, Collections.emptyList());
                 for (UGC video : videos) {
-                    responses.add(TaskOrVideoResponse.fromImage(task, video));
+                    responses.add(TaskOrVideoResponse.fromVideo(task, video));
                 }
             }
         }

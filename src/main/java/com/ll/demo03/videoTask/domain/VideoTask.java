@@ -1,10 +1,7 @@
 package com.ll.demo03.videoTask.domain;
 
+import com.ll.demo03.global.domain.Status;
 import com.ll.demo03.global.port.Network;
-import com.ll.demo03.imageTask.controller.request.ImageQueueRequest;
-import com.ll.demo03.imageTask.controller.request.ImageTaskRequest;
-import com.ll.demo03.imageTask.domain.ImageTask;
-import com.ll.demo03.imageTask.domain.ImageTaskInitiate;
 import com.ll.demo03.member.domain.Member;
 import com.ll.demo03.videoTask.controller.request.VideoQueueRequest;
 import com.ll.demo03.videoTask.controller.request.VideoTaskRequest;
@@ -18,13 +15,13 @@ public class VideoTask {
     private final String prompt;
     private final String lora;
     private final String runpodId;
-    private final String status;
+    private final Status status;
     private final Long createdAt;
     private final Long modifiedAt;
     private final Member creator;
 
     @Builder
-    public VideoTask(Long id, String prompt, String lora, String runpodId, String status,  Long createdAt, Long modifiedAt, Member creator) {
+    public VideoTask(Long id, String prompt, String lora, String runpodId, Status status,  Long createdAt, Long modifiedAt, Member creator) {
         this.id = id;
         this.prompt = prompt;
         this.lora = lora;
@@ -39,7 +36,7 @@ public class VideoTask {
         return VideoTask.builder()
                 .prompt(videoTaskInitiate.getPrompt())
                 .lora(videoTaskInitiate.getLora())
-                .status(videoTaskInitiate.getStatus())
+                .status(Status.valueOf(videoTaskInitiate.getStatus()))
                 .creator(creator)
                 .build();
     }
@@ -48,6 +45,19 @@ public class VideoTask {
         String newPrompt = network.modifyPrompt(request.getPrompt(), request.getLora());
         String finalPrompt = (newPrompt == null || newPrompt.isBlank()) ? request.getPrompt() : newPrompt;
         return new VideoTaskRequest(request.getLora(), finalPrompt);
+    }
+
+    public VideoTask updateStatus(Status status){
+        return VideoTask.builder()
+                .id(id)
+                .prompt(prompt)
+                .lora(lora)
+                .runpodId(runpodId)
+                .status(status)
+                .createdAt(createdAt)
+                .modifiedAt(modifiedAt)
+                .creator(creator)
+                .build();
     }
 
     public static VideoQueueRequest toQueueRequest(VideoTaskRequest request, Member creator) {

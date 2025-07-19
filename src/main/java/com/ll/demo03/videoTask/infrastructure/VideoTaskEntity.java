@@ -1,5 +1,6 @@
 package com.ll.demo03.videoTask.infrastructure;
 
+import com.ll.demo03.global.domain.Status;
 import com.ll.demo03.member.infrastructure.MemberEntity;
 import com.ll.demo03.videoTask.domain.VideoTask;
 import jakarta.persistence.*;
@@ -23,7 +24,7 @@ public class VideoTaskEntity {
 
     private String runpodId;
 
-    private String status;
+    private Status status;
 
     @Column(name= "created_at")
     private Long createdAt;

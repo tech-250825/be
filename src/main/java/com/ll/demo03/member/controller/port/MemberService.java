@@ -1,4 +1,5 @@
 package com.ll.demo03.member.controller.port;
 
-public class MemberService {
+public interface MemberService {
+    void delete(Long memberId);
 }

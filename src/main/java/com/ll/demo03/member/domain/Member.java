@@ -39,4 +39,11 @@ public class Member  {
         }
         this.credit -= amount;
     }
+
+    public void increaseCredit(int amount) {
+        if (amount <= 0) {
+            throw new IllegalArgumentException("증가량은 0보다 커야 합니다.");
+        }
+        this.credit += amount;
+    }
 }

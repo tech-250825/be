@@ -1,0 +1,98 @@
+package com.ll.demo03.webhook;
+
+import com.ll.demo03.UGC.domain.UGC;
+import com.ll.demo03.UGC.service.port.UGCRepository;
+import com.ll.demo03.global.controller.request.WebhookEvent;
+import com.ll.demo03.global.domain.Status;
+import com.ll.demo03.global.port.RedisService;
+import com.ll.demo03.member.domain.Member;
+import com.ll.demo03.videoTask.domain.VideoTask;
+import com.ll.demo03.videoTask.service.port.VideoTaskRepository;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@Slf4j
+@Transactional
+@RequiredArgsConstructor
+public class VideoWebhookProcessorImpl implements WebhookProcessor<WebhookEvent> {
+
+    private final VideoTaskRepository videoTaskRepository;
+    private final UGCRepository UGCRepository;
+    private final RedisService redisService;
+
+    public void processWebhookEvent(WebhookEvent event) {
+        log.info("event" , event);
+        Long taskId = event.getTaskId();
+        String status = event.getStatus();
+
+        try {
+            switch (status){
+                case "FAILED" -> handleFailed(taskId);
+                case "COMPLETED" -> handleCompleted(taskId, event);
+                default -> handleFailed(taskId);
+            }
+        } catch (Exception e) {
+            log.error("웹훅 이벤트 처리 중 오류 발생: {}", e.getMessage(), e);
+            handleFailed(taskId);
+        }
+    }
+
+    public void saveToDatabase(Long taskId, String url) {
+        try {
+
+            VideoTask videoTask = videoTaskRepository.findById(taskId)
+                    .orElseThrow(() -> new EntityNotFoundException("Video task not found"));
+
+            UGC ugc = UGC.ofVideo(url, videoTask);
+            UGCRepository.save(ugc);
+
+            log.info("✅ DB 저장 완료: taskId={}, videoUrl={}", taskId, ugc);
+        } catch (Exception e) {
+            log.error("DB 저장 중 오류 발생: {}", e.getMessage(), e);
+        }
+    }
+
+
+    public void handleFailed(Long taskId) {
+        try {
+            VideoTask videoTask = videoTaskRepository.findById(taskId)
+                    .orElseThrow(() -> new EntityNotFoundException("Video task not found"));
+
+            videoTask.updateStatus(Status.FAILED);
+
+            Member member = videoTask.getCreator();
+            member.increaseCredit( 1);
+            Long memberId = member.getId();
+
+            redisService.publishNotificationToOtherServers(memberId, taskId, "", "이미지 생성에 실패했습니다.");
+            redisService.removeFromQueue("video", taskId);
+            videoTaskRepository.save(videoTask);
+        } catch (Exception e) {
+            log.error("SSE 알림 전송 중 오류 발생: {}", e.getMessage(), e);
+        }
+    }
+
+    public void handleCompleted(Long taskId, WebhookEvent event) {
+        try {
+            VideoTask videoTask = videoTaskRepository.findById(taskId)
+                    .orElseThrow(() -> new EntityNotFoundException("Video task not found"));
+
+            videoTask.updateStatus(Status.COMPLETED);
+
+            Long memberId = videoTask.getCreator().getId();
+            String url = event.getImages();
+            String prompt = event.getPrompt();
+
+            redisService.publishNotificationToOtherServers(memberId, taskId, url, prompt);
+            redisService.removeFromQueue("video", taskId);
+            videoTaskRepository.save(videoTask);
+        } catch (Exception e) {
+            log.error("SSE 알림 전송 중 오류 발생: {}", e.getMessage(), e);
+        }
+    }
+
+}

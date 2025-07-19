@@ -1,5 +1,6 @@
 package com.ll.demo03.imageTask.domain;
 
+import com.ll.demo03.global.domain.Status;
 import lombok.Builder;
 import lombok.Getter;
 

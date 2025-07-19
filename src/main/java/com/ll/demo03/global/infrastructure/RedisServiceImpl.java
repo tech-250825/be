@@ -1,15 +1,25 @@
 package com.ll.demo03.global.infrastructure;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ll.demo03.global.port.RedisService;
+import com.ll.demo03.notification.controller.response.NotificationMessage;
+import com.ll.demo03.notification.controller.response.NotificationResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class RedisServiceImpl implements RedisService {
 
     private final StringRedisTemplate redisTemplate;
+    private ObjectMapper objectMapper;
 
     @Override
     public void setValue(String key, String value) {
@@ -27,7 +37,35 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
-    public void pushToImageQueue(String taskId){
-        redisTemplate.opsForList().rightPush("image:queue", String.valueOf(taskId));
+    public void pushToQueue(String type, Long taskId){
+        switch(type){
+            case "image" -> redisTemplate.opsForList().rightPush("image:queue", String.valueOf(taskId));
+            case "video" -> redisTemplate.opsForList().rightPush("video:queue", String.valueOf(taskId));
+        }
+    }
+
+    @Override
+    public void removeFromQueue(String type, Long taskId){
+        switch(type){
+            case "image" -> redisTemplate.opsForList().remove("image:queue", 1,  String.valueOf(taskId));
+            case "video" -> redisTemplate.opsForList().remove("video:queue", 1,  String.valueOf(taskId));
+        }
+    }
+
+    @Override
+    public void publishNotificationToOtherServers(Long memberId, Long taskId, String prompt, String url) {
+        try {
+            Map<String, Object> payload = Map.of(
+                    "memberId", memberId,
+                    "taskId", taskId,
+                    "prompt", prompt,
+                    "imageUrl", url
+            );
+            String jsonMessage = objectMapper.writeValueAsString(payload);
+            redisTemplate.convertAndSend("sse-notification-channel", jsonMessage);
+            log.debug("✅ Redis Publish 성공: memberId={}, taskId={}", memberId, taskId);
+        } catch (Exception e) {
+            log.error("❌ Redis Publish 실패: memberId={}, taskId={}, error={}", memberId, taskId, e.getMessage(), e);
+        }
     }
 }

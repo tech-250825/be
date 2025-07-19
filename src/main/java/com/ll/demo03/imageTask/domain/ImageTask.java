@@ -1,9 +1,11 @@
 package com.ll.demo03.imageTask.domain;
 
+import com.ll.demo03.global.domain.Status;
 import com.ll.demo03.imageTask.controller.request.ImageQueueRequest;
 import com.ll.demo03.global.port.Network;
 import com.ll.demo03.imageTask.controller.request.ImageTaskRequest;
 import com.ll.demo03.member.domain.Member;
+import com.ll.demo03.videoTask.domain.VideoTask;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -14,13 +16,13 @@ public class ImageTask {
     private final String prompt;
     private final String lora;
     private final String runpodId;
-    private final String status;
+    private final Status status;
     private final Long createdAt;
     private final Long modifiedAt;
     private final Member creator;
 
     @Builder
-    public ImageTask(Long id, String prompt, String lora, String runpodId, String status, Long createdAt, Long modifiedAt, Member creator) {
+    public ImageTask(Long id, String prompt, String lora, String runpodId, Status status, Long createdAt, Long modifiedAt, Member creator) {
         this.id = id;
         this.prompt = prompt;
         this.lora = lora;
@@ -35,7 +37,20 @@ public class ImageTask {
         return ImageTask.builder()
                 .prompt(imageTaskInitiate.getPrompt())
                 .lora(imageTaskInitiate.getLora())
-                .status(imageTaskInitiate.getStatus())
+                .status(Status.valueOf(imageTaskInitiate.getStatus()))
+                .creator(creator)
+                .build();
+    }
+
+    public ImageTask updateStatus(Status status){
+        return ImageTask.builder()
+                .id(id)
+                .prompt(prompt)
+                .lora(lora)
+                .runpodId(runpodId)
+                .status(status)
+                .createdAt(createdAt)
+                .modifiedAt(modifiedAt)
                 .creator(creator)
                 .build();
     }

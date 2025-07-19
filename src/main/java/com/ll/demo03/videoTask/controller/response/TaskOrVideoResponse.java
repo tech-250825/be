@@ -13,10 +13,10 @@ import lombok.Getter;
 @AllArgsConstructor
 @Builder
 public class TaskOrVideoResponse {
-    private String type; // "task" or "image"
+    private String type; // "task" or "video"
 
     @Nullable
-    private VideoTaskDto task;
+    private VideoTaskResponse task;
 
     @Nullable
     private UGCResponse image;
@@ -24,14 +24,14 @@ public class TaskOrVideoResponse {
     public static TaskOrVideoResponse fromTask(VideoTask task) {
         return TaskOrVideoResponse.builder()
                 .type("task")
-                .task(VideoTaskDto.from(task))
+                .task(VideoTaskResponse.from(task))
                 .build();
     }
 
-    public static TaskOrVideoResponse fromImage(VideoTask task, UGC UGC) {
+    public static TaskOrVideoResponse fromVideo(VideoTask task, UGC UGC) {
         return TaskOrVideoResponse.builder()
                 .type("video")
-                .task(VideoTaskDto.from(task))
+                .task(VideoTaskResponse.from(task))
                 .image(UGCResponse.of(UGC))
                 .build();
     }

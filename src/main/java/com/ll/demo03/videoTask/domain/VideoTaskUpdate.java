@@ -1,6 +1,6 @@
 package com.ll.demo03.videoTask.domain;
 
-import com.ll.demo03.imageTask.domain.Status;
+import com.ll.demo03.global.domain.Status;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -10,8 +10,6 @@ public class VideoTaskUpdate {
     private final Status status;
 
     @Builder
-    public VideoTaskUpdate(Status status) {
-        this.status = status;
-    }
+    public VideoTaskUpdate(Status status) {this.status = status;}
 }
 

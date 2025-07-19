@@ -6,6 +6,8 @@ import com.ll.demo03.videoTask.domain.VideoTask;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.domain.Specification;
+import java.util.Optional;
+
 
 public interface ImageTaskRepository {
     void deleteByMemberId(Long memberId);
@@ -19,4 +21,6 @@ public interface ImageTaskRepository {
     ImageTask save(ImageTask imageTask);
 
     Slice<ImageTask> findAll(Specification<ImageTask> spec, PageRequest pageRequest);
+
+    Optional<ImageTask> findById(Long taskId);
 }

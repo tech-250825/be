@@ -5,7 +5,7 @@ import com.ll.demo03.UGC.service.port.UGCRepository;
 import com.ll.demo03.global.port.ResponseConverter;
 import com.ll.demo03.imageTask.controller.response.TaskOrImageResponse;
 import com.ll.demo03.imageTask.domain.ImageTask;
-import com.ll.demo03.imageTask.domain.Status;
+import com.ll.demo03.global.domain.Status;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;

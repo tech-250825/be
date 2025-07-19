@@ -8,7 +8,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 @Builder
-public class VideoTaskDto {
+public class VideoTaskResponse {
 
     private Long id;
     private String prompt;
@@ -17,8 +17,8 @@ public class VideoTaskDto {
     private String runpodId;
     private Long createdAt;
 
-    public static VideoTaskDto from(VideoTask task) {
-        return VideoTaskDto.builder()
+    public static VideoTaskResponse from(VideoTask task) {
+        return VideoTaskResponse.builder()
                 .id(task.getId())
                 .prompt(task.getPrompt())
                 .lora(task.getLora())

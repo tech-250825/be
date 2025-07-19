@@ -4,6 +4,7 @@ import com.ll.demo03.UGC.service.port.UGCRepository;
 import com.ll.demo03.imageTask.service.port.ImageTaskRepository;
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
+import com.ll.demo03.member.controller.port.MemberService;
 import com.ll.demo03.member.domain.Member;
 import com.ll.demo03.member.service.port.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class MemberServiceImpl {
+public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
     private final UGCRepository ugcRepository;
@@ -28,6 +29,7 @@ public class MemberServiceImpl {
     }
 
 
+    @Override
     @Transactional
     public void delete(Long memberId) {
         Member member = memberRepository.findById(memberId)

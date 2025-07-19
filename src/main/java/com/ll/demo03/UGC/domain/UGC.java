@@ -41,6 +41,7 @@ public class UGC {
         return UGC.builder()
                 .url(url)
                 .videoTask(videoTask)
+                .index(0)
                 .creator(videoTask.getCreator())
                 .build();
     }
