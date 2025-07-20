@@ -69,8 +69,6 @@ public class SecurityConfig {
                                                 "/api/videos/webhook",
                                                 "/api/upscale-images/webhook",
                                                 "/auth/token/verify",
-                                                "/api/auth/login/*",
-                                                "/ws/**",
                                                 "/auth/google/redirect",
                                                 "/swagger-ui/**",
                                                 "/swagger-resources/**",
@@ -79,9 +77,7 @@ public class SecurityConfig {
                                                 "/actuator/health",
                                         "/actuator/prometheus",
                                         "/sse/**",
-                                                "/auth/**",              // OAuth 관련 모든 경로 허용
-                                                "/login/**",
-                                                "/oauth2/**"
+                                                "/api/lora"
 
                                 ).permitAll() //
                 .anyRequest().authenticated() //나머지는 인증 필요
