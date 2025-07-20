@@ -2,8 +2,11 @@ package com.ll.demo03.UGC.domain;
 
 import com.ll.demo03.imageTask.domain.ImageTask;
 import com.ll.demo03.member.domain.Member;
+import com.ll.demo03.videoTask.domain.VideoTask;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.time.LocalDateTime;
 
 @Getter
 public class UGC {
@@ -12,20 +15,18 @@ public class UGC {
     private String url;
     private int index;
     private ImageTask imageTask;
-    private com.ll.demo03.videoTask.domain.VideoTask videoTask;
-    private Long createdAt;
-    private Long modifiedAt;
+    private VideoTask videoTask;
+    private LocalDateTime createdAt;
     private Member creator;
 
     @Builder
-    public UGC(Long id, String url, int index, ImageTask imageTask, com.ll.demo03.videoTask.domain.VideoTask videoTask, Long createdAt, Long modifiedAt, Member creator){
+    public UGC(Long id, String url, int index, ImageTask imageTask, VideoTask videoTask, LocalDateTime createdAt, Member creator){
         this.id = id;
         this.url = url;
         this.index = index;
         this.imageTask = imageTask;
         this.videoTask = videoTask;
         this.createdAt = createdAt;
-        this.modifiedAt = modifiedAt;
         this.creator = creator;
     }
 

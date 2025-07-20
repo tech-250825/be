@@ -17,11 +17,10 @@ public interface VideoTaskJpaRepository extends JpaRepository<VideoTaskEntity, L
 
     void deleteByMemberId(Long memberId);
 
-    Slice<VideoTaskEntity> findByMember(MemberEntity memberEntity, PageRequest pageRequest);
+    Slice<VideoTaskEntity> findByMember(MemberEntity member, PageRequest pageRequest);
 
-    boolean existsByMemberAndCreatedAtGreaterThan(MemberEntity memberEntity, LocalDateTime createdAt);
+    boolean existsByMemberAndCreatedAtGreaterThan(MemberEntity member, LocalDateTime createdAt);
 
-    boolean existsByMemberAndCreatedAtLessThan(MemberEntity memberEntity, LocalDateTime createdAt);
+    boolean existsByMemberAndCreatedAtLessThan(MemberEntity member, LocalDateTime createdAt);
 
-    Slice<VideoTaskEntity> findAll(Specification<VideoTask> spec, PageRequest pageRequest);
 }

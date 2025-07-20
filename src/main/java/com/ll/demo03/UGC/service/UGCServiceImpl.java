@@ -1,5 +1,6 @@
 package com.ll.demo03.UGC.service;
 
+import com.ll.demo03.UGC.controller.port.UGCService;
 import com.ll.demo03.UGC.controller.response.UGCResponse;
 import com.ll.demo03.UGC.service.port.UGCRepository;
 import com.ll.demo03.global.port.CursorPaginationService;
@@ -16,7 +17,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class UGCServiceImpl {
+public class UGCServiceImpl  implements UGCService {
 
     private final UGCRepository UGCRepository;
     private final CursorPaginationService paginationService;

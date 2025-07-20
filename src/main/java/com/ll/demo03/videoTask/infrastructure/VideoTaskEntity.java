@@ -40,7 +40,7 @@ public class VideoTaskEntity {
 
     @ManyToOne
     @JoinColumn(name = "member_id")
-    private MemberEntity creator;
+    private MemberEntity member;
 
     public static VideoTaskEntity from(VideoTask videoTask) {
         VideoTaskEntity videoTaskEntity = new VideoTaskEntity();
@@ -49,7 +49,7 @@ public class VideoTaskEntity {
         videoTaskEntity.lora = videoTask.getLora();
         videoTaskEntity.runpodId = videoTask.getRunpodId();
         videoTaskEntity.status = videoTask.getStatus();
-        videoTaskEntity.creator = MemberEntity.from(videoTask.getCreator());
+        videoTaskEntity.member = MemberEntity.from(videoTask.getCreator());
 
         return videoTaskEntity;
     }
@@ -63,7 +63,7 @@ public class VideoTaskEntity {
                 .status(status)
                 .createdAt(createdAt)
                 .modifiedAt(modifiedAt)
-                .creator(creator.toModel())
+                .creator(member.toModel())
                 .build();
     }
 }

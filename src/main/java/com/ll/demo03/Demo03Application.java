@@ -7,7 +7,6 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.scheduling.annotation.EnableAsync;
 
-@EntityScan(basePackages = {"com.ll.demo03.UGC.infrastructure"})
 @EnableAsync
 @EnableCaching
 @EnableJpaAuditing

@@ -5,6 +5,7 @@ import com.ll.demo03.member.domain.Member;
 import com.ll.demo03.videoTask.domain.VideoTask;
 
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -25,6 +26,7 @@ public interface VideoTaskRepository {
 
     VideoTask save(VideoTask videoTask);
 
-    Slice<VideoTask> findAll(Specification<VideoTask> spec, PageRequest pageRequest);
+    Slice<VideoTask> findCreatedAfter(Member member, LocalDateTime createdAt, Pageable pageable);
+    Slice<VideoTask> findCreatedBefore(Member member, LocalDateTime createdAt, Pageable pageable);
 
 }

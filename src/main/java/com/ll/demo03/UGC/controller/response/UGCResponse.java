@@ -4,13 +4,15 @@ import com.ll.demo03.UGC.domain.UGC;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 @AllArgsConstructor
 @Getter
 public class UGCResponse {
     private Long id;
     private String url;
     private int index;
-    private Long createdAt;
+    private LocalDateTime createdAt;
 
     public static UGCResponse of(UGC UGC) {
         return new UGCResponse(

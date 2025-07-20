@@ -23,5 +23,4 @@ public interface ImageTaskJpaRepository extends JpaRepository<ImageTaskEntity, L
 
     boolean existsByMemberAndCreatedAtLessThan(MemberEntity creator, LocalDateTime createdAt);
 
-    Slice<ImageTaskEntity> findAll(Specification<ImageTask> spec, PageRequest pageRequest);
 }

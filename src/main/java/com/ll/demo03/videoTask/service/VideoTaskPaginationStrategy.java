@@ -3,6 +3,7 @@ package com.ll.demo03.videoTask.service;
 import com.ll.demo03.global.domain.PageCursors;
 import com.ll.demo03.global.port.CursorPaginationStrategy;
 import com.ll.demo03.global.util.CursorBasedPageable;
+import com.ll.demo03.imageTask.domain.ImageTask;
 import com.ll.demo03.member.domain.Member;
 import com.ll.demo03.videoTask.domain.VideoTask;
 import com.ll.demo03.videoTask.service.port.VideoTaskRepository;
@@ -20,17 +21,17 @@ import java.util.List;
 
 @Component
 public class VideoTaskPaginationStrategy implements CursorPaginationStrategy<VideoTask> {
-    private final VideoTaskRepository videoTaskRepository;
+    private final VideoTaskRepository taskRepository;
 
     public VideoTaskPaginationStrategy(VideoTaskRepository videoTaskRepository) {
-        this.videoTaskRepository = videoTaskRepository;
+        this.taskRepository = videoTaskRepository;
     }
 
     @Override
     public Slice<VideoTask> getFirstPage(Member member, CursorBasedPageable pageable) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         PageRequest pageRequest = PageRequest.of(0, pageable.getSize(), sort);
-        return videoTaskRepository.findByMember(member, pageRequest);
+        return taskRepository.findByMember(member, pageRequest);
     }
 
     @Override
@@ -38,14 +39,9 @@ public class VideoTaskPaginationStrategy implements CursorPaginationStrategy<Vid
         String cursorValue = pageable.getDecodedCursor(pageable.getPrevPageCursor());
         LocalDateTime cursorCreatedAt = LocalDateTime.parse(cursorValue);
 
-        Specification<VideoTask> spec = (root, query, cb) -> cb.and(
-                cb.equal(root.get("member"), member),
-                cb.greaterThan(root.get("createdAt"), cursorCreatedAt)
-        );
-
         Sort sort = Sort.by(Sort.Direction.ASC, "createdAt");
         PageRequest pageRequest = PageRequest.of(0, pageable.getSize(), sort);
-        Slice<VideoTask> taskPage = videoTaskRepository.findAll(spec, pageRequest);
+        Slice<VideoTask> taskPage = taskRepository.findCreatedAfter(member, cursorCreatedAt, pageRequest);
 
         List<VideoTask> reversed = new ArrayList<>(taskPage.getContent());
         Collections.reverse(reversed);
@@ -57,14 +53,10 @@ public class VideoTaskPaginationStrategy implements CursorPaginationStrategy<Vid
         String cursorValue = pageable.getDecodedCursor(pageable.getNextPageCursor());
         LocalDateTime cursorCreatedAt = LocalDateTime.parse(cursorValue);
 
-        Specification<VideoTask> spec = (root, query, cb) -> cb.and(
-                cb.equal(root.get("member"), member),
-                cb.lessThan(root.get("createdAt"), cursorCreatedAt)
-        );
-
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         PageRequest pageRequest = PageRequest.of(0, pageable.getSize(), sort);
-        return videoTaskRepository.findAll(spec, pageRequest);
+
+        return taskRepository.findCreatedBefore(member, cursorCreatedAt, pageRequest);
     }
 
     @Override
@@ -72,8 +64,8 @@ public class VideoTaskPaginationStrategy implements CursorPaginationStrategy<Vid
         VideoTask first = content.get(0);
         VideoTask last = content.get(content.size() - 1);
 
-        boolean hasPrev = videoTaskRepository.existsByMemberAndCreatedAtGreaterThan(member, first.getCreatedAt());
-        boolean hasNext = videoTaskRepository.existsByMemberAndCreatedAtLessThan(member, last.getCreatedAt());
+        boolean hasPrev = taskRepository.existsByMemberAndCreatedAtGreaterThan(member, first.getCreatedAt());
+        boolean hasNext = taskRepository.existsByMemberAndCreatedAtLessThan(member, last.getCreatedAt());
 
         String prevCursor = pageable.getEncodedCursor(first.getCreatedAt().toString(), hasPrev);
         String nextCursor = pageable.getEncodedCursor(last.getCreatedAt().toString(), hasNext);

@@ -23,7 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 @RestController
-@RequestMapping("/api/images")
+@RequestMapping("/api/videos")
 @Slf4j
 public class VideoTaskController {
 

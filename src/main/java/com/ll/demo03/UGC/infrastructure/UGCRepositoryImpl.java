@@ -8,10 +8,13 @@ import com.ll.demo03.videoTask.infrastructure.VideoTaskEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.stereotype.Repository;
+
 import java.util.List;
 import java.util.Optional;
 
 
+@Repository
 @RequiredArgsConstructor
 public class UGCRepositoryImpl implements UGCRepository {
 

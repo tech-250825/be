@@ -4,6 +4,7 @@ import com.ll.demo03.imageTask.domain.ImageTask;
 import com.ll.demo03.member.domain.Member;
 import com.ll.demo03.videoTask.domain.VideoTask;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -22,7 +23,8 @@ public interface ImageTaskRepository {
 
     ImageTask save(ImageTask imageTask);
 
-    Slice<ImageTask> findAll(Specification<ImageTask> spec, PageRequest pageRequest);
+    Slice<ImageTask> findCreatedAfter(Member member, LocalDateTime createdAt, Pageable pageable);
+    Slice<ImageTask> findCreatedBefore(Member member, LocalDateTime createdAt, Pageable pageable);
 
     Optional<ImageTask> findById(Long taskId);
 }

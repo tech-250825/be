@@ -20,17 +20,17 @@ import java.util.List;
 
 @Component
 public class ImageTaskPaginationStrategy implements CursorPaginationStrategy<ImageTask> {
-    private final ImageTaskRepository imageTaskRepository;
+    private final ImageTaskRepository taskRepository;
 
     public ImageTaskPaginationStrategy(ImageTaskRepository imageTaskRepository) {
-        this.imageTaskRepository = imageTaskRepository;
+        this.taskRepository = imageTaskRepository;
     }
 
     @Override
     public Slice<ImageTask> getFirstPage(Member member, CursorBasedPageable pageable) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         PageRequest pageRequest = PageRequest.of(0, pageable.getSize(), sort);
-        return imageTaskRepository.findByMember(member, pageRequest);
+        return taskRepository.findByMember(member, pageRequest);
     }
 
     @Override
@@ -38,14 +38,9 @@ public class ImageTaskPaginationStrategy implements CursorPaginationStrategy<Ima
         String cursorValue = pageable.getDecodedCursor(pageable.getPrevPageCursor());
         LocalDateTime cursorCreatedAt = LocalDateTime.parse(cursorValue);
 
-        Specification<ImageTask> spec = (root, query, cb) -> cb.and(
-                cb.equal(root.get("member"), member),
-                cb.greaterThan(root.get("createdAt"), cursorCreatedAt)
-        );
-
         Sort sort = Sort.by(Sort.Direction.ASC, "createdAt");
         PageRequest pageRequest = PageRequest.of(0, pageable.getSize(), sort);
-        Slice<ImageTask> taskPage = imageTaskRepository.findAll(spec, pageRequest);
+        Slice<ImageTask> taskPage = taskRepository.findCreatedAfter(member, cursorCreatedAt, pageRequest);
 
         List<ImageTask> reversed = new ArrayList<>(taskPage.getContent());
         Collections.reverse(reversed);
@@ -57,23 +52,20 @@ public class ImageTaskPaginationStrategy implements CursorPaginationStrategy<Ima
         String cursorValue = pageable.getDecodedCursor(pageable.getNextPageCursor());
         LocalDateTime cursorCreatedAt = LocalDateTime.parse(cursorValue);
 
-        Specification<ImageTask> spec = (root, query, cb) -> cb.and(
-                cb.equal(root.get("member"), member),
-                cb.lessThan(root.get("createdAt"), cursorCreatedAt)
-        );
-
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         PageRequest pageRequest = PageRequest.of(0, pageable.getSize(), sort);
-        return imageTaskRepository.findAll(spec, pageRequest);
+
+        return taskRepository.findCreatedBefore(member, cursorCreatedAt, pageRequest);
     }
+
 
     @Override
     public PageCursors createCursors(Member member, List<ImageTask> content, CursorBasedPageable pageable) {
         ImageTask first = content.get(0);
         ImageTask last = content.get(content.size() - 1);
 
-        boolean hasPrev = imageTaskRepository.existsByMemberAndCreatedAtGreaterThan(member, first.getCreatedAt());
-        boolean hasNext = imageTaskRepository.existsByMemberAndCreatedAtLessThan(member, last.getCreatedAt());
+        boolean hasPrev = taskRepository.existsByMemberAndCreatedAtGreaterThan(member, first.getCreatedAt());
+        boolean hasNext = taskRepository.existsByMemberAndCreatedAtLessThan(member, last.getCreatedAt());
 
         String prevCursor = pageable.getEncodedCursor(first.getCreatedAt().toString(), hasPrev);
         String nextCursor = pageable.getEncodedCursor(last.getCreatedAt().toString(), hasNext);

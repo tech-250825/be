@@ -4,7 +4,6 @@ import com.ll.demo03.member.domain.AuthProvider;
 import com.ll.demo03.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 import com.ll.demo03.member.domain.Role;
 
 
@@ -12,8 +11,6 @@ import com.ll.demo03.member.domain.Role;
 @Setter
 @Entity
 @Table(name = "members")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberEntity {
 
     @Id

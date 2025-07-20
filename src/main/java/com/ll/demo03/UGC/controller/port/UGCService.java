@@ -11,6 +11,4 @@ public interface UGCService {
 
     PageResponse<List<UGCResponse>> getMyImages(Member creator, CursorBasedPageable pageable);
 
-    void deleteMyImages(UGCListRequest imageIds, Member creator);
-
 }

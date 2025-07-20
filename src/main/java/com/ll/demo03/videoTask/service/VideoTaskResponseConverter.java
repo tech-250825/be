@@ -5,6 +5,7 @@ import com.ll.demo03.UGC.service.port.UGCRepository;
 import com.ll.demo03.global.port.ResponseConverter;
 import com.ll.demo03.videoTask.controller.response.TaskOrVideoResponse;
 import com.ll.demo03.videoTask.domain.VideoTask;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Component
 public class VideoTaskResponseConverter implements ResponseConverter<VideoTask, TaskOrVideoResponse> {
     private final UGCRepository ugcRepository;
 

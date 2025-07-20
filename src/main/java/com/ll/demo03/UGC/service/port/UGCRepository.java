@@ -2,6 +2,7 @@ package com.ll.demo03.UGC.service.port;
 
 import com.ll.demo03.UGC.domain.UGC;
 import com.ll.demo03.imageTask.domain.ImageTask;
+import com.ll.demo03.videoTask.domain.VideoTask;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
@@ -25,7 +26,7 @@ public interface UGCRepository {
 
     List<UGC> findByImageTaskIn(List<ImageTask> tasks);
 
-    List<UGC> findByVideoTaskIn(List<com.ll.demo03.videoTask.domain.VideoTask> tasks);
+    List<UGC> findByVideoTaskIn(List<VideoTask> tasks);
 
     Optional<UGC> findById(Long imageId);
 

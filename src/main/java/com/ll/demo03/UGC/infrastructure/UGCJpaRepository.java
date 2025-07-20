@@ -14,8 +14,6 @@ import java.util.List;
 
 public interface UGCJpaRepository extends JpaRepository<UGCEntity, Long>, JpaSpecificationExecutor<UGCEntity> {
 
-
-
     boolean existsByIdLessThanAndMemberId(Long id, Long memberId);
 
     boolean existsByIdGreaterThanAndMemberId(Long id, Long memberId);
@@ -28,9 +26,10 @@ public interface UGCJpaRepository extends JpaRepository<UGCEntity, Long>, JpaSpe
 
     void deleteByMemberId(Long memberId);
 
-    @Query("SELECT u FROM UGC u WHERE u.imageTask IN :tasks")
+    @Query("SELECT u FROM UGCEntity u WHERE u.imageTask IN :tasks")
     List<UGCEntity> findByImageTaskIn(@Param("tasks") List<ImageTaskEntity> tasks);
 
-    @Query("SELECT u FROM UGC u WHERE u.videoTask IN :tasks")
+    @Query("SELECT u FROM UGCEntity u WHERE u.videoTask IN :tasks")
     List<UGCEntity> findByVideoTaskIn(@Param("tasks") List<VideoTaskEntity> tasks);
+
 }

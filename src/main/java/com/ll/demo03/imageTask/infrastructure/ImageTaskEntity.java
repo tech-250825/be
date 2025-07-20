@@ -40,7 +40,7 @@ public class ImageTaskEntity {
 
     @ManyToOne
     @JoinColumn(name = "member_id")
-    private MemberEntity creator;
+    private MemberEntity member;
 
     public static ImageTaskEntity from(ImageTask imageTask) {
         ImageTaskEntity imageTaskEntity = new ImageTaskEntity();
@@ -49,7 +49,7 @@ public class ImageTaskEntity {
         imageTaskEntity.prompt = imageTask.getPrompt();
         imageTaskEntity.runpodId = imageTask.getRunpodId();
         imageTaskEntity.status = imageTask.getStatus();
-        imageTaskEntity.creator = MemberEntity.from(imageTask.getCreator());
+        imageTaskEntity.member = MemberEntity.from(imageTask.getCreator());
 
         return imageTaskEntity;
     }
@@ -63,7 +63,7 @@ public class ImageTaskEntity {
                 .status(status)
                 .createdAt(createdAt)
                 .modifiedAt(modifiedAt)
-                .creator(creator.toModel())
+                .creator(member.toModel())
                 .build();
     }
 }

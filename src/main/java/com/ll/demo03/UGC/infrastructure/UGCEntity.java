@@ -6,13 +6,14 @@ import com.ll.demo03.videoTask.infrastructure.VideoTaskEntity;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+
+import java.time.LocalDateTime;
 
 
 @Getter
 @Setter
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
 @Table(name="ugc")
 public class UGCEntity {
 
@@ -22,27 +23,25 @@ public class UGCEntity {
 
     private String url;
 
+    @Column(name = "ugc_index")
     private int index;
 
     @Nullable
     @ManyToOne(fetch= FetchType.LAZY)
-    @JoinColumn(name = "image_task")
     private ImageTaskEntity imageTask;
 
     @Nullable
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "video_task")
     private VideoTaskEntity videoTask;
 
+    @CreatedDate
     @Column(name= "created_at")
-    private Long createdAt;
+    private LocalDateTime createdAt;
 
-    @Column(name = "modified_at")
-    private Long modifiedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private MemberEntity creator;
+    private MemberEntity member;
 
     public static UGCEntity from(UGC ugc) {
         UGCEntity ugcEntity = new UGCEntity();
@@ -51,9 +50,7 @@ public class UGCEntity {
         ugcEntity.index = ugc.getIndex();
         ugcEntity.imageTask = ImageTaskEntity.from(ugc.getImageTask());
         ugcEntity.videoTask = VideoTaskEntity.from(ugc.getVideoTask());
-        ugcEntity.createdAt = ugc.getCreatedAt();
-        ugcEntity.modifiedAt = ugc.getModifiedAt();
-        ugcEntity.creator = MemberEntity.from(ugc.getCreator());
+        ugcEntity.member = MemberEntity.from(ugc.getCreator());
 
         return ugcEntity;
     }
@@ -66,8 +63,7 @@ public class UGCEntity {
                 .imageTask(imageTask.toModel())
                 .videoTask(videoTask.toModel())
                 .createdAt(createdAt)
-                .modifiedAt(modifiedAt)
-                .creator(creator.toModel())
+                .creator(member.toModel())
                 .build();
     }
 }
