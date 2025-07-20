@@ -21,34 +21,34 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ImageWebhookProcessorImpl implements WebhookProcessor<WebhookEvent> {
 
-    private final ImageTaskRepository imageTaskRepository;
+    private final ImageTaskRepository taskRepository;
     private final UGCRepository UGCRepository;
     private final RedisService redisService;
 
     public void processWebhookEvent(WebhookEvent event) {
-        log.info("event" , event);
         Long taskId = event.getTaskId();
         String status = event.getStatus();
+        String runpodId = event.getRunpodId();
 
         try {
             switch (status){
-                case "FAILED" -> handleFailed(taskId);
-                case "COMPLETED" -> handleCompleted(taskId, event);
-                default -> handleFailed(taskId);
+                case "FAILED" -> handleFailed(taskId,  runpodId);
+                case "COMPLETED" -> handleCompleted(taskId, event,  runpodId);
+                default -> handleFailed(taskId, runpodId);
             }
         } catch (Exception e) {
             log.error("웹훅 이벤트 처리 중 오류 발생: {}", e.getMessage(), e);
-            handleFailed(taskId);
+            handleFailed(taskId, runpodId);
         }
     }
 
     public void saveToDatabase(Long taskId, String url) {
         try {
 
-            ImageTask imageTask = imageTaskRepository.findById(taskId)
+            ImageTask task = taskRepository.findById(taskId)
                     .orElseThrow(() -> new EntityNotFoundException("Image task not found"));
 
-            UGC ugc = UGC.ofImage(url, imageTask);
+            UGC ugc = UGC.ofImage(url, task);
             UGCRepository.save(ugc);
 
             log.info("✅ DB 저장 완료: taskId={}, imageUrl={}", taskId, ugc);
@@ -58,39 +58,41 @@ public class ImageWebhookProcessorImpl implements WebhookProcessor<WebhookEvent>
     }
 
 
-    public void handleFailed(Long taskId) {
+    public void handleFailed(Long taskId, String runpodId) {
         try {
-            ImageTask imageTask = imageTaskRepository.findById(taskId)
+            ImageTask task = taskRepository.findById(taskId)
                     .orElseThrow(() -> new EntityNotFoundException("Image task not found"));
 
-            imageTask.updateStatus(Status.FAILED);
+            task = task.updateStatus(Status.FAILED, runpodId);
 
-            Member member = imageTask.getCreator();
+            Member member = task.getCreator();
             member.increaseCredit( 1);
             Long memberId = member.getId();
 
             redisService.publishNotificationToOtherServers(memberId, taskId, "", "이미지 생성에 실패했습니다.");
             redisService.removeFromQueue("image", taskId);
-            imageTaskRepository.save(imageTask);
+            taskRepository.save(task);
         } catch (Exception e) {
             log.error("SSE 알림 전송 중 오류 발생: {}", e.getMessage(), e);
         }
     }
 
-    public void handleCompleted(Long taskId, WebhookEvent event) {
+    public void handleCompleted(Long taskId, WebhookEvent event, String runpodId) {
         try {
-            ImageTask imageTask = imageTaskRepository.findById(taskId)
+            ImageTask task = taskRepository.findById(taskId)
                     .orElseThrow(() -> new EntityNotFoundException("Image task not found"));
 
-            imageTask.updateStatus(Status.COMPLETED);
+            task = task.updateStatus(Status.COMPLETED, runpodId);
 
-            Long memberId = imageTask.getCreator().getId();
+            Long memberId = task.getCreator().getId();
             String url = event.getImages();
             String prompt = event.getPrompt();
 
+            saveToDatabase(task.getId(), url);
+
             redisService.publishNotificationToOtherServers(memberId, taskId, url, prompt);
             redisService.removeFromQueue("image", taskId);
-            imageTaskRepository.save(imageTask);
+            taskRepository.save(task);
         } catch (Exception e) {
             log.error("SSE 알림 전송 중 오류 발생: {}", e.getMessage(), e);
         }

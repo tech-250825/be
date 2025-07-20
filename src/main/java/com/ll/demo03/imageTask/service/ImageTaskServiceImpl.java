@@ -1,6 +1,9 @@
 package com.ll.demo03.imageTask.service;
 
 
+import com.ll.demo03.global.domain.Status;
+import com.ll.demo03.global.error.ErrorCode;
+import com.ll.demo03.global.exception.CustomException;
 import com.ll.demo03.global.infrastructure.MessageProducerImpl;
 import com.ll.demo03.global.port.CursorPaginationService;
 import com.ll.demo03.global.port.RedisService;
@@ -45,21 +48,23 @@ public class ImageTaskServiceImpl implements ImageTaskService {
 
     @Override
     public void initate(ImageTaskRequest request, Member member){
+        Member creator = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER)); //이렇게 영속화 시켜야함
+        creator.decreaseCredit(1); //@AuthenticationPrincipal PrincipalDetails 에서 꺼낸 member 객체는 JPA에 영속되어있지 않으므로 decreaseCredit해도 JPA가 트랜잭션 커밋 시점에 알아서 update 쿼리를 날리지 않는다 .
 
         ImageTaskRequest newRequest = ImageTask.updatePrompt(request, network);
         ImageQueueRequest imageQueueRequest = ImageTask.toImageQueueRequest(newRequest, member);
         imageMessageProducer.sendImageCreationMessage(imageQueueRequest);
+        memberRepository.save(creator);
     }
 
     @Override
-    public void processImageCreationTransactional(ImageTaskInitiate message) {
+    public void processImageCreationTransactional(ImageQueueRequest message) { //비동기 에러나면 어칼껀데
 
-        Long memberId = message.getCreatorId();
-        Member member = memberRepository.findById(memberId).orElseThrow(() -> new EntityNotFoundException("Member not found: " + memberId));;
-        member.decreaseCredit(1);
+        Member member = memberRepository.findById(message.getMemberId()).orElseThrow(() -> new EntityNotFoundException("Member not found")); //rabbitmq TLS화하여 보안설정 하기
 
-        ImageTask imageTask = ImageTask.from(member, message);
-        ImageTask saved = imageTaskRepository.save(imageTask);
+        ImageTask task = ImageTask.from(member, message);
+        task = task.updateStatus(Status.IN_PROGRESS, null);
+        ImageTask saved = imageTaskRepository.save(task);
         Long taskId = saved.getId();
 
         redisService.pushToQueue("image", taskId);

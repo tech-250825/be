@@ -4,7 +4,9 @@ import com.ll.demo03.UGC.domain.UGC;
 import com.ll.demo03.UGC.service.port.UGCRepository;
 import com.ll.demo03.imageTask.domain.ImageTask;
 import com.ll.demo03.imageTask.infrastructure.ImageTaskEntity;
+import com.ll.demo03.imageTask.infrastructure.ImageTaskJpaRepository;
 import com.ll.demo03.videoTask.infrastructure.VideoTaskEntity;
+import com.ll.demo03.videoTask.infrastructure.VideoTaskJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -19,6 +21,8 @@ import java.util.Optional;
 public class UGCRepositoryImpl implements UGCRepository {
 
     private final UGCJpaRepository ugcJpaRepository;
+    private final ImageTaskJpaRepository imageTaskJpaRepository;
+    private final VideoTaskJpaRepository videoTaskJpaRepository;
 
     @Override
     public UGC save(UGC ugc){
@@ -68,7 +72,7 @@ public class UGCRepositoryImpl implements UGCRepository {
     @Override
     public List<UGC> findByImageTaskIn(List<ImageTask> tasks) {
         List<ImageTaskEntity> entities = tasks.stream()
-                .map(ImageTaskEntity::from)
+                .map(t -> imageTaskJpaRepository.getReferenceById(t.getId()))
                 .toList();
 
         return ugcJpaRepository.findByImageTaskIn(entities)
@@ -81,7 +85,7 @@ public class UGCRepositoryImpl implements UGCRepository {
     @Override
     public List<UGC> findByVideoTaskIn(List<com.ll.demo03.videoTask.domain.VideoTask> tasks) {
         List<VideoTaskEntity> entities = tasks.stream()
-                .map(VideoTaskEntity::from)
+                .map(t -> videoTaskJpaRepository.getReferenceById(t.getId()))
                 .toList();
 
         return ugcJpaRepository.findByVideoTaskIn(entities)

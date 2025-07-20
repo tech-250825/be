@@ -8,14 +8,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
 @NoArgsConstructor
-@Setter
 @Getter
 @Entity
 @Table(name = "video_tasks")
+@EntityListeners(AuditingEntityListener.class)
 public class VideoTaskEntity {
 
     @Id
@@ -28,6 +29,7 @@ public class VideoTaskEntity {
 
     private String runpodId;
 
+    @Enumerated(EnumType.STRING)
     private Status status;
 
     @CreatedDate
@@ -42,16 +44,18 @@ public class VideoTaskEntity {
     @JoinColumn(name = "member_id")
     private MemberEntity member;
 
-    public static VideoTaskEntity from(VideoTask videoTask) {
-        VideoTaskEntity videoTaskEntity = new VideoTaskEntity();
-        videoTaskEntity.id = videoTask.getId();
-        videoTaskEntity.prompt = videoTask.getPrompt();
-        videoTaskEntity.lora = videoTask.getLora();
-        videoTaskEntity.runpodId = videoTask.getRunpodId();
-        videoTaskEntity.status = videoTask.getStatus();
-        videoTaskEntity.member = MemberEntity.from(videoTask.getCreator());
+    public static VideoTaskEntity from(VideoTask task) {
+        VideoTaskEntity taskEntity = new VideoTaskEntity();
+        taskEntity.id = task.getId();
+        taskEntity.prompt = task.getPrompt();
+        taskEntity.lora = task.getLora();
+        taskEntity.runpodId = task.getRunpodId();
+        taskEntity.createdAt = task.getCreatedAt();
+        taskEntity.modifiedAt = task.getModifiedAt();
+        taskEntity.status = task.getStatus();
+        taskEntity.member = MemberEntity.from(task.getCreator());
 
-        return videoTaskEntity;
+        return taskEntity;
     }
 
     public VideoTask toModel() {

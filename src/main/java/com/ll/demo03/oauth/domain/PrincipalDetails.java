@@ -36,6 +36,9 @@ public record PrincipalDetails(
 
     @Override
     public String getUsername() {
+        if (attributes != null && attributes.get("email") != null) {
+            return attributes.get("email").toString();
+        }
         return user.getEmail();
     }
 

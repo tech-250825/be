@@ -8,12 +8,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
 @NoArgsConstructor
-@Setter
 @Getter
+@EntityListeners(AuditingEntityListener.class)
 @Entity
 @Table(name = "image_tasks")
 public class ImageTaskEntity {
@@ -28,6 +29,7 @@ public class ImageTaskEntity {
 
     private String runpodId;
 
+    @Enumerated(EnumType.STRING)
     private Status status;
 
     @CreatedDate
@@ -42,16 +44,18 @@ public class ImageTaskEntity {
     @JoinColumn(name = "member_id")
     private MemberEntity member;
 
-    public static ImageTaskEntity from(ImageTask imageTask) {
-        ImageTaskEntity imageTaskEntity = new ImageTaskEntity();
-        imageTaskEntity.id = imageTask.getId();
-        imageTaskEntity.lora = imageTask.getLora();
-        imageTaskEntity.prompt = imageTask.getPrompt();
-        imageTaskEntity.runpodId = imageTask.getRunpodId();
-        imageTaskEntity.status = imageTask.getStatus();
-        imageTaskEntity.member = MemberEntity.from(imageTask.getCreator());
+    public static ImageTaskEntity from(ImageTask task) {
+        ImageTaskEntity taskEntity = new ImageTaskEntity();
+        taskEntity.id = task.getId();
+        taskEntity.lora = task.getLora();
+        taskEntity.prompt = task.getPrompt();
+        taskEntity.runpodId = task.getRunpodId();
+        taskEntity.status = task.getStatus();
+        taskEntity.createdAt = task.getCreatedAt();
+        taskEntity.modifiedAt = task.getModifiedAt();
+        taskEntity.member = MemberEntity.from(task.getCreator());
 
-        return imageTaskEntity;
+        return taskEntity;
     }
 
     public ImageTask toModel() {

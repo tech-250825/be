@@ -3,6 +3,7 @@ package com.ll.demo03.global.infrastructure;
 import com.ll.demo03.config.RabbitMQConfig;
 import com.ll.demo03.global.port.MessageProducer;
 import com.ll.demo03.imageTask.controller.request.ImageQueueRequest;
+import com.ll.demo03.videoTask.controller.request.VideoQueueRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -25,7 +26,7 @@ public class MessageProducerImpl implements MessageProducer {
     }
 
     @Override
-    public void sendVideoCreationMessage(com.ll.demo03.videoTask.controller.request.VideoQueueRequest message) {
+    public void sendVideoCreationMessage(VideoQueueRequest message) {
         rabbitTemplate.convertAndSend(
                 RabbitMQConfig.VIDEO_EXCHANGE,
                 RabbitMQConfig.VIDEO_ROUTING_KEY,

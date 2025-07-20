@@ -5,7 +5,6 @@ import com.ll.demo03.imageTask.controller.request.ImageQueueRequest;
 import com.ll.demo03.global.port.Network;
 import com.ll.demo03.imageTask.controller.request.ImageTaskRequest;
 import com.ll.demo03.member.domain.Member;
-import com.ll.demo03.videoTask.domain.VideoTask;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -35,16 +34,15 @@ public class ImageTask {
         this.creator = creator;
     }
 
-    public static ImageTask from(Member creator, ImageTaskInitiate imageTaskInitiate) {
+    public static ImageTask from(Member creator, ImageQueueRequest queueRequest) {
         return ImageTask.builder()
-                .prompt(imageTaskInitiate.getPrompt())
-                .lora(imageTaskInitiate.getLora())
-                .status(Status.valueOf(imageTaskInitiate.getStatus()))
+                .prompt(queueRequest.getPrompt())
+                .lora(queueRequest.getLora())
                 .creator(creator)
                 .build();
     }
 
-    public ImageTask updateStatus(Status status){
+    public ImageTask updateStatus(Status status, String runpodId){
         return ImageTask.builder()
                 .id(id)
                 .prompt(prompt)
@@ -58,7 +56,7 @@ public class ImageTask {
     }
 
     public static ImageTaskRequest updatePrompt(ImageTaskRequest request, Network network) {
-        String newPrompt = network.modifyPrompt(request.getPrompt(), request.getLora());
+        String newPrompt = network.modifyPrompt(request.getLora() , request.getPrompt());
         String finalPrompt = (newPrompt == null || newPrompt.isBlank()) ? request.getPrompt() : newPrompt;
         return new ImageTaskRequest(request.getLora(), finalPrompt);
     }

@@ -36,14 +36,10 @@ public class VideoTaskController {
             @RequestBody VideoTaskRequest request,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
-        try{
             Member member = principalDetails.user();
             videoTaskService.initate(request, member);
             return GlobalResponse.success();
-        } catch (Exception e) {
-            log.error("영상 생성 요청 중 오류 발생: ", e);
-            return GlobalResponse.error(ErrorCode.INTERNAL_SERVER_ERROR);
-        }
+
     }
 
 

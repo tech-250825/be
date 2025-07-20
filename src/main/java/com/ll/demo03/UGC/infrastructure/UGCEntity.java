@@ -7,6 +7,7 @@ import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 @Setter
 @Entity
 @Table(name="ugc")
+@EntityListeners(AuditingEntityListener.class)
 public class UGCEntity {
 
     @Id
@@ -48,20 +50,32 @@ public class UGCEntity {
         ugcEntity.id = ugc.getId();
         ugcEntity.url = ugc.getUrl();
         ugcEntity.index = ugc.getIndex();
-        ugcEntity.imageTask = ImageTaskEntity.from(ugc.getImageTask());
-        ugcEntity.videoTask = VideoTaskEntity.from(ugc.getVideoTask());
+
+        if (ugc.getImageTask() != null) {
+            ugcEntity.imageTask = ImageTaskEntity.from(ugc.getImageTask()); //이렇게 안하면 null pointer exception 바로 터진다
+        } else {
+            ugcEntity.imageTask = null;
+        }
+
+        if (ugc.getVideoTask() != null) {
+            ugcEntity.videoTask = VideoTaskEntity.from(ugc.getVideoTask());
+        } else {
+            ugcEntity.videoTask = null;
+        }
+
         ugcEntity.member = MemberEntity.from(ugc.getCreator());
 
         return ugcEntity;
     }
+
 
     public UGC toModel() {
         return UGC.builder()
                 .id(id)
                 .url(url)
                 .index(index)
-                .imageTask(imageTask.toModel())
-                .videoTask(videoTask.toModel())
+                .imageTask(imageTask != null ? imageTask.toModel() : null)
+                .videoTask(videoTask != null ? videoTask.toModel() : null)
                 .createdAt(createdAt)
                 .creator(member.toModel())
                 .build();

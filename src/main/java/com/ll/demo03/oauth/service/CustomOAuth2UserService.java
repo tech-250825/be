@@ -43,19 +43,23 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         Member member = getOrSave(oAuth2UserInfo);
 
         PrincipalDetails principalDetails = new PrincipalDetails(member, attributes, userNameAttributeName);
+        log.info("유저 정보 로딩됨 ={}", principalDetails );
+        log.info("유저 정보 로딩됨 ={}", principalDetails.getName()  );
+        log.info("유저 정보 로딩됨 ={}", principalDetails.getUsername()  );
 
-        SecurityContextHolder.getContext().setAuthentication(
-                new OAuth2AuthenticationToken(
-                        principalDetails,
-                        principalDetails.getAuthorities(),
-                        registrationId
-                )
-        );
+//        SecurityContextHolder.getContext().setAuthentication(
+//                new OAuth2AuthenticationToken(
+//                        principalDetails,
+//                        principalDetails.getAuthorities(),
+//                        registrationId
+//                )
+//        );
 
         return principalDetails;
     }
 
     private Member getOrSave(OAuth2UserInfo oAuth2UserInfo) {
+        log.info("oAuth2UserInfo.email() = {}", oAuth2UserInfo.email());
         return memberRepository.findByEmail(oAuth2UserInfo.email())
                 .orElseGet(() -> {
                     Member newMember = oAuth2UserInfo.toEntity();

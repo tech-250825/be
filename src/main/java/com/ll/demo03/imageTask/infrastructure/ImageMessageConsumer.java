@@ -1,6 +1,7 @@
 package com.ll.demo03.imageTask.infrastructure;
 
 import com.ll.demo03.config.RabbitMQConfig;
+import com.ll.demo03.imageTask.controller.request.ImageQueueRequest;
 import com.ll.demo03.imageTask.domain.ImageTaskInitiate;
 import com.ll.demo03.imageTask.service.ImageTaskServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,7 @@ public class ImageMessageConsumer {
     private final ImageTaskServiceImpl imageTaskService;
 
     @RabbitListener(queues = RabbitMQConfig.IMAGE_QUEUE)
-    public void processImageCreation(ImageTaskInitiate message) {
+    public void processImageCreation(ImageQueueRequest message) {
         try {
             imageTaskService.processImageCreationTransactional(message);
             log.info("영상 생성 요청 처리 완료");

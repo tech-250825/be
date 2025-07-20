@@ -37,11 +37,16 @@ public class TokenProvider {
     private static final String KEY_ROLE = "role";
     private final MemberRepository memberRepository;
 
+    @PostConstruct
+    private void setSecretKey() {
+        secretKey = Keys.hmacShaKeyFor(key.getBytes());
+    }
 
     public Authentication getAuthentication(String token) {
         Claims claims = parseClaims(token);
 
         String email = claims.getSubject();
+
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
@@ -54,17 +59,10 @@ public class TokenProvider {
         return new UsernamePasswordAuthenticationToken(principalDetails, "", principalDetails.getAuthorities());
     }
 
-    private List<SimpleGrantedAuthority> getAuthorities(Claims claims) {
-        return Collections.singletonList(new SimpleGrantedAuthority(
-                claims.get(KEY_ROLE).toString()));
-    }
-
-
     public boolean validateToken(String token) {
         try {
             Claims claims = parseClaims(token);
-            boolean isValid = claims.getExpiration().after(new Date());
-            return isValid;
+            return claims.getExpiration().after(new Date());
         } catch (Exception e) {
             System.out.println("Error parsing claims: " + e.getMessage());
             return false;
@@ -73,9 +71,6 @@ public class TokenProvider {
 
     public Claims parseClaims(String token) {
         try {
-            if (!validateToken(token)) {
-                throw new CustomException(ErrorCode.REFRESH_TOKEN_EXPIRED);
-            }
             return Jwts.parser().verifyWith(secretKey).build()
                     .parseSignedClaims(token).getPayload();
         } catch (ExpiredJwtException e) {

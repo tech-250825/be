@@ -11,6 +11,7 @@ import lombok.Setter;
 @Setter
 public class NotificationMessage {
     private long memberId;
-
-    private String notificationJson;
+    private String imageUrl;
+    private Long taskId;
+    private String prompt;
 }

@@ -47,6 +47,7 @@ public class MemberEntity {
     public Member toModel(){
         return Member.builder()
                 .id(this.getId())
+                .email(this.getEmail())
                 .name(this.getName())
                 .profile(this.getProfile())
                 .credit(this.getCredit())

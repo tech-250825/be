@@ -1,16 +1,14 @@
 package com.ll.demo03.global.infrastructure;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ll.demo03.global.port.RedisService;
-import com.ll.demo03.notification.controller.response.NotificationMessage;
-import com.ll.demo03.notification.controller.response.NotificationResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -19,7 +17,7 @@ import java.util.Map;
 public class RedisServiceImpl implements RedisService {
 
     private final StringRedisTemplate redisTemplate;
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
     @Override
     public void setValue(String key, String value) {
@@ -53,6 +51,7 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW) //requires_new로 분리 트랜잭션
     public void publishNotificationToOtherServers(Long memberId, Long taskId, String prompt, String url) {
         try {
             Map<String, Object> payload = Map.of(

@@ -56,7 +56,8 @@ public class TokenGenerator {
                 .collect(Collectors.joining());
 
         PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
-        String email= principalDetails.user().getEmail();
+        String email= principalDetails.getUsername();
+        log.info("email = {}" ,email);
 
         return Jwts.builder()
                 .setSubject(email)

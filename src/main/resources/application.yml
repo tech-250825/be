@@ -1,6 +1,6 @@
 app:
   client:
-    url: http://localhost:3000
+    url: http://localhost:8090
 server:
   port: 8090
   shutdown: graceful
@@ -37,11 +37,9 @@ spring:
     redis:
       host: localhost
       port: 6379
-      username: default
-      password: 1234
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true
@@ -63,20 +61,21 @@ management:
         enabled: true
 logging:
   level:
-    com.ll.demo03: INFO
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-    org.hibernate.orm.jdbc.bind: INFO
-    org.hibernate.orm.jdbc.extract: INFO
-    org.springframework.transaction.interceptor: INFO
+    root: INFO
     org.springframework.security: DEBUG
-    org.springframework.core.env: DEBUG
-    com.zaxxer.hikari.HikariConfig: DEBUG
-    com.zaxxer.hikari.HikariDataSource: DEBUG
-    org.springframework.security.oauth2: DEBUG
-    org.springframework.web.client: DEBUG
+#    org.hibernate.SQL: DEBUG
+#    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+#    org.hibernate.orm.jdbc.bind: INFO
+#    org.hibernate.orm.jdbc.extract: INFO
+#    org.springframework.transaction.interceptor: INFO
+#    org.springframework.security: DEBUG
+#    org.springframework.core.env: DEBUG
+#    com.zaxxer.hikari.HikariConfig: DEBUG
+#    com.zaxxer.hikari.HikariDataSource: DEBUG
+#    org.springframework.security.oauth2: DEBUG
+#    org.springframework.web.client: DEBUG
 custom:
-  webhook-url: https://5337de6de6b9.ngrok-free.app
+  webhook-url: https://ffed6919e0ce.ngrok-free.app
   site:
     name: "My Site Prod"
 

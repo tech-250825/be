@@ -1,5 +1,7 @@
 package com.ll.demo03.member.domain;
 
+import com.ll.demo03.global.error.ErrorCode;
+import com.ll.demo03.global.exception.CustomException;
 import com.ll.demo03.member.infrastructure.MemberEntity;
 import lombok.*;
 
@@ -35,7 +37,7 @@ public class Member  {
             throw new IllegalArgumentException("감소량은 0보다 커야 합니다.");
         }
         if (!canUseCredit(amount)) {
-            throw new IllegalStateException("크레딧이 부족합니다.");
+            throw new CustomException(ErrorCode.NO_CREDIT); //에러 처리 여기서 하면 ExceptionControllerAdvice가 알아서 받는다 .
         }
         this.credit -= amount;
     }

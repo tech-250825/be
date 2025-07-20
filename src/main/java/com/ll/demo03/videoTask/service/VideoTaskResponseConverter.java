@@ -2,6 +2,7 @@ package com.ll.demo03.videoTask.service;
 
 import com.ll.demo03.UGC.domain.UGC;
 import com.ll.demo03.UGC.service.port.UGCRepository;
+import com.ll.demo03.global.domain.Status;
 import com.ll.demo03.global.port.ResponseConverter;
 import com.ll.demo03.videoTask.controller.response.TaskOrVideoResponse;
 import com.ll.demo03.videoTask.domain.VideoTask;
@@ -24,23 +25,23 @@ public class VideoTaskResponseConverter implements ResponseConverter<VideoTask, 
     @Override
     public List<TaskOrVideoResponse> convertToResponses(List<VideoTask> tasks) {
         List<VideoTask> completedTasks = tasks.stream()
-                .filter(task -> "COMPLETED".equals(task.getStatus()))
+                .filter(task -> Status.COMPLETED.equals(task.getStatus()))
                 .collect(Collectors.toList());
 
-        Map<VideoTask, List<UGC>> taskVideoMap = Collections.emptyMap();
+        Map<Long, List<UGC>> taskVideoMap = Collections.emptyMap();
         if (!completedTasks.isEmpty()) {
             taskVideoMap = ugcRepository.findByVideoTaskIn(completedTasks)
                     .stream()
-                    .collect(Collectors.groupingBy(UGC::getVideoTask));
+                    .collect(Collectors.groupingBy(ugc -> ugc.getVideoTask().getId()));
         }
 
         List<TaskOrVideoResponse> responses = new ArrayList<>();
 
         for (VideoTask task : tasks) {
-            if ("IN_PROGRESS".equals(task.getStatus())) {
+            if (Status.IN_PROGRESS.equals(task.getStatus()) || Status.FAILED.equals(task.getStatus()) ) {
                 responses.add(TaskOrVideoResponse.fromTask(task));
-            } else if ("COMPLETED".equals(task.getStatus())) {
-                List<UGC> videos = taskVideoMap.getOrDefault(task, Collections.emptyList());
+            } else if (Status.COMPLETED.equals(task.getStatus())) {
+                List<UGC> videos = taskVideoMap.getOrDefault(task.getId(), Collections.emptyList());
                 for (UGC video : videos) {
                     responses.add(TaskOrVideoResponse.fromVideo(task, video));
                 }

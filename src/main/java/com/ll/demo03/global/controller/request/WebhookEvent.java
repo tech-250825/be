@@ -66,7 +66,7 @@ public class WebhookEvent {
                 : null;
     }
 
-    public String getStatus(WebhookEvent event) {
-        return this.getStatus();
+    public String getRunpodId() {
+        return this.runpodId;
     }
 }

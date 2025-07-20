@@ -47,7 +47,7 @@ public class SseController {
         SseEmitter emitter = new SseEmitter(60 * 60 * 1000L);
 
         sseEmitterRepository.save(sessionId, emitter);
-        registerSession(memberId, sessionId);
+        redisTemplate.opsForList().rightPush("sse:member:" + memberId, sessionId);
 
         emitter.onCompletion(() -> {
             sseEmitterRepository.remove(sessionId);
@@ -76,43 +76,9 @@ public class SseController {
         System.out.println("=== Redis Connection Debug ===");
 
         try {
-            // Redis 연결 팩토리 정보 출력
-            RedisConnectionFactory connectionFactory = redisMessageListenerContainer.getConnectionFactory();
-            System.out.println("Connection Factory: " + connectionFactory);
-            System.out.println("Connection Factory Class: " + connectionFactory.getClass());
-
-            if (connectionFactory instanceof LettuceConnectionFactory) {
-                LettuceConnectionFactory lettuceFactory = (LettuceConnectionFactory) connectionFactory;
-                System.out.println("Host: " + lettuceFactory.getHostName());
-                System.out.println("Port: " + lettuceFactory.getPort());
-                System.out.println("Password: " + (lettuceFactory.getPassword() != null ? "SET" : "NOT_SET"));
-            }
-
-            // 실제 연결 테스트
-            RedisConnection connection = connectionFactory.getConnection();
-            System.out.println("Connection SUCCESS: " + connection);
-            connection.close();
-
-            // 연결이 성공하면 리스너 등록
             redisMessageListenerContainer.addMessageListener((message, pattern) -> {
                 String msgBody = new String(message.getBody(), StandardCharsets.UTF_8);
                 NotificationMessage notificationMessage = parseNotificationMessage(msgBody);
-
-                NotificationResponse response;
-                try {
-                    response = objectMapper.readValue(notificationMessage.getNotificationJson(), NotificationResponse.class);
-                } catch (JsonProcessingException e) {
-                    log.error("NotificationResponse 파싱 실패: {}", e.getMessage());
-                    return;
-                }
-
-                String sendJson;
-                try {
-                    sendJson = objectMapper.writeValueAsString(response);
-                } catch (JsonProcessingException e) {
-                    log.error("NotificationResponse 직렬화 실패: {}", e.getMessage());
-                    sendJson = notificationMessage.getNotificationJson();
-                }
 
                 String memberKey = "sse:member:" + notificationMessage.getMemberId();
                 List<String> sessionIds = redisTemplate.opsForList().range(memberKey, 0, -1);
@@ -122,7 +88,7 @@ public class SseController {
                         SseEmitter emitter = sseEmitterRepository.get(sessionId);
                         if (emitter != null) {
                             try {
-                                emitter.send(SseEmitter.event().data(sendJson));
+                                emitter.send(SseEmitter.event().data(notificationMessage));
                             } catch (Exception e) {
                                 log.error("❌ SSE 전송 실패: sessionId={}, error={}", sessionId, e.getMessage());
                                 sseEmitterRepository.remove(sessionId);
@@ -134,8 +100,6 @@ public class SseController {
                     }
                 }
             }, new ChannelTopic("sse-notification-channel"));
-
-            System.out.println("=== Redis Listener 등록 완료 ===");
 
         } catch (Exception e) {
             System.out.println("Redis Connection Error: " + e.getMessage());

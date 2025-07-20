@@ -34,22 +34,21 @@ public class VideoTask {
         this.creator = creator;
     }
 
-    public static VideoTask from(Member creator, VideoTaskInitiate videoTaskInitiate) {
+    public static VideoTask from(Member creator, VideoQueueRequest queueRequest) {
         return VideoTask.builder()
-                .prompt(videoTaskInitiate.getPrompt())
-                .lora(videoTaskInitiate.getLora())
-                .status(Status.valueOf(videoTaskInitiate.getStatus()))
+                .prompt(queueRequest.getPrompt())
+                .lora(queueRequest.getLora())
                 .creator(creator)
                 .build();
     }
 
     public static VideoTaskRequest updatePrompt(VideoTaskRequest request, Network network) {
-        String newPrompt = network.modifyPrompt(request.getPrompt(), request.getLora());
+        String newPrompt = network.modifyPrompt(request.getLora() , request.getPrompt());
         String finalPrompt = (newPrompt == null || newPrompt.isBlank()) ? request.getPrompt() : newPrompt;
         return new VideoTaskRequest(request.getLora(), finalPrompt);
     }
 
-    public VideoTask updateStatus(Status status){
+    public VideoTask updateStatus(Status status, String runpodId){
         return VideoTask.builder()
                 .id(id)
                 .prompt(prompt)
