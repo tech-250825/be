@@ -1,5 +1,6 @@
 package com.ll.demo03.member.controller;
 
+import com.ll.demo03.global.dto.GlobalResponse;
 import com.ll.demo03.member.domain.Member;
 import com.ll.demo03.member.service.MemberServiceImpl;
 import com.ll.demo03.oauth.domain.PrincipalDetails;
@@ -22,24 +23,24 @@ public class MemberController {
 
     @GetMapping("/profile")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<MemberDto> getUserProfile(
+    public GlobalResponse<MemberDto> getUserProfile(
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
         Member member = principalDetails.user();
         MemberDto userProfile = MemberDto.of(member);
 
-        return ResponseEntity.ok(userProfile);
+        return GlobalResponse.success(userProfile);
     }
 
 
     @DeleteMapping("/withdraw")
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "회원 탈퇴", description = "로그인한 사용자가 자신의 계정을 탈퇴합니다.")
-    public ResponseEntity<Void> deleteMember(
+    public GlobalResponse<Void> deleteMember(
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
         Long memberId = principalDetails.user().getId();
         memberService.delete(memberId);
-        return ResponseEntity.noContent().build();
+        return GlobalResponse.success();
     }
 }

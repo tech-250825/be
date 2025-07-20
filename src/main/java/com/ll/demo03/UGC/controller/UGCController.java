@@ -1,6 +1,7 @@
 package com.ll.demo03.UGC.controller;
 
 import com.ll.demo03.UGC.controller.response.UGCResponse;
+import com.ll.demo03.global.dto.GlobalResponse;
 import com.ll.demo03.member.domain.Member;
 import com.ll.demo03.UGC.service.UGCServiceImpl;
 import com.ll.demo03.oauth.domain.PrincipalDetails;
@@ -22,12 +23,12 @@ public class UGCController {
     private final UGCServiceImpl UGCService;
 
     @GetMapping("/mypage")
-    public ResponseEntity<PageResponse<List<UGCResponse>>> getMyImages(
+    public GlobalResponse<PageResponse<List<UGCResponse>>> getMyImages(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             CursorBasedPageable cursorBasedPageable
     ) {
         Member member = principalDetails.user();
         PageResponse<List<UGCResponse>> mypage= UGCService.getMyImages(member, cursorBasedPageable);
-        return ResponseEntity.ok( mypage);
+        return GlobalResponse.success( mypage);
     }
 }
