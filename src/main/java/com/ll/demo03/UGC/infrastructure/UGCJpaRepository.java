@@ -14,6 +14,8 @@ import java.util.List;
 
 public interface UGCJpaRepository extends JpaRepository<UGCEntity, Long>, JpaSpecificationExecutor<UGCEntity> {
 
+
+
     boolean existsByIdLessThanAndMemberId(Long id, Long memberId);
 
     boolean existsByIdGreaterThanAndMemberId(Long id, Long memberId);

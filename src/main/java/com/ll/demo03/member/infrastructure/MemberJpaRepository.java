@@ -13,6 +13,6 @@ public interface MemberJpaRepository extends JpaRepository<MemberEntity, Long> {
     Optional<MemberEntity> findByEmail(String email);
 
     @Modifying
-    @Query("UPDATE Member m SET m.credit = 5")
+    @Query("UPDATE MemberEntity m SET m.credit = 5")
     void resetAllMembersCredit();
 }

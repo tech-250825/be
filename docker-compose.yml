@@ -1,17 +1,20 @@
 services:
-  hoit-app:
-    image: hoit-app:latest
-    container_name: hoit-app
-    ports:
-      - "8090:8090"
-    environment:
-      - SPRING_PROFILES_ACTIVE=prod
-    depends_on:
-      - redis
-      - rabbit-mq
+
+  mysql:
+    image: mysql:latest
+    container_name: mysql_1
     restart: unless-stopped
-    networks:
-      - hoit-network
+    ports:
+      - "3306:3306"
+    environment:
+      - TZ=Asia/Seoul
+      - MYSQL_ROOT_PASSWORD=for4000llm
+      - MYSQL_USER=hoituser
+      - MYSQL_PASSWORD=for4000llm
+      - MYSQL_DATABASE=hoit_db
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+
 
   redis:
     image: redis:alpine
@@ -20,8 +23,7 @@ services:
       - "6379:6379"
     command: redis-server --requirepass 1234
     restart: unless-stopped
-    networks:
-      - hoit-network
+
 
   rabbit-mq:
     image: rabbitmq:3-management-alpine
@@ -33,22 +35,6 @@ services:
       - RABBITMQ_DEFAULT_USER=admin
       - RABBITMQ_DEFAULT_PASS=admin
     restart: unless-stopped
-    networks:
-      - hoit-network
-    # 볼륨 권한 문제로 임시 제거
-  nginx-proxy-manager:
-    image: 'jc21/nginx-proxy-manager:latest'
-    restart: unless-stopped
-    ports:
-      - '80:80'      # HTTP
-      - '443:443'    # HTTPS
-      - '81:81'      # 관리 웹 인터페이스
-    volumes:
-      - ./data:/data
-      - ./letsencrypt:/etc/letsencrypt
-    networks:
-      - hoit-network   # 🔧 이 줄 추가!
 
-networks:
-  hoit-network:
-    driver: bridge
+    # 볼륨 권한 문제로 임시 제거
+

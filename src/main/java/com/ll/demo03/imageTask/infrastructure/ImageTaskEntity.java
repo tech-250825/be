@@ -1,16 +1,21 @@
 package com.ll.demo03.imageTask.infrastructure;
 
+import com.ll.demo03.global.domain.Status;
 import com.ll.demo03.imageTask.domain.ImageTask;
 import com.ll.demo03.member.infrastructure.MemberEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+
+import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @Setter
 @Getter
 @Entity
+@Table(name = "image_tasks")
 public class ImageTaskEntity {
 
     @Id
@@ -23,13 +28,15 @@ public class ImageTaskEntity {
 
     private String runpodId;
 
-    private String status;
+    private Status status;
 
+    @CreatedDate
     @Column(name= "created_at")
-    private Long createdAt;
+    private LocalDateTime createdAt;
 
+    @CreatedDate
     @Column(name = "modified_at")
-    private Long modifiedAt;
+    private LocalDateTime modifiedAt;
 
     @ManyToOne
     @JoinColumn(name = "member_id")
@@ -42,8 +49,6 @@ public class ImageTaskEntity {
         imageTaskEntity.prompt = imageTask.getPrompt();
         imageTaskEntity.runpodId = imageTask.getRunpodId();
         imageTaskEntity.status = imageTask.getStatus();
-        imageTaskEntity.createdAt = imageTask.getCreatedAt();
-        imageTaskEntity.modifiedAt = imageTask.getModifiedAt();
         imageTaskEntity.creator = MemberEntity.from(imageTask.getCreator());
 
         return imageTaskEntity;

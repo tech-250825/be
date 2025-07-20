@@ -1,10 +1,9 @@
 package com.ll.demo03.UGC.controller;
 
-import com.ll.demo03.UGC.controller.request.UGCListRequest;
 import com.ll.demo03.UGC.controller.response.UGCResponse;
 import com.ll.demo03.member.domain.Member;
 import com.ll.demo03.UGC.service.UGCServiceImpl;
-import com.ll.demo03.oauth.entity.PrincipalDetails;
+import com.ll.demo03.oauth.domain.PrincipalDetails;
 import com.ll.demo03.global.util.CursorBasedPageable;
 import com.ll.demo03.global.util.PageResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,7 +13,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @Tag(name = " 회원 API", description = "User")
 @RestController

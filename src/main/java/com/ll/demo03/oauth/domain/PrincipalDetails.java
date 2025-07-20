@@ -1,4 +1,4 @@
-package com.ll.demo03.oauth.entity;
+package com.ll.demo03.oauth.domain;
 import com.ll.demo03.member.domain.Member;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

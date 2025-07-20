@@ -7,11 +7,15 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+
+import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @Setter
 @Getter
 @Entity
+@Table(name = "video_tasks")
 public class VideoTaskEntity {
 
     @Id
@@ -26,11 +30,13 @@ public class VideoTaskEntity {
 
     private Status status;
 
+    @CreatedDate
     @Column(name= "created_at")
-    private Long createdAt;
+    private LocalDateTime createdAt;
 
+    @CreatedDate
     @Column(name = "modified_at")
-    private Long modifiedAt;
+    private LocalDateTime modifiedAt;
 
     @ManyToOne
     @JoinColumn(name = "member_id")
@@ -43,8 +49,6 @@ public class VideoTaskEntity {
         videoTaskEntity.lora = videoTask.getLora();
         videoTaskEntity.runpodId = videoTask.getRunpodId();
         videoTaskEntity.status = videoTask.getStatus();
-        videoTaskEntity.createdAt = videoTask.getCreatedAt();
-        videoTaskEntity.modifiedAt = videoTask.getModifiedAt();
         videoTaskEntity.creator = MemberEntity.from(videoTask.getCreator());
 
         return videoTaskEntity;

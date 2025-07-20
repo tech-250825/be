@@ -62,7 +62,7 @@ public class SseController {
         try {
             emitter.send(SseEmitter.event()
                     .name("notification")
-                    .data(notificationData, MediaType.APPLICATION_JSON));
+                    .data("sse연결이 되었습니다.", MediaType.APPLICATION_JSON));
         } catch (IOException e) {
             emitter.completeWithError(e);
         }

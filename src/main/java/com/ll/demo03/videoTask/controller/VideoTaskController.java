@@ -5,7 +5,7 @@ import com.ll.demo03.global.dto.GlobalResponse;
 import com.ll.demo03.member.domain.Member;
 import com.ll.demo03.videoTask.controller.port.VideoTaskService;
 import com.ll.demo03.videoTask.controller.response.TaskOrVideoResponse;
-import com.ll.demo03.oauth.entity.PrincipalDetails;
+import com.ll.demo03.oauth.domain.PrincipalDetails;
 import com.ll.demo03.videoTask.controller.request.VideoTaskRequest;
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.util.CursorBasedPageable;

@@ -43,4 +43,4 @@ db_dev.trace.db
 src/main/generated
 
 .idea
-.terraform
+.terraformmysql/volumes/

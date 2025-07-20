@@ -11,9 +11,9 @@ import com.ll.demo03.member.domain.Role;
 @Getter
 @Setter
 @Entity
+@Table(name = "members")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@SuperBuilder
 public class MemberEntity {
 
     @Id
@@ -24,7 +24,6 @@ public class MemberEntity {
     private String email;
     private String profile;
 
-    @Builder.Default
     private int credit = 100000;
 
     @Enumerated(EnumType.STRING)

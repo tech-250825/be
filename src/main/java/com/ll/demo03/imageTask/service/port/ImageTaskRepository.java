@@ -6,6 +6,8 @@ import com.ll.demo03.videoTask.domain.VideoTask;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.domain.Specification;
+
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 
@@ -14,9 +16,9 @@ public interface ImageTaskRepository {
 
     Slice<ImageTask> findByMember(Member creator, PageRequest pageRequest);
 
-    boolean existsByMemberAndCreatedAtGreaterThan(Member creator, Long createdAt);
+    boolean existsByMemberAndCreatedAtGreaterThan(Member creator, LocalDateTime createdAt);
 
-    boolean existsByMemberAndCreatedAtLessThan(Member creator, Long createdAt);
+    boolean existsByMemberAndCreatedAtLessThan(Member creator, LocalDateTime createdAt);
 
     ImageTask save(ImageTask imageTask);
 

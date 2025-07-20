@@ -1,4 +1,4 @@
-package com.ll.demo03.oauth.token.entity;
+package com.ll.demo03.oauth.token.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

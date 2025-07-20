@@ -6,15 +6,14 @@ import com.ll.demo03.videoTask.infrastructure.VideoTaskEntity;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
+
 
 @Getter
 @Setter
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
-@Table(name="UGC")
+@Table(name="ugc")
 public class UGCEntity {
 
     @Id
@@ -27,12 +26,12 @@ public class UGCEntity {
 
     @Nullable
     @ManyToOne(fetch= FetchType.LAZY)
-    @JoinColumn(name = "task_id")
+    @JoinColumn(name = "image_task")
     private ImageTaskEntity imageTask;
 
     @Nullable
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "videoTask_id")
+    @JoinColumn(name = "video_task")
     private VideoTaskEntity videoTask;
 
     @Column(name= "created_at")

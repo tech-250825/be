@@ -1,8 +1,9 @@
 package com.ll.demo03.oauth.token.controller;
 
-import com.ll.demo03.oauth.token.TokenProvider;
-import com.ll.demo03.oauth.token.dto.AccessTokenRequest;
+import com.ll.demo03.oauth.token.service.TokenGenerator;
+import com.ll.demo03.oauth.token.controller.request.AccessTokenRequest;
 import com.ll.demo03.global.dto.GlobalResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpHeaders;
@@ -14,26 +15,23 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Duration;
 
+import static com.ll.demo03.global.util.CookieUtils.addCookie;
+
 @RequiredArgsConstructor
 @RestController
 public class TokenController {
 
-    private final TokenProvider tokenProvider;
+    private final TokenGenerator tokenGenerator;
 
     @PostMapping("/auth/token/verify")
-    public ResponseEntity<GlobalResponse<String>> getToken(@RequestBody AccessTokenRequest request) {
-        String accessToken = tokenProvider.generateAccessTokenFromRefreshToken(request.get_hrauth());
+    public ResponseEntity<GlobalResponse<String>> getToken(@RequestBody AccessTokenRequest request , HttpServletResponse response) {
+        String accessToken = tokenGenerator.generateAccessTokenFromRefreshToken(request.get_hrauth());
 
-        HttpCookie cookie = ResponseCookie.from("_hoauth", accessToken)
-                .httpOnly(true)
-                .secure(true)
-                .path("/")
-                .maxAge(Duration.ofHours(1))
-                .build();
+        addCookie(response, "_hoauth", accessToken, 3600);
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(GlobalResponse.success(accessToken));
+                .body(GlobalResponse.success("재인증되었습니다."));
+
     }
 }
 

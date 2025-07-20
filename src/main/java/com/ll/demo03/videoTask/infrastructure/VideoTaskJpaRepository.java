@@ -9,6 +9,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 public interface VideoTaskJpaRepository extends JpaRepository<VideoTaskEntity, Long>, JpaSpecificationExecutor<VideoTaskEntity> {
@@ -18,9 +19,9 @@ public interface VideoTaskJpaRepository extends JpaRepository<VideoTaskEntity, L
 
     Slice<VideoTaskEntity> findByMember(MemberEntity memberEntity, PageRequest pageRequest);
 
-    boolean existsByMemberAndCreatedAtGreaterThan(MemberEntity memberEntity, Long createdAt);
+    boolean existsByMemberAndCreatedAtGreaterThan(MemberEntity memberEntity, LocalDateTime createdAt);
 
-    boolean existsByMemberAndCreatedAtLessThan(MemberEntity memberEntity, Long createdAt);
+    boolean existsByMemberAndCreatedAtLessThan(MemberEntity memberEntity, LocalDateTime createdAt);
 
     Slice<VideoTaskEntity> findAll(Specification<VideoTask> spec, PageRequest pageRequest);
 }

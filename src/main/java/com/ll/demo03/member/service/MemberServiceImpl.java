@@ -7,6 +7,7 @@ import com.ll.demo03.global.exception.CustomException;
 import com.ll.demo03.member.controller.port.MemberService;
 import com.ll.demo03.member.domain.Member;
 import com.ll.demo03.member.service.port.MemberRepository;
+import com.ll.demo03.notification.service.port.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;

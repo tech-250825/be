@@ -10,6 +10,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Repository
@@ -39,12 +40,12 @@ public class VideoTaskRepositoryImpl  implements VideoTaskRepository {
     };
 
     @Override
-    public boolean existsByMemberAndCreatedAtGreaterThan(Member member, Long createdAt) {
+    public boolean existsByMemberAndCreatedAtGreaterThan(Member member, LocalDateTime createdAt) {
         return videoTaskJpaRepository.existsByMemberAndCreatedAtGreaterThan(MemberEntity.from(member), createdAt);
     }
 
     @Override
-    public boolean existsByMemberAndCreatedAtLessThan(Member member, Long createdAt) {
+    public boolean existsByMemberAndCreatedAtLessThan(Member member, LocalDateTime createdAt) {
         return videoTaskJpaRepository.existsByMemberAndCreatedAtLessThan(MemberEntity.from(member), createdAt);
     }
 

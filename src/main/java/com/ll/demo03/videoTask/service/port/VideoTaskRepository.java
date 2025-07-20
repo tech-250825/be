@@ -19,9 +19,9 @@ public interface VideoTaskRepository {
 
     Slice<VideoTask> findByMember(Member member, PageRequest pageRequest);
 
-    boolean existsByMemberAndCreatedAtGreaterThan(Member member, Long createdAt);
+    boolean existsByMemberAndCreatedAtGreaterThan(Member member, LocalDateTime createdAt);
 
-    boolean existsByMemberAndCreatedAtLessThan(Member member, Long createdAt);
+    boolean existsByMemberAndCreatedAtLessThan(Member member, LocalDateTime createdAt);
 
     VideoTask save(VideoTask videoTask);
 

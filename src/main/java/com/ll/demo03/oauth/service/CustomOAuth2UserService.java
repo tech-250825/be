@@ -1,11 +1,11 @@
 package com.ll.demo03.oauth.service;
 
-import com.ll.demo03.member.infrastructure.Member;
+import com.ll.demo03.member.domain.Member;
+import com.ll.demo03.member.service.port.MemberRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import com.ll.demo03.member.infrastructure.MemberJpaRepository;
-import com.ll.demo03.oauth.entity.OAuth2UserInfo;
-import com.ll.demo03.oauth.entity.PrincipalDetails;
+import com.ll.demo03.oauth.domain.OAuth2UserInfo;
+import com.ll.demo03.oauth.domain.PrincipalDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -23,18 +23,16 @@ import java.util.Map;
 @Transactional
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
-    private final MemberJpaRepository memberJpaRepository;
+    private final MemberRepository memberRepository;
 
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        log.info("OAuth2 Login Start"); // 디버깅 로그 추가
 
         OAuth2User oAuth2User = super.loadUser(userRequest);
         Map<String, Object> attributes = oAuth2User.getAttributes();
 
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
-        log.info("Provider: {}", registrationId); // 어떤 OAuth 제공자인지 확인
 
         String userNameAttributeName = userRequest.getClientRegistration()
                 .getProviderDetails()
@@ -44,12 +42,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfo.of(registrationId, attributes);
         Member member = getOrSave(oAuth2UserInfo);
 
-        log.info("Member found/created: {}", member); // 멤버 정보 확인
-
         PrincipalDetails principalDetails = new PrincipalDetails(member, attributes, userNameAttributeName);
-        log.info("PrincipalDetails created: {}", principalDetails); // PrincipalDetails 생성 확인
 
-        // SecurityContext에 직접 설정
         SecurityContextHolder.getContext().setAuthentication(
                 new OAuth2AuthenticationToken(
                         principalDetails,
@@ -62,16 +56,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     }
 
     private Member getOrSave(OAuth2UserInfo oAuth2UserInfo) {
-        return memberJpaRepository.findByEmail(oAuth2UserInfo.email())
-                .map(existingMember -> {
-                    // 기존 회원 정보 업데이트가 필요하다면 여기서 수행
-                    log.info("Existing member found: {}", existingMember);
-                    return existingMember;
-                })
+        return memberRepository.findByEmail(oAuth2UserInfo.email())
                 .orElseGet(() -> {
                     Member newMember = oAuth2UserInfo.toEntity();
                     log.info("New member created: {}", newMember);
-                    return memberJpaRepository.save(newMember);
+                    return memberRepository.save(newMember);
                 });
     }
 

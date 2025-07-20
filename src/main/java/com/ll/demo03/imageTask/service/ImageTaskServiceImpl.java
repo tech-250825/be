@@ -62,7 +62,7 @@ public class ImageTaskServiceImpl implements ImageTaskService {
         ImageTask saved = imageTaskRepository.save(imageTask);
         Long taskId = saved.getId();
 
-        redisService.pushToImageQueue(String.valueOf(taskId));
+        redisService.pushToQueue("image", taskId);
 
         network.createImage(
                 taskId,

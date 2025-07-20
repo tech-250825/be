@@ -1,6 +1,7 @@
 package com.ll.demo03.notification.controller.response;
 
-import com.ll.demo03.notification.infrastructure.NotificationStatus;
+import com.ll.demo03.notification.domain.Notification;
+import com.ll.demo03.notification.infrastructure.NotificationEntity;
 import com.ll.demo03.notification.infrastructure.NotificationType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,16 +23,16 @@ public class NotificationResponse {
 
     private NotificationType type;
 
-    private NotificationStatus status;
-
-    private String message;
-
-    private boolean isRead;
-
     private LocalDateTime createdAt;
-
-    private LocalDateTime modifiedAt;
 
     private Object payload;
 
+    public static NotificationResponse from(Notification notification) {
+        return NotificationResponse.builder()
+                .id(notification.getId())
+                .type(notification.getType())
+                .payload(notification.getPayload())
+                .createdAt(notification.getCreatedAt())
+                .build();
+    }
 }

@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 
 
 @Repository
@@ -18,9 +19,9 @@ public interface ImageTaskJpaRepository extends JpaRepository<ImageTaskEntity, L
 
     Slice<ImageTaskEntity> findByMember(MemberEntity creator, PageRequest pageRequest);
 
-    boolean existsByMemberAndCreatedAtGreaterThan(MemberEntity creator, Long createdAt);
+    boolean existsByMemberAndCreatedAtGreaterThan(MemberEntity creator, LocalDateTime createdAt);
 
-    boolean existsByMemberAndCreatedAtLessThan(MemberEntity creator, Long createdAt);
+    boolean existsByMemberAndCreatedAtLessThan(MemberEntity creator, LocalDateTime createdAt);
 
     Slice<ImageTaskEntity> findAll(Specification<ImageTask> spec, PageRequest pageRequest);
 }

@@ -1,4 +1,4 @@
-package com.ll.demo03.oauth.token.dto;
+package com.ll.demo03.oauth.token.controller.request;
 
 import lombok.Getter;
 import lombok.Setter;

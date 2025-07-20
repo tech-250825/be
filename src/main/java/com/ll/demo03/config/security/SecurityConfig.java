@@ -1,11 +1,11 @@
 package com.ll.demo03.config.security;
 
 
-import com.ll.demo03.oauth.HttpCookieOAuth2AuthorizationRequestRepository;
+import com.ll.demo03.oauth.token.infrasturcture.HttpCookieOAuth2AuthorizationRequestRepository;
 import lombok.RequiredArgsConstructor;
 import com.ll.demo03.oauth.service.CustomOAuth2UserService;
-import com.ll.demo03.oauth.token.TokenAuthenticationFilter;
-import com.ll.demo03.oauth.token.TokenExceptionFilter;
+import com.ll.demo03.oauth.token.service.TokenAuthenticationFilter;
+import com.ll.demo03.oauth.token.service.TokenExceptionFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;

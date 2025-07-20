@@ -8,6 +8,8 @@ import com.ll.demo03.videoTask.controller.request.VideoTaskRequest;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 @Getter
 public class VideoTask {
 
@@ -16,12 +18,12 @@ public class VideoTask {
     private final String lora;
     private final String runpodId;
     private final Status status;
-    private final Long createdAt;
-    private final Long modifiedAt;
+    private final LocalDateTime createdAt;
+    private final LocalDateTime modifiedAt;
     private final Member creator;
 
     @Builder
-    public VideoTask(Long id, String prompt, String lora, String runpodId, Status status,  Long createdAt, Long modifiedAt, Member creator) {
+    public VideoTask(Long id, String prompt, String lora, String runpodId, Status status,  LocalDateTime createdAt, LocalDateTime modifiedAt, Member creator) {
         this.id = id;
         this.prompt = prompt;
         this.lora = lora;

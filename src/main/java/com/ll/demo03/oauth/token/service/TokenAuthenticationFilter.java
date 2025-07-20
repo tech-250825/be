@@ -1,4 +1,4 @@
-package com.ll.demo03.oauth.token;
+package com.ll.demo03.oauth.token.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ll.demo03.global.error.ErrorCode;

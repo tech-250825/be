@@ -7,14 +7,14 @@ import org.springframework.stereotype.Service;
 import java.util.concurrent.TimeUnit;
 
 @Service
-public class TokenService {
+public class RefreshTokenService {
 
     private final RedisTemplate<String, String> redisTemplate;
 
     @Value("${jwt.refresh-token.expire-time}")
     private long refreshTokenExpireTime;
 
-    public TokenService(RedisTemplate<String, String> redisTemplate) {
+    public RefreshTokenService(RedisTemplate<String, String> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 

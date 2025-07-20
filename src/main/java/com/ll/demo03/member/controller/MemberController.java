@@ -2,7 +2,7 @@ package com.ll.demo03.member.controller;
 
 import com.ll.demo03.member.domain.Member;
 import com.ll.demo03.member.service.MemberServiceImpl;
-import com.ll.demo03.oauth.entity.PrincipalDetails;
+import com.ll.demo03.oauth.domain.PrincipalDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

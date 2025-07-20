@@ -10,6 +10,7 @@ import java.util.Optional;
 
 public interface UGCRepository {
 
+
     boolean existsByIdLessThanAndMemberId(Long id, Long memberId);
 
     boolean existsByIdGreaterThanAndMemberId(Long id, Long memberId);

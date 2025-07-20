@@ -1,7 +1,7 @@
-package com.ll.demo03.oauth.entity;
+package com.ll.demo03.oauth.domain;
 
 import com.ll.demo03.member.domain.AuthProvider;
-import com.ll.demo03.member.infrastructure.Member;
+import com.ll.demo03.member.domain.Member;
 import lombok.Builder;
 import com.ll.demo03.member.domain.Role;
 import com.ll.demo03.global.error.ErrorCode;

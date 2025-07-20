@@ -1,7 +1,7 @@
 package com.ll.demo03.payment.controller;
 
 
-import com.ll.demo03.oauth.entity.PrincipalDetails;
+import com.ll.demo03.oauth.domain.PrincipalDetails;
 import com.ll.demo03.payment.controller.request.PaymentConfirmRequest;
 import com.ll.demo03.payment.controller.response.PaymentConfirmResponse;
 import com.ll.demo03.payment.service.PaymentService;

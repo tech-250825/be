@@ -4,14 +4,13 @@ import com.ll.demo03.imageTask.domain.ImageTask;
 import com.ll.demo03.imageTask.service.port.ImageTaskRepository;
 import com.ll.demo03.member.domain.Member;
 import com.ll.demo03.member.infrastructure.MemberEntity;
-import com.ll.demo03.videoTask.domain.VideoTask;
-import com.ll.demo03.videoTask.infrastructure.VideoTaskEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Repository
@@ -41,12 +40,12 @@ public class ImageTaskRepositoryImpl implements ImageTaskRepository {
     };
 
     @Override
-    public boolean existsByMemberAndCreatedAtGreaterThan(com.ll.demo03.member.domain.Member creator, Long createdAt){
+    public boolean existsByMemberAndCreatedAtGreaterThan(Member creator, LocalDateTime createdAt){
         return imageTaskJpaRepository.existsByMemberAndCreatedAtGreaterThan(MemberEntity.from(creator), createdAt);
     };
 
     @Override
-    public boolean existsByMemberAndCreatedAtLessThan(com.ll.demo03.member.domain.Member creator, Long createdAt){
+    public boolean existsByMemberAndCreatedAtLessThan(Member creator, LocalDateTime createdAt){
         return imageTaskJpaRepository.existsByMemberAndCreatedAtLessThan(MemberEntity.from(creator), createdAt);
     };
 

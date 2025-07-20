@@ -62,13 +62,13 @@ public class VideoTaskServiceImpl implements VideoTaskService {
         VideoTask saved = videoTaskRepository.save(videoTask);
         Long taskId = saved.getId();
 
-        redisService.pushToImageQueue(String.valueOf(taskId));
+        redisService.pushToQueue("video", taskId);
 
         network.createImage(
                 taskId,
                 message.getLora(),
                 message.getPrompt(),
-                webhookUrl + "/api/images/webhook"
+                webhookUrl + "/api/videos/webhook"
         );
     }
 

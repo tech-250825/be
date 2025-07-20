@@ -1,13 +1,14 @@
 package com.ll.demo03.config.security;
 
-import com.ll.demo03.oauth.HttpCookieOAuth2AuthorizationRequestRepository;
+import com.ll.demo03.oauth.token.infrasturcture.HttpCookieOAuth2AuthorizationRequestRepository;
 import com.ll.demo03.global.util.CookieUtils;
+import com.ll.demo03.oauth.token.service.TokenGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import com.ll.demo03.oauth.token.TokenProvider;
+import com.ll.demo03.oauth.token.service.TokenProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -21,7 +22,7 @@ import static com.ll.demo03.global.util.CookieUtils.addCookie;
 @RequiredArgsConstructor
 @Component
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
-    private final TokenProvider tokenProvider;
+    private final TokenGenerator tokenGenerator;
     private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
 
     @Value("${app.client.url}")
@@ -31,9 +32,9 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
         try {
-            String accessToken = tokenProvider.generateAccessToken(authentication);
+            String accessToken = tokenGenerator.generateAccessToken(authentication);
 
-            String refreshToken = tokenProvider.generateRefreshToken(authentication);
+            String refreshToken = tokenGenerator.generateRefreshToken(authentication);
 
             Optional<String> redirectUriCookie = CookieUtils.getCookie(request, HttpCookieOAuth2AuthorizationRequestRepository.REDIRECT_URI_PARAM_COOKIE_NAME)
                     .map(cookie -> cookie.getValue());

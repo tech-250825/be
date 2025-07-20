@@ -18,6 +18,11 @@ public class UGCRepositoryImpl implements UGCRepository {
     private final UGCJpaRepository ugcJpaRepository;
 
     @Override
+    public UGC save(UGC ugc){
+        return ugcJpaRepository.save(UGCEntity.from(ugc)).toModel();
+    }
+
+    @Override
     public void delete(UGC ugc){
         ugcJpaRepository.delete(UGCEntity.from(ugc));
     }

@@ -1,9 +1,13 @@
 package com.ll.demo03.imageTask.controller.response;
 
+import com.ll.demo03.global.domain.Status;
 import com.ll.demo03.imageTask.domain.ImageTask;
+import com.ll.demo03.imageTask.infrastructure.ImageTaskEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
@@ -13,9 +17,9 @@ public class ImageTaskDto {
     private Long id;
     private String prompt;
     private String lora;
-    private String status;
+    private Status status;
     private String runpodId;
-    private Long createdAt;
+    private LocalDateTime createdAt;
 
     public static ImageTaskDto from(ImageTask task) {
         return ImageTaskDto.builder()
@@ -24,7 +28,7 @@ public class ImageTaskDto {
                 .lora(task.getLora())
                 .status(task.getStatus())
                 .runpodId(task.getRunpodId())
-                .createdAt(task.getCreatedAt())
+                .createdAt(ImageTaskEntity.from(task).getCreatedAt())
                 .build();
     }
 }

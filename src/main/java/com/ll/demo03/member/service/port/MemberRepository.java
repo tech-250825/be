@@ -11,4 +11,8 @@ public interface MemberRepository {
     void resetAllMembersCredit();
 
     void delete(Member member);
+
+    Optional<Member> findByEmail(String email);
+
+    Member save(Member newMember);
 }
