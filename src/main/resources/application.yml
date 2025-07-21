@@ -22,7 +22,7 @@ spring:
   datasource:
     maximum-pool-size: 5
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/hoit_db
+    url: jdbc:mysql://hoit-database-1.cdogc6048p9x.ap-northeast-2.rds.amazonaws.com:3306/hoit_db
     username: hoituser
   security:
     oauth2:
@@ -39,7 +39,7 @@ spring:
       port: 6379
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
