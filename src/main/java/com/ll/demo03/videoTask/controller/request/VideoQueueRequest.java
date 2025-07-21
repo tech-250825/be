@@ -12,5 +12,8 @@ import lombok.Setter;
 public class VideoQueueRequest {
     private String lora;
     private String prompt;
+    private int width;
+    private int height;
+    private int numFrames;
     private Long memberId;
 }

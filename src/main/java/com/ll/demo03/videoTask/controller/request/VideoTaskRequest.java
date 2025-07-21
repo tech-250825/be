@@ -10,4 +10,7 @@ import lombok.NoArgsConstructor;
 public class VideoTaskRequest {
     private String lora;
     private String prompt;
+    private int width;
+    private int height;
+    private int numFrames;
 }

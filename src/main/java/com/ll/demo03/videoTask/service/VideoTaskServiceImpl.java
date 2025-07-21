@@ -72,6 +72,9 @@ public class VideoTaskServiceImpl implements VideoTaskService {
                 taskId,
                 message.getLora(),
                 message.getPrompt(),
+                message.getWidth(),
+                message.getHeight(),
+                message.getNumFrames(),
                 webhookUrl + "/api/videos/webhook"
         );
     }
