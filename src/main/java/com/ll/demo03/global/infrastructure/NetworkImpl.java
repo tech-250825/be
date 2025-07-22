@@ -94,7 +94,7 @@ public class NetworkImpl implements Network {
         }
         """, webhook, taskId, prompt, lora);
 
-            HttpResponse<String> response = Unirest.post("https://api.runpod.ai/v2/ldkbvglhy10oq4/run")
+            HttpResponse<String> response = Unirest.post("https://api.runpod.ai/v2/dv20fz38sl3z7t//run")
                     .header("accept", "application/json")
                     .header("authorization", runpodApiKey)
                     .header("content-type", "application/json")
@@ -129,7 +129,7 @@ public class NetworkImpl implements Network {
         }
         """, webhook, taskId, prompt , lora, width, height, numFrames);
 
-            HttpResponse<String> response = Unirest.post("https://api.runpod.ai/v2/vmyn0177mpa0ev/run")
+            HttpResponse<String> response = Unirest.post("https://api.runpod.ai/v2/dv20fz38sl3z7t/run")
                     .header("accept", "application/json")
                     .header("authorization", runpodApiKey)
                     .header("content-type", "application/json")

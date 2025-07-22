@@ -22,8 +22,14 @@ public class VideoTask {
     private final LocalDateTime modifiedAt;
     private final Member creator;
 
+    private final int width;
+    private final int height;
+    private final int numFrames;
+
     @Builder
-    public VideoTask(Long id, String prompt, String lora, String runpodId, Status status,  LocalDateTime createdAt, LocalDateTime modifiedAt, Member creator) {
+    public VideoTask(Long id, String prompt, String lora, String runpodId, Status status,
+                     LocalDateTime createdAt, LocalDateTime modifiedAt, Member creator,
+                     int width, int height, int numFrames) {
         this.id = id;
         this.prompt = prompt;
         this.lora = lora;
@@ -32,23 +38,29 @@ public class VideoTask {
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
         this.creator = creator;
+        this.width = width;
+        this.height = height;
+        this.numFrames = numFrames;
     }
 
     public static VideoTask from(Member creator, VideoQueueRequest queueRequest) {
         return VideoTask.builder()
                 .prompt(queueRequest.getPrompt())
                 .lora(queueRequest.getLora())
+                .width(queueRequest.getWidth())
+                .height(queueRequest.getHeight())
+                .numFrames(queueRequest.getNumFrames())
                 .creator(creator)
                 .build();
     }
 
     public static VideoTaskRequest updatePrompt(VideoTaskRequest request, Network network) {
-        String newPrompt = network.modifyPrompt(request.getLora() , request.getPrompt());
+        String newPrompt = network.modifyPrompt(request.getLora(), request.getPrompt());
         String finalPrompt = (newPrompt == null || newPrompt.isBlank()) ? request.getPrompt() : newPrompt;
-        return new VideoTaskRequest(request.getLora(), finalPrompt);
+        return new VideoTaskRequest(request.getLora(), finalPrompt, request.getWidth(), request.getHeight(), request.getNumFrames());
     }
 
-    public VideoTask updateStatus(Status status, String runpodId){
+    public VideoTask updateStatus(Status status, String runpodId) {
         return VideoTask.builder()
                 .id(id)
                 .prompt(prompt)
@@ -58,10 +70,20 @@ public class VideoTask {
                 .createdAt(createdAt)
                 .modifiedAt(modifiedAt)
                 .creator(creator)
+                .width(width)
+                .height(height)
+                .numFrames(numFrames)
                 .build();
     }
 
     public static VideoQueueRequest toQueueRequest(VideoTaskRequest request, Member creator) {
-        return new VideoQueueRequest(request.getLora(), request.getPrompt(), creator.getId());
+        return new VideoQueueRequest(
+                request.getLora(),
+                request.getPrompt(),
+                request.getWidth(),
+                request.getHeight(),
+                request.getNumFrames(),
+                creator.getId()
+        );
     }
 }
