@@ -108,7 +108,7 @@ public class NetworkImpl implements Network {
         }
     }
 
-    public String createVideo(Long taskId, String lora, String prompt, String webhook) {
+    public String createVideo(Long taskId, String lora, String prompt, int width, int height, int numFrames , String webhook) {
         try {
             Unirest.setTimeouts(0, 0);
 
@@ -120,11 +120,14 @@ public class NetworkImpl implements Network {
             "payload": {
               "task_id": %d,
               "positive_prompt": "%s",
-              "lora": "%s"
+              "lora": "%s",
+              "width" : %d,
+              "height" : %d, 
+              "num_frames" : %d
             }
           }
         }
-        """, webhook, taskId, prompt, lora);
+        """, webhook, taskId, prompt , lora, width, height, numFrames);
 
             HttpResponse<String> response = Unirest.post("https://api.runpod.ai/v2/vmyn0177mpa0ev/run")
                     .header("accept", "application/json")
