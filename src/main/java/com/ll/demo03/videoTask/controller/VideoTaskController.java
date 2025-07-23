@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -30,21 +31,34 @@ public class VideoTaskController {
     private final VideoWebhookProcessorImpl videoWebhookProcessor;
     private final VideoTaskService videoTaskService;
 
-    @PostMapping(value = "/create")
+    @PostMapping(value = "/create/t2v")
     @PreAuthorize("isAuthenticated()")
-    public GlobalResponse createImages(
+    public GlobalResponse createT2V(
             @RequestBody VideoTaskRequest request,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
             Member member = principalDetails.user();
-            videoTaskService.initate(request, member);
+            videoTaskService.initateT2V(request, member);
             return GlobalResponse.success();
+
+    }
+
+    @PostMapping(value = "/create/i2v")
+    @PreAuthorize("isAuthenticated()")
+    public GlobalResponse createI2V(
+            @RequestBody VideoTaskRequest request,
+            @RequestParam(required = false) MultipartFile image,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    ) {
+        Member member = principalDetails.user();
+        videoTaskService.initateI2V(request, member, image);
+        return GlobalResponse.success();
 
     }
 
 
     @PostMapping("/webhook")
-    public GlobalResponse handleWebhook(
+    public GlobalResponse handleT2VWebhook(
             @RequestBody WebhookEvent event) {
 
         try {
@@ -57,6 +71,7 @@ public class VideoTaskController {
             return GlobalResponse.error(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
+
 
     @GetMapping("/task")
     public GlobalResponse handle(

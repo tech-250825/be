@@ -38,7 +38,8 @@ public class RedisServiceImpl implements RedisService {
     public void pushToQueue(String type, Long taskId){
         switch(type){
             case "image" -> redisTemplate.opsForList().rightPush("image:queue", String.valueOf(taskId));
-            case "video" -> redisTemplate.opsForList().rightPush("video:queue", String.valueOf(taskId));
+            case "t2v" -> redisTemplate.opsForList().rightPush("t2v:queue", String.valueOf(taskId));
+            case "i2v" -> redisTemplate.opsForList().rightPush("i2v:queue", String.valueOf(taskId));
         }
     }
 
@@ -46,7 +47,8 @@ public class RedisServiceImpl implements RedisService {
     public void removeFromQueue(String type, Long taskId){
         switch(type){
             case "image" -> redisTemplate.opsForList().remove("image:queue", 1,  String.valueOf(taskId));
-            case "video" -> redisTemplate.opsForList().remove("video:queue", 1,  String.valueOf(taskId));
+            case "t2v" -> redisTemplate.opsForList().remove("t2v:queue", 1,  String.valueOf(taskId));
+            case "i2v" -> redisTemplate.opsForList().remove("i2v:queue", 1,  String.valueOf(taskId));
         }
     }
 

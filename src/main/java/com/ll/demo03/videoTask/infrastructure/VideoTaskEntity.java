@@ -25,7 +25,11 @@ public class VideoTaskEntity {
 
     private String prompt;
 
+    @Column(nullable = true)
     private String lora;
+
+    @Column(nullable = true)
+    private String url;
 
     private String runpodId;
 
@@ -53,6 +57,7 @@ public class VideoTaskEntity {
         taskEntity.id = task.getId();
         taskEntity.prompt = task.getPrompt();
         taskEntity.lora = task.getLora();
+        taskEntity.url = task.getImageUrl();
         taskEntity.runpodId = task.getRunpodId();
         taskEntity.createdAt = task.getCreatedAt();
         taskEntity.modifiedAt = task.getModifiedAt();
@@ -71,6 +76,7 @@ public class VideoTaskEntity {
                 .id(id)
                 .prompt(prompt)
                 .lora(lora)
+                .imageUrl(url)
                 .runpodId(runpodId)
                 .status(status)
                 .createdAt(createdAt)

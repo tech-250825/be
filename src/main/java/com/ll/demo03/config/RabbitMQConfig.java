@@ -21,9 +21,13 @@ public class RabbitMQConfig {
     public static final String UPSCALE_QUEUE = "upscale.queue";
     public static final String UPSCALE_ROUTING_KEY = "upscale.create";
 
-    public static final String VIDEO_EXCHANGE = "video.exchange";
-    public static final String VIDEO_QUEUE = "video.queue";
-    public static final String VIDEO_ROUTING_KEY = "video.create";
+    public static final String T2V_EXCHANGE = "t2v.exchange";
+    public static final String T2V_QUEUE = "t2v.queue";
+    public static final String T2V_ROUTING_KEY = "t2v.create";
+
+    public static final String I2V_EXCHANGE = "t2v.exchange";
+    public static final String I2V_QUEUE = "t2v.queue";
+    public static final String I2V_ROUTING_KEY = "t2v.create";
 
     @Bean
     public Queue imageQueue() {
@@ -36,9 +40,9 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public Binding imageBinding(@Qualifier("imageQueue") Queue imageQueue,
-                                @Qualifier("imageExchange") TopicExchange imageExchange) {
-        return BindingBuilder.bind(imageQueue).to(imageExchange).with(IMAGE_CREATE_ROUTING_KEY);
+    public Binding imageBinding(@Qualifier("imageQueue") Queue queue,
+                                @Qualifier("imageExchange") TopicExchange topicExchange) {
+        return BindingBuilder.bind(queue).to(topicExchange).with(IMAGE_CREATE_ROUTING_KEY);
     }
 
     // Upscale Queue and Binding
@@ -53,26 +57,43 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public Binding upscaleBinding(@Qualifier("upscaleQueue") Queue upscaleQueue,
-                                  @Qualifier("upscaleExchange") TopicExchange upscaleExchange) {
-        return BindingBuilder.bind(upscaleQueue).to(upscaleExchange).with(UPSCALE_ROUTING_KEY);
+    public Binding upscaleBinding(@Qualifier("upscaleQueue") Queue queue,
+                                  @Qualifier("upscaleExchange") TopicExchange topicExchange) {
+        return BindingBuilder.bind(queue).to(topicExchange).with(T2V_ROUTING_KEY);
     }
 
     @Bean
-    public Queue videoQueue() {
-        return new Queue(VIDEO_QUEUE, true);
+    public Queue t2vQueue() {
+        return new Queue(T2V_QUEUE, true);
     }
 
     @Bean
-    public TopicExchange videoExchange() {
-        return new TopicExchange(VIDEO_EXCHANGE);
+    public TopicExchange t2vExchange() {
+        return new TopicExchange(T2V_EXCHANGE);
     }
 
     @Bean
-    public Binding videoBinding(@Qualifier("videoQueue") Queue videoQueue,
-                                @Qualifier("videoExchange") TopicExchange videoExchange) {
-        return BindingBuilder.bind(videoQueue).to(videoExchange).with(VIDEO_ROUTING_KEY);
+    public Binding t2vBinding(@Qualifier("t2vQueue") Queue queue,
+                                @Qualifier("t2vExchange") TopicExchange topicExchange) {
+        return BindingBuilder.bind(queue).to(topicExchange).with(T2V_ROUTING_KEY);
     }
+
+    @Bean
+    public Queue i2vQueue() {
+        return new Queue(I2V_QUEUE, true);
+    }
+
+    @Bean
+    public TopicExchange i2vExchange() {
+        return new TopicExchange(I2V_EXCHANGE);
+    }
+
+    @Bean
+    public Binding i2vBinding(@Qualifier("i2vQueue") Queue queue,
+                              @Qualifier("i2vExchange") TopicExchange topicExchange) {
+        return BindingBuilder.bind(queue).to(topicExchange).with(I2V_ROUTING_KEY);
+    }
+
 
     @Bean
     public MessageConverter messageConverter() {

@@ -3,7 +3,8 @@ package com.ll.demo03.videoTask.domain;
 import com.ll.demo03.global.domain.Status;
 import com.ll.demo03.global.port.Network;
 import com.ll.demo03.member.domain.Member;
-import com.ll.demo03.videoTask.controller.request.VideoQueueRequest;
+import com.ll.demo03.videoTask.controller.request.I2VQueueRequest;
+import com.ll.demo03.videoTask.controller.request.T2VQueueRequest;
 import com.ll.demo03.videoTask.controller.request.VideoTaskRequest;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,6 +17,7 @@ public class VideoTask {
     private final Long id;
     private final String prompt;
     private final String lora;
+    private final String imageUrl;
     private final String runpodId;
     private final Status status;
     private final LocalDateTime createdAt;
@@ -27,12 +29,13 @@ public class VideoTask {
     private final int numFrames;
 
     @Builder
-    public VideoTask(Long id, String prompt, String lora, String runpodId, Status status,
+    public VideoTask(Long id, String prompt, String lora, String imageUrl, String runpodId, Status status,
                      LocalDateTime createdAt, LocalDateTime modifiedAt, Member creator,
                      int width, int height, int numFrames) {
         this.id = id;
         this.prompt = prompt;
         this.lora = lora;
+        this.imageUrl = imageUrl;
         this.runpodId = runpodId;
         this.status = status;
         this.createdAt = createdAt;
@@ -43,10 +46,22 @@ public class VideoTask {
         this.numFrames = numFrames;
     }
 
-    public static VideoTask from(Member creator, VideoQueueRequest queueRequest) {
+    public static VideoTask from(Member creator, T2VQueueRequest queueRequest) {
         return VideoTask.builder()
                 .prompt(queueRequest.getPrompt())
                 .lora(queueRequest.getLora())
+                .width(queueRequest.getWidth())
+                .height(queueRequest.getHeight())
+                .numFrames(queueRequest.getNumFrames())
+                .creator(creator)
+                .build();
+    }
+
+    public static VideoTask from(Member creator, I2VQueueRequest queueRequest) {
+        return VideoTask.builder()
+                .prompt(queueRequest.getPrompt())
+                .lora(queueRequest.getLora())
+                .imageUrl(queueRequest.getUrl())
                 .width(queueRequest.getWidth())
                 .height(queueRequest.getHeight())
                 .numFrames(queueRequest.getNumFrames())
@@ -65,6 +80,7 @@ public class VideoTask {
                 .id(id)
                 .prompt(prompt)
                 .lora(lora)
+                .imageUrl(imageUrl)
                 .runpodId(runpodId)
                 .status(status)
                 .createdAt(createdAt)
@@ -76,10 +92,22 @@ public class VideoTask {
                 .build();
     }
 
-    public static VideoQueueRequest toQueueRequest(VideoTaskRequest request, Member creator) {
-        return new VideoQueueRequest(
+    public static T2VQueueRequest toQueueRequest(VideoTaskRequest request, Member creator) {
+        return new T2VQueueRequest(
                 request.getLora(),
                 request.getPrompt(),
+                request.getWidth(),
+                request.getHeight(),
+                request.getNumFrames(),
+                creator.getId()
+        );
+    }
+
+    public static I2VQueueRequest toQueueRequest(VideoTaskRequest request, String url, Member creator) {
+        return new I2VQueueRequest(
+                request.getLora(),
+                request.getPrompt(),
+                url,
                 request.getWidth(),
                 request.getHeight(),
                 request.getNumFrames(),

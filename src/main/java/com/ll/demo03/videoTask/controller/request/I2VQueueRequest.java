@@ -9,9 +9,10 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class VideoQueueRequest {
+public class I2VQueueRequest {
     private String lora;
     private String prompt;
+    private String url;
     private int width;
     private int height;
     private int numFrames;

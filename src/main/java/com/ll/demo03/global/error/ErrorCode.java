@@ -43,7 +43,9 @@ public enum ErrorCode {
     INAPPROPRIATE_CONTENT(HttpStatus.BAD_REQUEST, "부적절한 프롬프트입니다."),
 
     //결제 실패
-    PAYMENT_CONFIRMATION_FAILED(HttpStatus.BAD_REQUEST, "결제에 실패했습니다.");
+    PAYMENT_CONFIRMATION_FAILED(HttpStatus.BAD_REQUEST, "결제에 실패했습니다."),
+
+    ERROR_WHILE_UPLOADING(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 업로드 도중 에러가 발생했습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;

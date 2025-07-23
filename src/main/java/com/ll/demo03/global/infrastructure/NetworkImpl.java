@@ -142,4 +142,39 @@ public class NetworkImpl implements Network {
             throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
+
+    public String createVideo(Long taskId, String lora, String prompt, String url, int width, int height, int numFrames , String webhook) {
+        try {
+            Unirest.setTimeouts(0, 0);
+
+            String jsonBody = String.format("""
+           {
+          "webhook": "%s",
+          "input": {
+            "workflow": "wan_video",
+            "payload": {
+              "task_id": %d,
+              "positive_prompt": "%s",
+              "image_url": "%s",
+              "width" : %d,
+              "height" : %d, 
+              "num_frames" : %d
+            }
+          }
+        }
+        """, webhook, taskId, prompt , url, width, height, numFrames);
+
+            HttpResponse<String> response = Unirest.post("https://api.runpod.ai/v2/dgxtzrxjg40wpi/run")
+                    .header("accept", "application/json")
+                    .header("authorization", runpodApiKey)
+                    .header("content-type", "application/json")
+                    .body(jsonBody)
+                    .asString();
+
+            return response.getBody();
+        } catch (UnirestException e) {
+            e.printStackTrace();
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

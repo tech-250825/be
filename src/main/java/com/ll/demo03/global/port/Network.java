@@ -4,6 +4,7 @@ public interface Network {
 
     String createImage(Long taskId, String lora, String prompt, String webhook);
     String createVideo(Long taskId, String lora, String prompt, int width, int height, int numFrames, String webhook);
+    String createVideo(Long taskId, String lora, String prompt, String url, int width, int height, int numFrames, String webhook);
     String modifyPrompt(String lora, String prompt);
 
 }
