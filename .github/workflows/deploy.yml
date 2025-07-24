@@ -1,0 +1,97 @@
+name: Deploy To EC2 with Cloud MySQL
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Github Repository 파일 불러오기
+        uses: actions/checkout@v4
+
+      - name: JDK 21버전 설치
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: gradlew 실행 권한 부여
+        run: chmod +x ./gradlew
+
+      - name: application.yml 파일 만들기
+        run: echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/application-secret.yml
+
+      - name: 테스트 및 빌드하기
+        run: ./gradlew clean build
+
+      - name: Docker 이미지 빌드
+        run: |
+          docker build -t hoit-app:latest .
+          docker save hoit-app:latest | gzip > hoit-app.tar.gz
+
+      - name: 파일들 EC2에 전송
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          source: hoit-app.tar.gz,docker-compose.yml
+          target: /home/ubuntu/hoit-server/
+
+      - name: SSH로 EC2에 접속하여 배포
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          script_stop: true
+          script: |
+            cd /home/ubuntu/hoit-server
+
+            echo "🚀 배포 시작..."
+
+            echo "🛑 기존 애플리케이션 중지 중..."
+            docker compose stop hoit-app 2>/dev/null || echo "중지할 앱 컨테이너 없음"
+            docker compose rm -f hoit-app 2>/dev/null || echo "제거할 앱 컨테이너 없음"
+
+            echo "📦 새 Docker 이미지 로드 중..."
+            docker load < hoit-app.tar.gz
+
+            echo "📁 디렉토리 생성 중..."
+            mkdir -p dockerProjects/rabbitmq-1/volumes/{etc/rabbitmq,var/lib/rabbitmq,var/log/rabbitmq}
+
+            echo "🔄 인프라 서비스 확인 중..."
+            docker compose up -d redis rabbit-mq nginx-proxy-manager
+
+            echo "⏳ 인프라 서비스 준비 대기..."
+            sleep 20
+
+            echo "🚀 애플리케이션 시작 중..."
+            docker compose up -d hoit-app
+
+            echo "⏳ 애플리케이션 시작 대기..."
+            sleep 60
+
+            echo "📊 컨테이너 상태:"
+            docker compose ps
+
+            echo "🔍 애플리케이션 헬스체크..."
+            for i in {1..12}; do
+              if curl -f http://localhost:8090/actuator/health >/dev/null 2>&1; then
+                echo "✅ 애플리케이션 정상 실행 중!"
+                break
+              else
+                echo "대기 중... ($i/12)"
+                sleep 5
+              fi
+            done
+
+            echo "📝 애플리케이션 로그 (마지막 20줄):"
+            docker compose logs --tail=20 hoit-app
+
+            rm -f hoit-app.tar.gz
+
+            echo "🎉 배포 완료!"
