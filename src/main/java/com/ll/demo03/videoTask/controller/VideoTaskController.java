@@ -53,7 +53,7 @@ public class VideoTaskController {
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
         try {
-            // 🔥 JSON 수동 파싱 추가
+            // 이거 제거할것.
             ObjectMapper objectMapper = new ObjectMapper();
             VideoTaskRequest request = objectMapper.readValue(requestJson, VideoTaskRequest.class);
 
