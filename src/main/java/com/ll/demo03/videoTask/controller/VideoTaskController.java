@@ -71,16 +71,10 @@ public class VideoTaskController {
     @PostMapping("/webhook")
     public GlobalResponse handleT2VWebhook(
             @RequestBody WebhookEvent event) {
-
-        try {
             log.info("Received webhook event: {}", event);
             videoWebhookProcessor.processWebhookEvent(event);
 
             return GlobalResponse.success();
-        } catch (Exception e) {
-            log.error("Error processing webhook: ", e);
-            return GlobalResponse.error(ErrorCode.INTERNAL_SERVER_ERROR);
-        }
     }
 
 
@@ -88,15 +82,11 @@ public class VideoTaskController {
     public GlobalResponse handle(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             CursorBasedPageable cursorBasedPageable) {
-        try {
 
             Member member = principalDetails.user();
             PageResponse<List<TaskOrVideoResponse>> result = videoTaskService.getMyTasks(member, cursorBasedPageable);
 
             return GlobalResponse.success(result);
-        } catch (Exception e) {
-            log.error("Error processing webhook: ", e);
-            return GlobalResponse.error(ErrorCode.INTERNAL_SERVER_ERROR);
-        }
+
     }
 }
