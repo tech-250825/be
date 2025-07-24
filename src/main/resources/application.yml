@@ -1,10 +1,14 @@
 app:
   client:
-    url: http://localhost:8090
+    url: http://localhost:3000/home
 server:
   port: 8090
   shutdown: graceful
 spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 20MB
   jackson:
     serialization:
       write-dates-as-timestamps: false
@@ -75,7 +79,7 @@ logging:
 #    org.springframework.security.oauth2: DEBUG
 #    org.springframework.web.client: DEBUG
 custom:
-  webhook-url: https://04d231805dcc.ngrok-free.app
+  webhook-url: https://5337de6de6b9.ngrok-free.app
   site:
     name: "My Site Prod"
 

@@ -1,5 +1,6 @@
 package com.ll.demo03.videoTask.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ll.demo03.global.controller.request.WebhookEvent;
 import com.ll.demo03.global.dto.GlobalResponse;
 import com.ll.demo03.member.domain.Member;
@@ -47,13 +48,22 @@ public class VideoTaskController {
     @PostMapping(value = "/create/i2v" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("isAuthenticated()")
     public GlobalResponse createI2V(
-            @RequestPart("request") VideoTaskRequest request,
+            @RequestPart("request") String requestJson,
             @RequestPart("image") MultipartFile image,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
-        Member member = principalDetails.user();
-        videoTaskService.initateI2V(request, member, image);
-        return GlobalResponse.success();
+        try {
+            // 🔥 JSON 수동 파싱 추가
+            ObjectMapper objectMapper = new ObjectMapper();
+            VideoTaskRequest request = objectMapper.readValue(requestJson, VideoTaskRequest.class);
+
+            Member member = principalDetails.user();
+            videoTaskService.initateI2V(request, member, image);
+            return GlobalResponse.success();
+        } catch (Exception e) {
+            log.error("I2V 처리 중 오류: ", e);
+            return GlobalResponse.error(ErrorCode.INTERNAL_SERVER_ERROR);
+        }
 
     }
 
