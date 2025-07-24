@@ -39,7 +39,7 @@ public class S3ServiceImpl implements S3Service {
             int randomNum = new Random().nextInt(100000);
             String randomFileName = timestamp + "_" + randomNum + extension;
 
-            String fileKey = "i2v-images/" + randomFileName;
+            String fileKey = "i2v/" + randomFileName;
 
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(bucket)

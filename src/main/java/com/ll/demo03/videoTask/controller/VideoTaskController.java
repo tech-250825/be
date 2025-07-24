@@ -14,6 +14,7 @@ import com.ll.demo03.webhook.VideoWebhookProcessorImpl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -43,11 +44,11 @@ public class VideoTaskController {
 
     }
 
-    @PostMapping(value = "/create/i2v")
+    @PostMapping(value = "/create/i2v" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("isAuthenticated()")
     public GlobalResponse createI2V(
-            @RequestBody VideoTaskRequest request,
-            @RequestParam(required = false) MultipartFile image,
+            @RequestPart("request") VideoTaskRequest request,
+            @RequestPart("image") MultipartFile image,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
         Member member = principalDetails.user();

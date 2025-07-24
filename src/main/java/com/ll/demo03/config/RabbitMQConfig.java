@@ -25,9 +25,9 @@ public class RabbitMQConfig {
     public static final String T2V_QUEUE = "t2v.queue";
     public static final String T2V_ROUTING_KEY = "t2v.create";
 
-    public static final String I2V_EXCHANGE = "t2v.exchange";
-    public static final String I2V_QUEUE = "t2v.queue";
-    public static final String I2V_ROUTING_KEY = "t2v.create";
+    public static final String I2V_EXCHANGE = "i2v.exchange";
+    public static final String I2V_QUEUE = "i2v.queue";
+    public static final String I2V_ROUTING_KEY = "i2v.create";
 
     @Bean
     public Queue imageQueue() {
@@ -59,7 +59,7 @@ public class RabbitMQConfig {
     @Bean
     public Binding upscaleBinding(@Qualifier("upscaleQueue") Queue queue,
                                   @Qualifier("upscaleExchange") TopicExchange topicExchange) {
-        return BindingBuilder.bind(queue).to(topicExchange).with(T2V_ROUTING_KEY);
+        return BindingBuilder.bind(queue).to(topicExchange).with(UPSCALE_ROUTING_KEY);
     }
 
     @Bean

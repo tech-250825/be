@@ -151,7 +151,7 @@ public class NetworkImpl implements Network {
            {
           "webhook": "%s",
           "input": {
-            "workflow": "wan_video",
+            "workflow": "wan_i2v",
             "payload": {
               "task_id": %d,
               "positive_prompt": "%s",
