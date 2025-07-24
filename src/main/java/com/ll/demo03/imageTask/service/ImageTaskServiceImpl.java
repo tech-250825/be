@@ -6,6 +6,7 @@ import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
 import com.ll.demo03.global.infrastructure.MessageProducerImpl;
 import com.ll.demo03.global.port.CursorPaginationService;
+import com.ll.demo03.global.port.MessageProducer;
 import com.ll.demo03.global.port.RedisService;
 import com.ll.demo03.imageTask.controller.port.ImageTaskService;
 import com.ll.demo03.imageTask.controller.request.ImageQueueRequest;
@@ -21,6 +22,7 @@ import com.ll.demo03.member.domain.Member;
 import com.ll.demo03.member.service.port.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,21 +32,22 @@ import java.util.List;
 
 @Service
 @Slf4j
+@Builder
 @Transactional
-@RequiredArgsConstructor
 public class ImageTaskServiceImpl implements ImageTaskService {
 
-    private final ImageTaskRepository imageTaskRepository;
+    private final ImageTaskRepository taskRepository;
     private final MemberRepository memberRepository;
     private final RedisService redisService;
     private final Network network;
-    private final MessageProducerImpl imageMessageProducer;
+    private final MessageProducer messageProducer;
     private final CursorPaginationService paginationService;
     private final ImageTaskPaginationStrategy paginationStrategy;
     private final ImageTaskResponseConverter responseConverter;
 
     @Value("${custom.webhook-url}")
     private String webhookUrl;
+
 
     @Override
     public void initate(ImageTaskRequest request, Member member){
@@ -53,7 +56,7 @@ public class ImageTaskServiceImpl implements ImageTaskService {
 
         ImageTaskRequest newRequest = ImageTask.updatePrompt(request, network);
         ImageQueueRequest imageQueueRequest = ImageTask.toImageQueueRequest(newRequest, member);
-        imageMessageProducer.sendImageCreationMessage(imageQueueRequest);
+        messageProducer.sendImageCreationMessage(imageQueueRequest);
         memberRepository.save(creator);
     }
 
@@ -64,7 +67,7 @@ public class ImageTaskServiceImpl implements ImageTaskService {
 
         ImageTask task = ImageTask.from(member, message);
         task = task.updateStatus(Status.IN_PROGRESS, null);
-        ImageTask saved = imageTaskRepository.save(task);
+        ImageTask saved = taskRepository.save(task);
         Long taskId = saved.getId();
 
         redisService.pushToQueue("image", taskId);

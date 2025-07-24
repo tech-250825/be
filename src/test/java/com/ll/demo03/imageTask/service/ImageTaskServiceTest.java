@@ -11,6 +11,7 @@ import com.ll.demo03.imageTask.service.port.ImageTaskRepository;
 import com.ll.demo03.member.domain.Member;
 import com.ll.demo03.member.service.port.MemberRepository;
 import com.ll.demo03.mock.*;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +22,7 @@ import java.util.List;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 
+@Slf4j
 class ImageTaskServiceTest {
 
     private TestContainer testContainer;
@@ -56,16 +58,20 @@ class ImageTaskServiceTest {
                 .prompt("고양이 사진 그려줘")
                 .lora("test-model")
                 .build();
+        log.info("감소 전 크레딧: {}, 요청 감소량: {}", member.getCredit(), 1);
 
         // when
         imageTaskService.initate(request, member);
 
         // then
         Member updated = memberRepository.findById(1L).get();
+        log.info("감소 전 크레딧: {}, 요청 감소량: {}", updated.getCredit(), 1);
         assertEquals(4, updated.getCredit());
 
         assertTrue(messageProducer.imageMessages.size() == 1);
+        log.info("프롬프트:  {}" ,messageProducer.imageMessages.size());
         ImageQueueRequest sentMessage = messageProducer.imageMessages.get(0);
+        log.info("프롬프트:  {}" ,sentMessage.getPrompt());
         assertTrue(sentMessage.getPrompt().contains("[FAKE_MODIFIED]"));
     }
 

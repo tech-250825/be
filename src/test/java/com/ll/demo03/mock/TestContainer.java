@@ -1,6 +1,7 @@
 package com.ll.demo03.mock;
 
 import com.ll.demo03.UGC.service.port.UGCRepository;
+import com.ll.demo03.global.infrastructure.MessageProducerImpl;
 import com.ll.demo03.global.port.CursorPaginationService;
 import com.ll.demo03.imageTask.controller.port.ImageTaskService;
 import com.ll.demo03.imageTask.service.ImageTaskPaginationStrategy;
@@ -9,6 +10,8 @@ import com.ll.demo03.imageTask.service.ImageTaskServiceImpl;
 import com.ll.demo03.imageTask.service.port.ImageTaskRepository;
 import com.ll.demo03.member.service.port.MemberRepository;
 import lombok.Builder;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.test.util.ReflectionTestUtils;
 
 public class TestContainer {
 
