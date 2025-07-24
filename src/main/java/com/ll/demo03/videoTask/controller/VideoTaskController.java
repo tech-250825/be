@@ -53,7 +53,7 @@ public class VideoTaskController {
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
         try {
-            // 이거 제거할것.
+            // 이거 제거할것..
             ObjectMapper objectMapper = new ObjectMapper();
             VideoTaskRequest request = objectMapper.readValue(requestJson, VideoTaskRequest.class);
 
