@@ -32,7 +32,7 @@ import java.util.List;
 
 @Service
 @Slf4j
-@Builder
+@RequiredArgsConstructor
 @Transactional
 public class ImageTaskServiceImpl implements ImageTaskService {
 

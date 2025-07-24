@@ -35,17 +35,19 @@ public class TestContainer {
         this.imageTaskResponseConverter = new ImageTaskResponseConverter(this.ugcRepository);
         this.fakeRedisService = new FakeRedisService();
         this.fakeNetwork = new FakeNetwork();
-        this.imageTaskService = ImageTaskServiceImpl.builder()
-                .taskRepository(imageTaskRepository)
-                .memberRepository(memberRepository)
-                .redisService(fakeRedisService)
-                .network(fakeNetwork)
-                .messageProducer(fakeMessageProducer)
-                .paginationService(new CursorPaginationService())
-                .paginationStrategy(imageTaskPaginationStrategy)
-                .responseConverter(imageTaskResponseConverter)
-                .webhookUrl("/fake-url")
-                .build();
+        this.imageTaskService = new ImageTaskServiceImpl(
+                imageTaskRepository,
+                memberRepository,
+                fakeRedisService,
+                fakeNetwork,
+                fakeMessageProducer,
+                new CursorPaginationService(),
+                imageTaskPaginationStrategy,
+                imageTaskResponseConverter
+        );
+
+        ReflectionTestUtils.setField(imageTaskService, "webhookUrl", "/fake-url");
+
 
     }
 
