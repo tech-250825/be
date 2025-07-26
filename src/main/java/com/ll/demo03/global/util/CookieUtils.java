@@ -25,7 +25,7 @@ public class CookieUtils {
         cookie.setPath("/");
         cookie.setHttpOnly(true);
         cookie.setMaxAge(maxAge);
-         cookie.setDomain("hoit.ai.kr");
+        // cookie.setDomain("hoit.ai.kr");
         response.addCookie(cookie);
     }
 
