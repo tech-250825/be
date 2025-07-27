@@ -2,6 +2,7 @@ package com.ll.demo03.UGC.infrastructure;
 
 
 import com.ll.demo03.imageTask.infrastructure.ImageTaskEntity;
+import com.ll.demo03.videoTask.domain.VideoTask;
 import com.ll.demo03.videoTask.infrastructure.VideoTaskEntity;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -31,5 +32,7 @@ public interface UGCJpaRepository extends JpaRepository<UGCEntity, Long>, JpaSpe
 
     @Query("SELECT u FROM UGCEntity u WHERE u.videoTask IN :tasks")
     List<UGCEntity> findByVideoTaskIn(@Param("tasks") List<VideoTaskEntity> tasks);
+
+    List<UGCEntity> findAllByVideoTask_Id(Long id);
 
 }

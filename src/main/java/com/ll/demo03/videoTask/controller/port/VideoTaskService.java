@@ -17,4 +17,5 @@ public interface VideoTaskService {
     void process(T2VQueueRequest message);
     void process(I2VQueueRequest message);
     PageResponse<List<TaskOrVideoResponse>> getMyTasks(Member member, CursorBasedPageable pageable);
+    void delete(Long id);
 }

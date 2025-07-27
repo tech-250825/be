@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VideoTaskRequest {
-    private String lora;
+    private Long loraId;
     private String prompt;
     private int width;
     private int height;

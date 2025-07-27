@@ -1,10 +1,15 @@
 package com.ll.demo03.videoTask.service;
 
 
+import com.ll.demo03.UGC.domain.UGC;
+import com.ll.demo03.UGC.service.port.UGCRepository;
 import com.ll.demo03.global.domain.Status;
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
 import com.ll.demo03.global.port.*;
+import com.ll.demo03.lora.controller.port.LoraService;
+import com.ll.demo03.lora.domain.Lora;
+import com.ll.demo03.lora.service.port.LoraRepository;
 import com.ll.demo03.member.domain.Member;
 import com.ll.demo03.member.service.port.MemberRepository;
 import com.ll.demo03.videoTask.controller.port.VideoTaskService;
@@ -40,7 +45,10 @@ public class VideoTaskServiceImpl implements VideoTaskService {
     private final CursorPaginationService paginationService;
     private final VideoTaskPaginationStrategy paginationStrategy;
     private final VideoTaskResponseConverter responseConverter;
+    private final LoraRepository loraRepository;
     private final S3Service s3Service;
+    private final LoraService loraService;
+    private final UGCRepository ugcRepository;
 
     @Value("${custom.webhook-url}")
     private String webhookUrl;
@@ -50,10 +58,16 @@ public class VideoTaskServiceImpl implements VideoTaskService {
         Member creator = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER)); //이렇게 영속화 시켜야함
         creator.decreaseCredit(1); //@AuthenticationPrincipal PrincipalDetails 에서 꺼낸 member 객체는 JPA에 영속되어있지 않으므로 decreaseCredit해도 JPA가 트랜잭션 커밋 시점에 알아서 update 쿼리를 날리지 않는다 .
 
-        VideoTaskRequest newRequest = VideoTask.updatePrompt(request, network);
-        T2VQueueRequest queueRequest = VideoTask.toQueueRequest(newRequest, member);
+        Lora lora = loraRepository.findById(request.getLoraId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+
+        VideoTask task = VideoTask.from(member, lora,  request);
+        task = task.updateStatus(Status.IN_PROGRESS, null);
+        VideoTask saved = videoTaskRepository.save(task);
+
+        String newPrompt = loraService.addTriggerWord(lora.getId(), request.getPrompt());
+
+        T2VQueueRequest queueRequest = VideoTask.toT2VQueueRequest(saved.getId(), request, lora.getModelName(), newPrompt, creator);
         videoMessageProducer.sendCreationMessage(queueRequest);
-        memberRepository.save(creator);
     }
 
     @Override
@@ -63,25 +77,21 @@ public class VideoTaskServiceImpl implements VideoTaskService {
 
         String url = s3Service.uploadFile(image);
 
-        VideoTaskRequest newRequest = VideoTask.updatePrompt(request, network);
-        I2VQueueRequest queueRequest = VideoTask.toQueueRequest(newRequest, url, member);
+        VideoTask task = VideoTask.from(member, url, request);
+        task = task.updateStatus(Status.IN_PROGRESS, null);
+        VideoTask saved = videoTaskRepository.save(task);
+
+        I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request, url, creator);
         videoMessageProducer.sendCreationMessage(queueRequest);
-        memberRepository.save(creator);
     }
 
     @Override
     public void process(T2VQueueRequest message) { //이건 비동기므로 에러가 나도 /api/videos/create에서 에러 반환 못받는다ㅜㅜ 해결책 고안할 것 .
+        Long taskId = message.getTaskId();
 
-        Member member = memberRepository.findById(message.getMemberId()).orElseThrow(() -> new EntityNotFoundException("Member not found")); //rabbitmq TLS화하여 보안설정 하기
+        redisService.pushToQueue("t2v",taskId);
 
-        VideoTask task = VideoTask.from(member, message);
-        task = task.updateStatus(Status.IN_PROGRESS, null);
-        VideoTask saved = videoTaskRepository.save(task);
-        Long taskId = saved.getId();
-
-        redisService.pushToQueue("t2v", taskId);
-
-        network.createVideo(
+        network.createT2VVideo(
                 taskId,
                 message.getLora(),
                 message.getPrompt(),
@@ -94,19 +104,12 @@ public class VideoTaskServiceImpl implements VideoTaskService {
 
     @Override
     public void process(I2VQueueRequest message) {
-
-        Member member = memberRepository.findById(message.getMemberId()).orElseThrow(() -> new EntityNotFoundException("Member not found"));
-
-        VideoTask task = VideoTask.from(member, message);
-        task = task.updateStatus(Status.IN_PROGRESS, null);
-        VideoTask saved = videoTaskRepository.save(task);
-        Long taskId = saved.getId();
+        Long taskId = message.getTaskId();
 
         redisService.pushToQueue("i2v", taskId);
 
-        network.createVideo(
+        network.createI2VVideo(
                 taskId,
-                message.getLora(),
                 message.getPrompt(),
                 message.getUrl(),
                 message.getWidth(),
@@ -119,6 +122,17 @@ public class VideoTaskServiceImpl implements VideoTaskService {
     @Override
     public PageResponse<List<TaskOrVideoResponse>> getMyTasks(Member member, CursorBasedPageable pageable) {
         return paginationService.getPagedContent(member, pageable, paginationStrategy, responseConverter);
+    }
+
+    @Override
+    public void delete(Long id){
+        VideoTask task = videoTaskRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+
+        List<UGC> ugcs = ugcRepository.findAllByVideoTaskId(task.getId());
+        ugcRepository.deleteAll(ugcs);
+
+        videoTaskRepository.delete(task);
     }
 
 }

@@ -2,15 +2,13 @@ package com.ll.demo03.lora.controller;
 
 
 import com.ll.demo03.global.dto.GlobalResponse;
-import com.ll.demo03.lora.dto.LoraResponse;
-import com.ll.demo03.lora.entity.MediaType;
-import com.ll.demo03.lora.entity.StyleType;
-import com.ll.demo03.lora.service.LoraService;
+import com.ll.demo03.lora.controller.port.LoraService;
+import com.ll.demo03.lora.controller.request.LoraPromptRequest;
+import com.ll.demo03.lora.controller.response.LoraResponse;
+import com.ll.demo03.lora.domain.MediaType;
+import com.ll.demo03.lora.domain.StyleType;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,6 +25,11 @@ public class LoraController {
             @RequestParam StyleType styleType
     ) {
         return GlobalResponse.success(loraService.getLora(mediaType, styleType));
+    }
+
+    @PostMapping
+    public GlobalResponse<String> updatePrompt(@RequestBody LoraPromptRequest request){
+        return GlobalResponse.success(loraService.updatePrompt(request));
     }
 
 }

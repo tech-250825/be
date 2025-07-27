@@ -10,6 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class T2VQueueRequest {
+    private Long taskId;
     private String lora;
     private String prompt;
     private int width;

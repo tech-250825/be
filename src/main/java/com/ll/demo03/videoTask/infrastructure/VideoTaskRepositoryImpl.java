@@ -64,4 +64,9 @@ public class VideoTaskRepositoryImpl  implements VideoTaskRepository {
         Specification<VideoTaskEntity> spec = SpecificationUtils.memberEqualsAndCreatedBefore("member", "createdAt", MemberEntity.from(member),createdAt);
         return jpaRepository.findAll(spec, pageable).map(VideoTaskEntity::toModel);
     }
+
+    @Override
+    public void delete(VideoTask task){
+        jpaRepository.delete(VideoTaskEntity.from(task));
+    }
 }

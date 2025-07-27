@@ -16,15 +16,26 @@ public class VideoTaskResponse {
     private Long id;
     private String prompt;
     private String lora;
+    private String imageUrl;
+    private int height;
+    private int width;
+    private int numFrames;
     private Status status;
     private String runpodId;
     private LocalDateTime createdAt;
 
     public static VideoTaskResponse from(VideoTask task) {
+
+        String loraName = task.getLora() != null ? task.getLora().getName() : null;
+
         return VideoTaskResponse.builder()
                 .id(task.getId())
                 .prompt(task.getPrompt())
-                .lora(task.getLora())
+                .lora(loraName)
+                .imageUrl(task.getImageUrl())
+                .height(task.getHeight())
+                .width(task.getWidth())
+                .numFrames(task.getNumFrames())
                 .status(task.getStatus())
                 .runpodId(task.getRunpodId())
                 .createdAt(task.getCreatedAt())
