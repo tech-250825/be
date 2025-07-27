@@ -95,5 +95,22 @@ public class UGCRepositoryImpl implements UGCRepository {
                 .toList();
     }
 
+    @Override
+    public List<UGC> findAllByVideoTaskId(Long id){
+        List<UGCEntity> entities = ugcJpaRepository.findAllByVideoTask_Id(id);
+        return entities.stream()
+                .map(UGCEntity::toModel)
+                .toList();
+
+    }
+
+    @Override
+    public void deleteAll(List<UGC> ugcs) {
+        List<UGCEntity> entities = ugcs.stream()
+                .map(UGCEntity::from)
+                .toList();
+        ugcJpaRepository.deleteAll(entities);
+    }
+
 }
 

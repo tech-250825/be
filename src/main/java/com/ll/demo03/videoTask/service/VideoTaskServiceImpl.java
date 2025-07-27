@@ -1,6 +1,8 @@
 package com.ll.demo03.videoTask.service;
 
 
+import com.ll.demo03.UGC.domain.UGC;
+import com.ll.demo03.UGC.service.port.UGCRepository;
 import com.ll.demo03.global.domain.Status;
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
@@ -46,6 +48,7 @@ public class VideoTaskServiceImpl implements VideoTaskService {
     private final LoraRepository loraRepository;
     private final S3Service s3Service;
     private final LoraService loraService;
+    private final UGCRepository ugcRepository;
 
     @Value("${custom.webhook-url}")
     private String webhookUrl;
@@ -125,6 +128,10 @@ public class VideoTaskServiceImpl implements VideoTaskService {
     public void delete(Long id){
         VideoTask task = videoTaskRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+
+        List<UGC> ugcs = ugcRepository.findAllByVideoTaskId(task.getId());
+        ugcRepository.deleteAll(ugcs);
+
         videoTaskRepository.delete(task);
     }
 

@@ -1,5 +1,6 @@
 package com.ll.demo03.videoTask.infrastructure;
 
+import com.ll.demo03.UGC.infrastructure.UGCEntity;
 import com.ll.demo03.imageTask.infrastructure.ImageTaskEntity;
 import com.ll.demo03.member.infrastructure.MemberEntity;
 import com.ll.demo03.videoTask.domain.VideoTask;
@@ -22,5 +23,6 @@ public interface VideoTaskJpaRepository extends JpaRepository<VideoTaskEntity, L
     boolean existsByMemberAndCreatedAtGreaterThan(MemberEntity member, LocalDateTime createdAt);
 
     boolean existsByMemberAndCreatedAtLessThan(MemberEntity member, LocalDateTime createdAt);
+
 
 }
