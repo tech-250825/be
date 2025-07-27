@@ -5,6 +5,10 @@ server:
   port: 8090
   shutdown: graceful
 spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 20MB
   rabbitmq:
     host: rabbit-mq
     port: 5672
