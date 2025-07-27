@@ -1,6 +1,6 @@
 app:
   client:
-    url: https://hoit.ai.kr
+    url: https://hoit.ai.kr/*
 server:
   port: 8090
   shutdown: graceful

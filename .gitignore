@@ -44,3 +44,5 @@ src/main/generated
 
 .idea
 .terraformmysql/volumes/
+
+CLAUDE.md
