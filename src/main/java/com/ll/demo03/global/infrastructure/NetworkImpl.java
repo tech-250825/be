@@ -32,7 +32,7 @@ public class NetworkImpl implements Network {
     @Value("${openai.api.key}")
     private String openAiApiKey;
 
-    public String modifyPrompt( String lora, String prompt) {
+    public String modifyPrompt( String gptPrompt, String oldPrompt) {
         String openAiUrl = "https://api.openai.com/v1/chat/completions";
 
         HttpHeaders headers = new HttpHeaders();
@@ -42,14 +42,12 @@ public class NetworkImpl implements Network {
         try {
             Map<String, Object> systemMessage = Map.of(
                     "role", "system",
-                    "content", "If the user's input is in Korean, translate it into natural English. " +
-                            "If the input is already in English, do not change it. " +
-                            "Do not add any style or artistic interpretation — just translate or preserve as is."
+                    "content", gptPrompt
             );
 
             Map<String, Object> userMessage = Map.of(
                     "role", "user",
-                    "content", prompt
+                    "content", oldPrompt
             );
 
             Map<String, Object> body = Map.of(
@@ -70,9 +68,9 @@ public class NetworkImpl implements Network {
             log.info("OpenAI 프롬프트 개선 응답: {}", result);
             return result;
 
-        } catch (Exception e) {
-            log.error("OpenAI API 요청 실패: ", e);
-            return prompt;
+        }catch (Exception e) {
+            log.error("OpenAI API 호출 실패", e);
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -108,7 +106,7 @@ public class NetworkImpl implements Network {
         }
     }
 
-    public String createVideo(Long taskId, String lora, String prompt, int width, int height, int numFrames , String webhook) {
+    public String createT2VVideo(Long taskId, String lora, String prompt, int width, int height, int numFrames , String webhook) {
         try {
             Unirest.setTimeouts(0, 0);
 
@@ -143,7 +141,7 @@ public class NetworkImpl implements Network {
         }
     }
 
-    public String createVideo(Long taskId, String lora, String prompt, String url, int width, int height, int numFrames , String webhook) {
+    public String createI2VVideo(Long taskId, String prompt, String url, int width, int height, int numFrames , String webhook) {
         try {
             Unirest.setTimeouts(0, 0);
 

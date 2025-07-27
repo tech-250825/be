@@ -37,7 +37,8 @@ public class MemberEntity {
         memberEntity.name = member.getName();
         memberEntity.email = member.getEmail();
         memberEntity.profile = member.getProfile();
-        memberEntity.credit = member.getCredit();
+        Integer credit = member.getCredit();
+        memberEntity.credit = (credit == null || credit == 0) ? 100 : credit;
         memberEntity.role = member.getRole();
         memberEntity.provider = member.getProvider();
         memberEntity.providerId = member.getProviderId();

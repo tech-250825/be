@@ -29,4 +29,5 @@ public interface VideoTaskRepository {
     Slice<VideoTask> findCreatedAfter(Member member, LocalDateTime createdAt, Pageable pageable);
     Slice<VideoTask> findCreatedBefore(Member member, LocalDateTime createdAt, Pageable pageable);
 
+    void delete(VideoTask task);
 }

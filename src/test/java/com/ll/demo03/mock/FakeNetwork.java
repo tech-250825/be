@@ -35,12 +35,12 @@ public class FakeNetwork implements Network {
     }
 
     @Override
-    public String createVideo(Long taskId, String lora, String prompt, int width, int height, int numFrames, String webhook) {
+    public String createT2VVideo(Long taskId, String lora, String prompt, int width, int height, int numFrames, String webhook) {
         return String.format("{\"status\":\"ok\",\"type\":\"video\",\"task_id\":%d}", taskId);
     }
 
     @Override
-    public String createVideo(Long taskId, String lora, String prompt, String url, int width, int height, int numFrames , String webhook) {
+    public String createI2VVideo(Long taskId, String prompt, String url, int width, int height, int numFrames , String webhook) {
         return String.format("{\"status\":\"ok\",\"type\":\"video\",\"task_id\":%d}", taskId);
     }
 }

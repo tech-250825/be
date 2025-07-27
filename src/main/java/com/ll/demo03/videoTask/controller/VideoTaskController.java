@@ -77,6 +77,13 @@ public class VideoTaskController {
             return GlobalResponse.success();
     }
 
+    @DeleteMapping("/{taskId}")
+    public GlobalResponse delete(@PathVariable Long taskId) {
+        videoTaskService.delete(taskId);
+        return GlobalResponse.success("삭제 완료되었습니다. ");
+    }
+
+
 
     @GetMapping("/task")
     public GlobalResponse handle(
