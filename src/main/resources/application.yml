@@ -26,7 +26,7 @@ spring:
   datasource:
     maximum-pool-size: 5
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://hoit-database-1.cdogc6048p9x.ap-northeast-2.rds.amazonaws.com:3306/hoit_db
+    url: jdbc:mysql://hoit-database-1.cdogc6048p9x.ap-northeast-2.rds.amazonaws.com:3306/hoit_db?serverTimezone=Asia/Seoul
     username: hoituser
   security:
     oauth2:

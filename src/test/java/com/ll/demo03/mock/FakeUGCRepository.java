@@ -1,5 +1,6 @@
 package com.ll.demo03.mock;
 
+import com.ll.demo03.UGC.infrastructure.UGCEntity;
 import com.ll.demo03.imageTask.domain.ImageTask;
 import com.ll.demo03.UGC.domain.UGC;
 import com.ll.demo03.UGC.service.port.UGCRepository;
@@ -113,4 +114,20 @@ public class FakeUGCRepository implements UGCRepository {
         boolean hasNext = end < fullList.size();
         return new PageImpl<>(content, pageable, hasNext ? end + 1 : fullList.size());
     }
+
+    @Override
+    public List<UGC> findAllByVideoTaskId(Long id) {
+        return storage.values().stream()
+                .filter(ugc -> ugc.getVideoTask() != null && ugc.getVideoTask().getId().equals(id))
+                .collect(Collectors.toList());
+    }
+
+
+    @Override
+    public void deleteAll(List<UGC> ugcs) {
+        for (UGC ugc : ugcs) {
+            storage.remove(ugc.getId());
+        }
+    }
+
 }
