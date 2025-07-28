@@ -78,19 +78,23 @@ public class NetworkImpl implements Network {
         try {
             Unirest.setTimeouts(0, 0);
 
-            String jsonBody = String.format("""
-        {
-          "webhook": "%s",
-          "input": {
-            "workflow": "illustrious_image",
-            "payload": {
-              "task_id": %d,
-              "positive_prompt": "%s",
-              "lora": "%s"
-            }
-          }
-        }
-        """, webhook, taskId, prompt, lora);
+            Map<String, Object> payload = Map.of(
+                    "task_id", taskId,
+                    "positive_prompt", prompt,
+                    "lora", lora
+            );
+
+            Map<String, Object> input = Map.of(
+                    "workflow", "illustrious_image",
+                    "payload", payload
+            );
+
+            Map<String, Object> requestBody = Map.of(
+                    "webhook", webhook,
+                    "input", input
+            );
+
+            String jsonBody = objectMapper.writeValueAsString(requestBody);
 
             HttpResponse<String> response = Unirest.post("https://api.runpod.ai/v2/dv20fz38sl3z7t//run")
                     .header("accept", "application/json")
@@ -100,7 +104,7 @@ public class NetworkImpl implements Network {
                     .asString();
 
             return response.getBody();
-        } catch (UnirestException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
@@ -110,22 +114,26 @@ public class NetworkImpl implements Network {
         try {
             Unirest.setTimeouts(0, 0);
 
-            String jsonBody = String.format("""
-           {
-          "webhook": "%s",
-          "input": {
-            "workflow": "wan_video",
-            "payload": {
-              "task_id": %d,
-              "positive_prompt": "%s",
-              "lora": "%s",
-              "width" : %d,
-              "height" : %d, 
-              "num_frames" : %d
-            }
-          }
-        }
-        """, webhook, taskId, prompt , lora, width, height, numFrames);
+            Map<String, Object> payload = Map.of(
+                    "task_id", taskId,
+                    "positive_prompt", prompt,
+                    "lora", lora,
+                    "width", width,
+                    "height", height,
+                    "num_frames", numFrames
+            );
+
+            Map<String, Object> input = Map.of(
+                    "workflow", "wan_video",
+                    "payload", payload
+            );
+
+            Map<String, Object> requestBody = Map.of(
+                    "webhook", webhook,
+                    "input", input
+            );
+
+            String jsonBody = objectMapper.writeValueAsString(requestBody);
 
             HttpResponse<String> response = Unirest.post("https://api.runpod.ai/v2/dv20fz38sl3z7t/run")
                     .header("accept", "application/json")
@@ -135,7 +143,7 @@ public class NetworkImpl implements Network {
                     .asString();
 
             return response.getBody();
-        } catch (UnirestException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
@@ -145,22 +153,26 @@ public class NetworkImpl implements Network {
         try {
             Unirest.setTimeouts(0, 0);
 
-            String jsonBody = String.format("""
-           {
-          "webhook": "%s",
-          "input": {
-            "workflow": "wan_i2v",
-            "payload": {
-              "task_id": %d,
-              "positive_prompt": "%s",
-              "image_url": "%s",
-              "width" : %d,
-              "height" : %d, 
-              "num_frames" : %d
-            }
-          }
-        }
-        """, webhook, taskId, prompt , url, width, height, numFrames);
+            Map<String, Object> payload = Map.of(
+                    "task_id", taskId,
+                    "positive_prompt", prompt,
+                    "image_url", url,
+                    "width", width,
+                    "height", height,
+                    "num_frames", numFrames
+            );
+
+            Map<String, Object> input = Map.of(
+                    "workflow", "wan_i2v",
+                    "payload", payload
+            );
+
+            Map<String, Object> requestBody = Map.of(
+                    "webhook", webhook,
+                    "input", input
+            );
+
+            String jsonBody = objectMapper.writeValueAsString(requestBody);
 
             HttpResponse<String> response = Unirest.post("https://api.runpod.ai/v2/dgxtzrxjg40wpi/run")
                     .header("accept", "application/json")
@@ -170,7 +182,7 @@ public class NetworkImpl implements Network {
                     .asString();
 
             return response.getBody();
-        } catch (UnirestException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
