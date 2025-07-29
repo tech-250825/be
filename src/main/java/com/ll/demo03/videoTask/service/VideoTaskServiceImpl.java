@@ -68,7 +68,7 @@ public class VideoTaskServiceImpl implements VideoTaskService {
 
         T2VQueueRequest queueRequest = VideoTask.toT2VQueueRequest(saved.getId(), request, lora.getModelName(), newPrompt, creator);
         videoMessageProducer.sendCreationMessage(queueRequest);
-        memberRepository.save(member);
+        memberRepository.save(creator);
     }
 
     @Override
@@ -84,7 +84,7 @@ public class VideoTaskServiceImpl implements VideoTaskService {
 
         I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request, url, creator);
         videoMessageProducer.sendCreationMessage(queueRequest);
-        memberRepository.save(member);
+        memberRepository.save(creator);
     }
 
     @Override

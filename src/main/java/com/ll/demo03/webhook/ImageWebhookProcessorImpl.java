@@ -8,6 +8,7 @@ import com.ll.demo03.global.port.RedisService;
 import com.ll.demo03.imageTask.domain.ImageTask;
 import com.ll.demo03.imageTask.service.port.ImageTaskRepository;
 import com.ll.demo03.member.domain.Member;
+import com.ll.demo03.member.service.port.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,7 @@ public class ImageWebhookProcessorImpl implements WebhookProcessor<WebhookEvent>
     private final ImageTaskRepository taskRepository;
     private final UGCRepository UGCRepository;
     private final RedisService redisService;
+    private final MemberRepository memberRepository;
 
     public void processWebhookEvent(WebhookEvent event) {
         Long taskId = event.getTaskId();
@@ -72,6 +74,7 @@ public class ImageWebhookProcessorImpl implements WebhookProcessor<WebhookEvent>
             redisService.publishNotificationToOtherServers(memberId, taskId, "", "이미지 생성에 실패했습니다.");
             redisService.removeFromQueue("image", taskId);
             taskRepository.save(task);
+            memberRepository.save(member);
         } catch (Exception e) {
             log.error("SSE 알림 전송 중 오류 발생: {}", e.getMessage(), e);
         }
