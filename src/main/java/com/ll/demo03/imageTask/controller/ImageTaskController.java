@@ -1,5 +1,6 @@
 package com.ll.demo03.imageTask.controller;
 
+import com.ll.demo03.global.controller.request.ImageWebhookEvent;
 import com.ll.demo03.global.dto.GlobalResponse;
 import com.ll.demo03.imageTask.controller.port.ImageTaskService;
 import com.ll.demo03.imageTask.controller.request.ImageTaskRequest;
@@ -45,7 +46,7 @@ public class ImageTaskController {
 
     @PostMapping("/webhook")
     public GlobalResponse handleWebhook(
-            @RequestBody WebhookEvent event) {
+            @RequestBody ImageWebhookEvent event) {
             log.info("Received webhook event: {}", event);
             imageWebhookProcessor.processWebhookEvent(event);
 

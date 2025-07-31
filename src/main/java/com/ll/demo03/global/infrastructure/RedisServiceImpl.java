@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -57,6 +58,26 @@ public class RedisServiceImpl implements RedisService {
     public void publishNotificationToOtherServers(Long memberId, Long taskId, String prompt, String url) {
         try {
             Map<String, Object> payload = Map.of(
+                    "type", "video",
+                    "memberId", memberId,
+                    "taskId", taskId,
+                    "prompt", prompt,
+                    "imageUrl", url
+            );
+            String jsonMessage = objectMapper.writeValueAsString(payload);
+            redisTemplate.convertAndSend("sse-notification-channel", jsonMessage);
+            log.debug("✅ Redis Publish 성공: memberId={}, taskId={}", memberId, taskId);
+        } catch (Exception e) {
+            log.error("❌ Redis Publish 실패: memberId={}, taskId={}, error={}", memberId, taskId, e.getMessage(), e);
+        }
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW) //requires_new로 분리 트랜잭션
+    public void publishNotificationToOtherServers(Long memberId, Long taskId, String prompt, List<String> url) {
+        try {
+            Map<String, Object> payload = Map.of(
+                    "type" , "image",
                     "memberId", memberId,
                     "taskId", taskId,
                     "prompt", prompt,

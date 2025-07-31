@@ -1,6 +1,6 @@
 app:
   client:
-    url: http://localhost:3000/*
+    url: http://localhost:8090
 server:
   port: 8090
   shutdown: graceful
@@ -26,7 +26,7 @@ spring:
   datasource:
     maximum-pool-size: 5
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://hoit-database-1.cdogc6048p9x.ap-northeast-2.rds.amazonaws.com:3306/hoit_db?serverTimezone=Asia/Seoul
+    url: jdbc:mysql://hoit-database-1.cdogc6048p9x.ap-northeast-2.rds.amazonaws.com:3306/hoit_test?serverTimezone=Asia/Seoul
     username: hoituser
   security:
     oauth2:
@@ -43,7 +43,7 @@ spring:
       port: 6379
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
@@ -79,7 +79,7 @@ logging:
 #    org.springframework.security.oauth2: DEBUG
 #    org.springframework.web.client: DEBUG
 custom:
-  webhook-url: https://fbf136feb600.ngrok-free.app
+  webhook-url: https://03666c77864c.ngrok-free.app
   site:
     name: "My Site Prod"
 

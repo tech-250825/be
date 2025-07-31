@@ -2,6 +2,7 @@ package com.ll.demo03.webhook;
 
 import com.ll.demo03.UGC.domain.UGC;
 import com.ll.demo03.UGC.service.port.UGCRepository;
+import com.ll.demo03.global.controller.request.ImageWebhookEvent;
 import com.ll.demo03.global.controller.request.WebhookEvent;
 import com.ll.demo03.global.domain.Status;
 import com.ll.demo03.global.port.RedisService;
@@ -15,19 +16,21 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 
 @Service
 @Slf4j
 @Transactional
 @RequiredArgsConstructor
-public class ImageWebhookProcessorImpl implements WebhookProcessor<WebhookEvent> {
+public abstract class ImageWebhookProcessorImpl implements WebhookProcessor<WebhookEvent> {
 
     private final ImageTaskRepository taskRepository;
     private final UGCRepository UGCRepository;
     private final RedisService redisService;
     private final MemberRepository memberRepository;
 
-    public void processWebhookEvent(WebhookEvent event) {
+    public void processWebhookEvent(ImageWebhookEvent event) {
         Long taskId = event.getTaskId();
         String status = event.getStatus();
         String runpodId = event.getRunpodId();
@@ -44,21 +47,21 @@ public class ImageWebhookProcessorImpl implements WebhookProcessor<WebhookEvent>
         }
     }
 
-    public void saveToDatabase(Long taskId, String url) {
+    public void saveToDatabase(Long taskId, List<String> urls) {
         try {
-
             ImageTask task = taskRepository.findById(taskId)
                     .orElseThrow(() -> new EntityNotFoundException("Image task not found"));
 
-            UGC ugc = UGC.ofImage(url, task);
-            UGCRepository.save(ugc);
+            for (String url : urls) {
+                UGC ugc = UGC.ofImage(url, task , urls.indexOf(url));
+                UGCRepository.save(ugc);
+                log.info("✅ DB 저장 완료: taskId={}, imageUrl={}", taskId, url);
+            }
 
-            log.info("✅ DB 저장 완료: taskId={}, imageUrl={}", taskId, ugc);
         } catch (Exception e) {
             log.error("DB 저장 중 오류 발생: {}", e.getMessage(), e);
         }
     }
-
 
     public void handleFailed(Long taskId, String runpodId) {
         try {
@@ -80,7 +83,7 @@ public class ImageWebhookProcessorImpl implements WebhookProcessor<WebhookEvent>
         }
     }
 
-    public void handleCompleted(Long taskId, WebhookEvent event, String runpodId) {
+    public void handleCompleted(Long taskId, ImageWebhookEvent event, String runpodId) {
         try {
             ImageTask task = taskRepository.findById(taskId)
                     .orElseThrow(() -> new EntityNotFoundException("Image task not found"));
@@ -88,17 +91,20 @@ public class ImageWebhookProcessorImpl implements WebhookProcessor<WebhookEvent>
             task = task.updateStatus(Status.COMPLETED, runpodId);
 
             Long memberId = task.getCreator().getId();
-            String url = event.getImages();
             String prompt = event.getPrompt();
 
-            saveToDatabase(task.getId(), url);
+            List<String> images = event.getOutput() != null ? event.getOutput().getImages() : List.of();
 
-            redisService.publishNotificationToOtherServers(memberId, taskId, url, prompt);
+            saveToDatabase(task.getId(), images);
+
+            redisService.publishNotificationToOtherServers(memberId, taskId, prompt, images);
+
             redisService.removeFromQueue("image", taskId);
             taskRepository.save(task);
         } catch (Exception e) {
             log.error("SSE 알림 전송 중 오류 발생: {}", e.getMessage(), e);
         }
     }
+
 
 }

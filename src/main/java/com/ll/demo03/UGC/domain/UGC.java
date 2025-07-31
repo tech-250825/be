@@ -30,9 +30,10 @@ public class UGC {
         this.creator = creator;
     }
 
-    public static UGC ofImage(String url, ImageTask imageTask) {
+    public static UGC ofImage(String url, ImageTask imageTask, int index) {
         return UGC.builder()
                 .url(url)
+                .index(index)
                 .imageTask(imageTask)
                 .creator(imageTask.getCreator())
                 .build();
