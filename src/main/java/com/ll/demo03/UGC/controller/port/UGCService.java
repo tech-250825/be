@@ -9,6 +9,6 @@ import java.util.List;
 
 public interface UGCService {
 
-    PageResponse<List<UGCResponse>> getMyImages(Member creator, CursorBasedPageable pageable);
+    PageResponse<List<UGCResponse>> getMyImages(Member creator, String type, CursorBasedPageable pageable);
 
 }

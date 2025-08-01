@@ -35,4 +35,26 @@ public interface UGCJpaRepository extends JpaRepository<UGCEntity, Long>, JpaSpe
 
     List<UGCEntity> findAllByVideoTask_Id(Long id);
 
+    // Methods for filtering by type
+    Slice<UGCEntity> findByMemberIdAndImageTaskIsNotNullAndVideoTaskIsNullOrderByIdDesc(Long memberId, Pageable pageRequest);
+    
+    Slice<UGCEntity> findByMemberIdAndVideoTaskIsNotNullOrderByIdDesc(Long memberId, Pageable pageRequest);
+    
+    Slice<UGCEntity> findByMemberIdAndImageTaskIsNotNullAndVideoTaskIsNullAndIdLessThanOrderByIdDesc(Long memberId, Long cursorId, Pageable pageRequest);
+    
+    Slice<UGCEntity> findByMemberIdAndVideoTaskIsNotNullAndIdLessThanOrderByIdDesc(Long memberId, Long cursorId, Pageable pageRequest);
+    
+    Slice<UGCEntity> findByMemberIdAndImageTaskIsNotNullAndVideoTaskIsNullAndIdGreaterThanOrderByIdAsc(Long memberId, Long cursorId, Pageable pageRequest);
+    
+    Slice<UGCEntity> findByMemberIdAndVideoTaskIsNotNullAndIdGreaterThanOrderByIdAsc(Long memberId, Long cursorId, Pageable pageRequest);
+
+    // Exists methods for type filtering
+    boolean existsByIdGreaterThanAndMemberIdAndImageTaskIsNotNullAndVideoTaskIsNull(Long id, Long memberId);
+    
+    boolean existsByIdGreaterThanAndMemberIdAndVideoTaskIsNotNull(Long id, Long memberId);
+    
+    boolean existsByIdLessThanAndMemberIdAndImageTaskIsNotNullAndVideoTaskIsNull(Long id, Long memberId);
+    
+    boolean existsByIdLessThanAndMemberIdAndVideoTaskIsNotNull(Long id, Long memberId);
+
 }

@@ -5,6 +5,7 @@ import com.ll.demo03.global.controller.request.WebhookEvent;
 import com.ll.demo03.global.dto.GlobalResponse;
 import com.ll.demo03.member.domain.Member;
 import com.ll.demo03.videoTask.controller.port.VideoTaskService;
+import com.ll.demo03.videoTask.controller.request.I2VTaskRequest;
 import com.ll.demo03.videoTask.controller.response.TaskOrVideoResponse;
 import com.ll.demo03.oauth.domain.PrincipalDetails;
 import com.ll.demo03.videoTask.controller.request.VideoTaskRequest;
@@ -67,6 +68,24 @@ public class VideoTaskController {
         }
 
     }
+
+    @PostMapping(value = "/create/i2v/v2")
+    @PreAuthorize("isAuthenticated()")
+    public GlobalResponse createI2V(
+            @RequestBody I2VTaskRequest request,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    ) {
+        try {
+            Member member = principalDetails.user();
+            videoTaskService.initateI2V(request, member);
+            return GlobalResponse.success();
+        } catch (Exception e) {
+            log.error("I2V 처리 중 오류: ", e);
+            return GlobalResponse.error(ErrorCode.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
 
 
     @PostMapping("/webhook")

@@ -25,10 +25,11 @@ public class UGCController {
     @GetMapping("/mypage")
     public GlobalResponse<PageResponse<List<UGCResponse>>> getMyImages(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @RequestParam(required = false) String type,
             CursorBasedPageable cursorBasedPageable
     ) {
         Member member = principalDetails.user();
-        PageResponse<List<UGCResponse>> mypage= UGCService.getMyImages(member, cursorBasedPageable);
+        PageResponse<List<UGCResponse>> mypage= UGCService.getMyImages(member, type, cursorBasedPageable);
         return GlobalResponse.success( mypage);
     }
 }

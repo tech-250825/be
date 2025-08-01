@@ -6,6 +6,7 @@ import com.ll.demo03.global.port.Network;
 import com.ll.demo03.lora.domain.Lora;
 import com.ll.demo03.member.domain.Member;
 import com.ll.demo03.videoTask.controller.request.I2VQueueRequest;
+import com.ll.demo03.videoTask.controller.request.I2VTaskRequest;
 import com.ll.demo03.videoTask.controller.request.T2VQueueRequest;
 import com.ll.demo03.videoTask.controller.request.VideoTaskRequest;
 import lombok.Builder;
@@ -55,6 +56,16 @@ public class VideoTask {
                 .build();
     }
 
+    public static VideoTask from(Member creator, I2VTaskRequest request) {
+        return VideoTask.builder()
+                .prompt(request.getPrompt())
+                .imageUrl(request.getImageUrl())
+                .resolutionProfile(request.getResolutionProfile())
+                .numFrames(request.getNumFrames())
+                .creator(creator)
+                .build();
+    }
+
     public static VideoTask from(Member creator, String url, VideoTaskRequest request) {
         return VideoTask.builder()
                 .prompt(request.getPrompt())
@@ -98,6 +109,18 @@ public class VideoTask {
                 taskId,
                 newPrompt,
                 url,
+                request.getResolutionProfile().getWidth(),
+                request.getResolutionProfile().getHeight(),
+                request.getNumFrames(),
+                creator.getId()
+        );
+    }
+
+    public static I2VQueueRequest toI2VQueueRequest(Long taskId, I2VTaskRequest request, String newPrompt, Member creator) {
+        return new I2VQueueRequest(
+                taskId,
+                newPrompt,
+                request.getImageUrl(),
                 request.getResolutionProfile().getWidth(),
                 request.getResolutionProfile().getHeight(),
                 request.getNumFrames(),

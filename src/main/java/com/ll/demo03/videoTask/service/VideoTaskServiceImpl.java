@@ -16,6 +16,7 @@ import com.ll.demo03.videoTask.controller.port.VideoTaskService;
 import com.ll.demo03.global.util.CursorBasedPageable;
 import com.ll.demo03.global.util.PageResponse;
 import com.ll.demo03.videoTask.controller.request.I2VQueueRequest;
+import com.ll.demo03.videoTask.controller.request.I2VTaskRequest;
 import com.ll.demo03.videoTask.controller.request.T2VQueueRequest;
 import com.ll.demo03.videoTask.controller.request.VideoTaskRequest;
 import com.ll.demo03.videoTask.controller.response.TaskOrVideoResponse;
@@ -89,6 +90,24 @@ public class VideoTaskServiceImpl implements VideoTaskService {
         String newPrompt = request.getPrompt();
 
         I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request, url, newPrompt, creator);
+        videoMessageProducer.sendCreationMessage(queueRequest);
+        memberRepository.save(creator);
+    }
+
+    @Override
+    public void initateI2V(I2VTaskRequest request, Member member) {
+        Member creator = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
+
+        int creditCost = request.getResolutionProfile().getBaseCreditCost() * (int) Math.ceil(request.getNumFrames() / 40.0);
+        creator.decreaseCredit(creditCost);
+
+        VideoTask task = VideoTask.from(member, request);
+        task = task.updateStatus(Status.IN_PROGRESS, null);
+        VideoTask saved = videoTaskRepository.save(task);
+
+        String newPrompt = request.getPrompt();
+
+        I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request, newPrompt, creator);
         videoMessageProducer.sendCreationMessage(queueRequest);
         memberRepository.save(creator);
     }

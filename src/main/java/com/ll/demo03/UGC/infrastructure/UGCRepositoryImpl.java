@@ -112,5 +112,86 @@ public class UGCRepositoryImpl implements UGCRepository {
         ugcJpaRepository.deleteAll(entities);
     }
 
+    @Override
+    public Slice<UGC> findByMemberIdAndTypeOrderByIdDesc(Long memberId, String type, Pageable pageRequest) {
+        if (type == null) {
+            return findByMemberIdOrderByIdDesc(memberId, pageRequest);
+        }
+        
+        if ("image".equalsIgnoreCase(type)) {
+            return ugcJpaRepository.findByMemberIdAndImageTaskIsNotNullAndVideoTaskIsNullOrderByIdDesc(memberId, pageRequest)
+                    .map(UGCEntity::toModel);
+        } else if ("video".equalsIgnoreCase(type)) {
+            return ugcJpaRepository.findByMemberIdAndVideoTaskIsNotNullOrderByIdDesc(memberId, pageRequest)
+                    .map(UGCEntity::toModel);
+        }
+        
+        return findByMemberIdOrderByIdDesc(memberId, pageRequest);
+    }
+
+    @Override
+    public Slice<UGC> findByMemberIdAndTypeAndIdLessThanOrderByIdDesc(Long memberId, String type, Long cursorId, Pageable pageRequest) {
+        if (type == null) {
+            return findByMemberIdAndIdLessThanOrderByIdDesc(memberId, cursorId, pageRequest);
+        }
+        
+        if ("image".equalsIgnoreCase(type)) {
+            return ugcJpaRepository.findByMemberIdAndImageTaskIsNotNullAndVideoTaskIsNullAndIdLessThanOrderByIdDesc(memberId, cursorId, pageRequest)
+                    .map(UGCEntity::toModel);
+        } else if ("video".equalsIgnoreCase(type)) {
+            return ugcJpaRepository.findByMemberIdAndVideoTaskIsNotNullAndIdLessThanOrderByIdDesc(memberId, cursorId, pageRequest)
+                    .map(UGCEntity::toModel);
+        }
+        
+        return findByMemberIdAndIdLessThanOrderByIdDesc(memberId, cursorId, pageRequest);
+    }
+
+    @Override
+    public Slice<UGC> findByMemberIdAndTypeAndIdGreaterThanOrderByIdAsc(Long memberId, String type, Long cursorId, Pageable pageRequest) {
+        if (type == null) {
+            return findByMemberIdAndIdGreaterThanOrderByIdAsc(memberId, cursorId, pageRequest);
+        }
+        
+        if ("image".equalsIgnoreCase(type)) {
+            return ugcJpaRepository.findByMemberIdAndImageTaskIsNotNullAndVideoTaskIsNullAndIdGreaterThanOrderByIdAsc(memberId, cursorId, pageRequest)
+                    .map(UGCEntity::toModel);
+        } else if ("video".equalsIgnoreCase(type)) {
+            return ugcJpaRepository.findByMemberIdAndVideoTaskIsNotNullAndIdGreaterThanOrderByIdAsc(memberId, cursorId, pageRequest)
+                    .map(UGCEntity::toModel);
+        }
+        
+        return findByMemberIdAndIdGreaterThanOrderByIdAsc(memberId, cursorId, pageRequest);
+    }
+
+    @Override
+    public boolean existsByIdGreaterThanAndMemberIdAndType(Long id, Long memberId, String type) {
+        if (type == null) {
+            return existsByIdGreaterThanAndMemberId(id, memberId);
+        }
+        
+        if ("image".equalsIgnoreCase(type)) {
+            return ugcJpaRepository.existsByIdGreaterThanAndMemberIdAndImageTaskIsNotNullAndVideoTaskIsNull(id, memberId);
+        } else if ("video".equalsIgnoreCase(type)) {
+            return ugcJpaRepository.existsByIdGreaterThanAndMemberIdAndVideoTaskIsNotNull(id, memberId);
+        }
+        
+        return existsByIdGreaterThanAndMemberId(id, memberId);
+    }
+
+    @Override
+    public boolean existsByIdLessThanAndMemberIdAndType(Long id, Long memberId, String type) {
+        if (type == null) {
+            return existsByIdLessThanAndMemberId(id, memberId);
+        }
+        
+        if ("image".equalsIgnoreCase(type)) {
+            return ugcJpaRepository.existsByIdLessThanAndMemberIdAndImageTaskIsNotNullAndVideoTaskIsNull(id, memberId);
+        } else if ("video".equalsIgnoreCase(type)) {
+            return ugcJpaRepository.existsByIdLessThanAndMemberIdAndVideoTaskIsNotNull(id, memberId);
+        }
+        
+        return existsByIdLessThanAndMemberId(id, memberId);
+    }
+
 }
 

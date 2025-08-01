@@ -37,4 +37,16 @@ public interface UGCRepository {
     List<UGC> findAllByVideoTaskId(Long id);
 
     void deleteAll(List<UGC> ugcs);
+    
+    // Methods with type filtering
+    Slice<UGC> findByMemberIdAndTypeOrderByIdDesc(Long memberId, String type, Pageable pageRequest);
+    
+    Slice<UGC> findByMemberIdAndTypeAndIdLessThanOrderByIdDesc(Long memberId, String type, Long cursorId, Pageable pageRequest);
+    
+    Slice<UGC> findByMemberIdAndTypeAndIdGreaterThanOrderByIdAsc(Long memberId, String type, Long cursorId, Pageable pageRequest);
+    
+    // Exists methods with type filtering
+    boolean existsByIdGreaterThanAndMemberIdAndType(Long id, Long memberId, String type);
+    
+    boolean existsByIdLessThanAndMemberIdAndType(Long id, Long memberId, String type);
 }
