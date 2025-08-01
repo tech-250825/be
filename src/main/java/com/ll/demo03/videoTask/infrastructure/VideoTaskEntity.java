@@ -1,5 +1,6 @@
 package com.ll.demo03.videoTask.infrastructure;
 
+import com.ll.demo03.global.domain.ResolutionProfile;
 import com.ll.demo03.global.domain.Status;
 import com.ll.demo03.lora.infrasturcture.LoraEntity;
 import com.ll.demo03.member.infrastructure.MemberEntity;
@@ -35,8 +36,9 @@ public class VideoTaskEntity {
 
     private String runpodId;
 
-    private int width;
-    private int height;
+    @Enumerated(EnumType.STRING)
+    private ResolutionProfile resolutionProfile;
+
     private int numFrames;
 
     @Enumerated(EnumType.STRING)
@@ -65,8 +67,7 @@ public class VideoTaskEntity {
         taskEntity.modifiedAt = task.getModifiedAt();
         taskEntity.status = task.getStatus();
         taskEntity.member = MemberEntity.from(task.getCreator());
-        taskEntity.width = task.getWidth();
-        taskEntity.height = task.getHeight();
+        taskEntity.resolutionProfile= task.getResolutionProfile();
         taskEntity.numFrames = task.getNumFrames();
 
         return taskEntity;
@@ -83,8 +84,7 @@ public class VideoTaskEntity {
                 .createdAt(createdAt)
                 .modifiedAt(modifiedAt)
                 .creator(member.toModel())
-                .width(width)
-                .height(height)
+                .resolutionProfile(resolutionProfile)
                 .numFrames(numFrames)
                 .build();
     }

@@ -13,11 +13,13 @@ import com.ll.demo03.imageTask.controller.request.ImageQueueRequest;
 import com.ll.demo03.imageTask.controller.request.ImageTaskRequest;
 import com.ll.demo03.imageTask.controller.response.TaskOrImageResponse;
 import com.ll.demo03.imageTask.domain.ImageTask;
-import com.ll.demo03.imageTask.domain.ImageTaskInitiate;
 import com.ll.demo03.global.port.Network;
 import com.ll.demo03.imageTask.service.port.ImageTaskRepository;
 import com.ll.demo03.global.util.CursorBasedPageable;
 import com.ll.demo03.global.util.PageResponse;
+import com.ll.demo03.lora.controller.port.LoraService;
+import com.ll.demo03.lora.domain.Lora;
+import com.ll.demo03.lora.service.port.LoraRepository;
 import com.ll.demo03.member.domain.Member;
 import com.ll.demo03.member.service.port.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -44,6 +46,8 @@ public class ImageTaskServiceImpl implements ImageTaskService {
     private final CursorPaginationService paginationService;
     private final ImageTaskPaginationStrategy paginationStrategy;
     private final ImageTaskResponseConverter responseConverter;
+    private final LoraRepository loraRepository;
+    private final LoraService loraService;
 
     @Value("${custom.webhook-url}")
     private String webhookUrl;
@@ -51,11 +55,16 @@ public class ImageTaskServiceImpl implements ImageTaskService {
 
     @Override
     public void initate(ImageTaskRequest request, Member member){
-        Member creator = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER)); //이렇게 영속화 시켜야함
-        creator.decreaseCredit(1); //@AuthenticationPrincipal PrincipalDetails 에서 꺼낸 member 객체는 JPA에 영속되어있지 않으므로 decreaseCredit해도 JPA가 트랜잭션 커밋 시점에 알아서 update 쿼리를 날리지 않는다 .
+        Member creator = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
 
-        ImageTaskRequest newRequest = ImageTask.updatePrompt(request, network);
-        ImageQueueRequest imageQueueRequest = ImageTask.toImageQueueRequest(newRequest, member);
+        int creditCost = request.getResolutionProfile().getBaseCreditCost();
+        creator.decreaseCredit(creditCost);
+
+        Lora lora = loraRepository.findById(request.getLoraId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+        
+        String newPrompt = loraService.addTriggerWord(lora.getId(), request.getPrompt());
+        
+        ImageQueueRequest imageQueueRequest = ImageTask.toImageQueueRequest(request, lora.getModelName(), newPrompt, member);
         messageProducer.sendImageCreationMessage(imageQueueRequest);
         memberRepository.save(creator);
     }
@@ -76,6 +85,8 @@ public class ImageTaskServiceImpl implements ImageTaskService {
                 taskId,
                 message.getLora(),
                 message.getPrompt(),
+                message.getWidth(),
+                message.getHeight(),
                 webhookUrl + "/api/images/webhook"
         );
     }
@@ -84,5 +95,4 @@ public class ImageTaskServiceImpl implements ImageTaskService {
     public PageResponse<List<TaskOrImageResponse>> getMyTasks(Member member, CursorBasedPageable pageable) {
         return paginationService.getPagedContent(member, pageable, paginationStrategy, responseConverter);
     }
-
 }

@@ -1,6 +1,7 @@
 package com.ll.demo03.videoTask.domain;
 
 import com.ll.demo03.global.domain.Status;
+import com.ll.demo03.global.domain.ResolutionProfile;
 import com.ll.demo03.global.port.Network;
 import com.ll.demo03.lora.domain.Lora;
 import com.ll.demo03.member.domain.Member;
@@ -24,15 +25,13 @@ public class VideoTask {
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
     private final Member creator;
-
-    private final int width;
-    private final int height;
+    private final ResolutionProfile resolutionProfile;
     private final int numFrames;
 
     @Builder
     public VideoTask(Long id, String prompt, Lora lora, String imageUrl, String runpodId, Status status,
                      LocalDateTime createdAt, LocalDateTime modifiedAt, Member creator,
-                     int width, int height, int numFrames) {
+                     ResolutionProfile resolutionProfile, int numFrames) {
         this.id = id;
         this.prompt = prompt;
         this.lora = lora;
@@ -42,17 +41,15 @@ public class VideoTask {
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
         this.creator = creator;
-        this.width = width;
-        this.height = height;
+        this.resolutionProfile = resolutionProfile;
         this.numFrames = numFrames;
     }
 
-    public static VideoTask from(Member creator, Lora lora,  VideoTaskRequest request) {
+    public static VideoTask from(Member creator, Lora lora, VideoTaskRequest request) {
         return VideoTask.builder()
                 .prompt(request.getPrompt())
                 .lora(lora)
-                .width(request.getWidth())
-                .height(request.getHeight())
+                .resolutionProfile(request.getResolutionProfile())
                 .numFrames(request.getNumFrames())
                 .creator(creator)
                 .build();
@@ -62,13 +59,11 @@ public class VideoTask {
         return VideoTask.builder()
                 .prompt(request.getPrompt())
                 .imageUrl(url)
-                .width(request.getWidth())
-                .height(request.getHeight())
+                .resolutionProfile(request.getResolutionProfile())
                 .numFrames(request.getNumFrames())
                 .creator(creator)
                 .build();
     }
-
 
     public VideoTask updateStatus(Status status, String runpodId) {
         return VideoTask.builder()
@@ -81,8 +76,7 @@ public class VideoTask {
                 .createdAt(createdAt)
                 .modifiedAt(modifiedAt)
                 .creator(creator)
-                .width(width)
-                .height(height)
+                .resolutionProfile(resolutionProfile)
                 .numFrames(numFrames)
                 .build();
     }
@@ -92,20 +86,20 @@ public class VideoTask {
                 taskId,
                 modelName,
                 newPrompt,
-                request.getWidth(),
-                request.getHeight(),
+                request.getResolutionProfile().getWidth(),
+                request.getResolutionProfile().getHeight(),
                 request.getNumFrames(),
                 creator.getId()
         );
     }
 
-    public static I2VQueueRequest toI2VQueueRequest(Long taskId, VideoTaskRequest request, String url, Member creator) {
+    public static I2VQueueRequest toI2VQueueRequest(Long taskId, VideoTaskRequest request, String url, String newPrompt, Member creator) {
         return new I2VQueueRequest(
                 taskId,
-                request.getPrompt(),
+                newPrompt,
                 url,
-                request.getWidth(),
-                request.getHeight(),
+                request.getResolutionProfile().getWidth(),
+                request.getResolutionProfile().getHeight(),
                 request.getNumFrames(),
                 creator.getId()
         );

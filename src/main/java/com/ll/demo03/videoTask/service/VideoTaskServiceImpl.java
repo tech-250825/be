@@ -55,12 +55,14 @@ public class VideoTaskServiceImpl implements VideoTaskService {
 
     @Override
     public void initateT2V(VideoTaskRequest request, Member member){
-        Member creator = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER)); //이렇게 영속화 시켜야함
-        creator.decreaseCredit(1); //@AuthenticationPrincipal PrincipalDetails 에서 꺼낸 member 객체는 JPA에 영속되어있지 않으므로 decreaseCredit해도 JPA가 트랜잭션 커밋 시점에 알아서 update 쿼리를 날리지 않는다 .
+        Member creator = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
+
+        int creditCost = request.getResolutionProfile().getBaseCreditCost() * (int) Math.ceil(request.getNumFrames() / 40.0);
+        creator.decreaseCredit(creditCost);
 
         Lora lora = loraRepository.findById(request.getLoraId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
-        VideoTask task = VideoTask.from(member, lora,  request);
+        VideoTask task = VideoTask.from(member, lora, request);
         task = task.updateStatus(Status.IN_PROGRESS, null);
         VideoTask saved = videoTaskRepository.save(task);
 
@@ -74,7 +76,9 @@ public class VideoTaskServiceImpl implements VideoTaskService {
     @Override
     public void initateI2V(VideoTaskRequest request, Member member, MultipartFile image) {
         Member creator = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
-        creator.decreaseCredit(1);
+
+        int creditCost = request.getResolutionProfile().getBaseCreditCost() * (int) Math.ceil(request.getNumFrames() / 40.0);
+        creator.decreaseCredit(creditCost);
 
         String url = s3Service.uploadFile(image);
 
@@ -82,7 +86,9 @@ public class VideoTaskServiceImpl implements VideoTaskService {
         task = task.updateStatus(Status.IN_PROGRESS, null);
         VideoTask saved = videoTaskRepository.save(task);
 
-        I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request, url, creator);
+        String newPrompt = request.getPrompt();
+
+        I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request, url, newPrompt, creator);
         videoMessageProducer.sendCreationMessage(queueRequest);
         memberRepository.save(creator);
     }

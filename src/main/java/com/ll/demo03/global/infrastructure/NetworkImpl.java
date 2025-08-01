@@ -74,14 +74,16 @@ public class NetworkImpl implements Network {
         }
     }
 
-    public String createImage(Long taskId, String lora, String prompt, String webhook) {
+    public String createImage(Long taskId, String lora, String prompt, int width, int height, String webhook) {
         try {
             Unirest.setTimeouts(0, 0);
 
             Map<String, Object> payload = Map.of(
                     "task_id", taskId,
                     "positive_prompt", prompt,
-                    "lora", lora
+                    "lora", lora,
+                    "width", width,
+                    "height", height
             );
 
             Map<String, Object> input = Map.of(

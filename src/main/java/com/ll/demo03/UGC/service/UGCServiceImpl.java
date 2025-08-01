@@ -19,7 +19,6 @@ import java.util.List;
 @Slf4j
 public class UGCServiceImpl  implements UGCService {
 
-    private final UGCRepository UGCRepository;
     private final CursorPaginationService paginationService;
     private final UGCPaginationStrategy paginationStrategy;
     private final UGCResponseConverter responseConverter;

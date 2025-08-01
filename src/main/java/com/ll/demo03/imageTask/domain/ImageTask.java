@@ -1,6 +1,7 @@
 package com.ll.demo03.imageTask.domain;
 
 import com.ll.demo03.global.domain.Status;
+import com.ll.demo03.global.domain.ResolutionProfile;
 import com.ll.demo03.imageTask.controller.request.ImageQueueRequest;
 import com.ll.demo03.global.port.Network;
 import com.ll.demo03.imageTask.controller.request.ImageTaskRequest;
@@ -21,9 +22,10 @@ public class ImageTask {
     private final LocalDateTime createdAt;
     private final LocalDateTime modifiedAt;
     private final Member creator;
+    private final ResolutionProfile resolutionProfile;
 
     @Builder
-    public ImageTask(Long id, String prompt, String lora, String runpodId, Status status, LocalDateTime createdAt, LocalDateTime modifiedAt, Member creator) {
+    public ImageTask(Long id, String prompt, String lora, String runpodId, Status status, LocalDateTime createdAt, LocalDateTime modifiedAt, Member creator, ResolutionProfile resolutionProfile) {
         this.id = id;
         this.prompt = prompt;
         this.lora = lora;
@@ -32,12 +34,15 @@ public class ImageTask {
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
         this.creator = creator;
+        this.resolutionProfile = resolutionProfile;
     }
 
     public static ImageTask from(Member creator, ImageQueueRequest queueRequest) {
+        ResolutionProfile profile = ResolutionProfile.fromDimensions(queueRequest.getWidth(), queueRequest.getHeight());
         return ImageTask.builder()
                 .prompt(queueRequest.getPrompt())
                 .lora(queueRequest.getLora())
+                .resolutionProfile(profile)
                 .creator(creator)
                 .build();
     }
@@ -52,16 +57,11 @@ public class ImageTask {
                 .createdAt(createdAt)
                 .modifiedAt(modifiedAt)
                 .creator(creator)
+                .resolutionProfile(resolutionProfile)
                 .build();
     }
 
-    public static ImageTaskRequest updatePrompt(ImageTaskRequest request, Network network) {
-        String newPrompt = network.modifyPrompt(request.getLora() , request.getPrompt());
-        String finalPrompt = (newPrompt == null || newPrompt.isBlank()) ? request.getPrompt() : newPrompt;
-        return new ImageTaskRequest(request.getLora(), finalPrompt);
-    }
-
-    public static ImageQueueRequest toImageQueueRequest(ImageTaskRequest imageTaskRequest, Member creator) {
-        return new ImageQueueRequest(imageTaskRequest.getLora(), imageTaskRequest.getPrompt(), creator.getId());
+    public static ImageQueueRequest toImageQueueRequest(ImageTaskRequest imageTaskRequest, String lora, String newPrompt, Member creator) {
+        return new ImageQueueRequest(lora, newPrompt, imageTaskRequest.getResolutionProfile().getWidth(), imageTaskRequest.getResolutionProfile().getHeight(), creator.getId());
     }
 }

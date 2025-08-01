@@ -9,5 +9,7 @@ import lombok.*;
 public class ImageQueueRequest {
     private String lora;
     private String prompt;
+    private int width;
+    private int height;
     private Long memberId;
 }
