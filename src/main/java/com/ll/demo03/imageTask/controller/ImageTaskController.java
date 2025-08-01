@@ -4,13 +4,12 @@ import com.ll.demo03.global.controller.request.ImageWebhookEvent;
 import com.ll.demo03.global.dto.GlobalResponse;
 import com.ll.demo03.imageTask.controller.port.ImageTaskService;
 import com.ll.demo03.imageTask.controller.request.ImageTaskRequest;
-import com.ll.demo03.global.controller.request.WebhookEvent;
 import com.ll.demo03.imageTask.controller.response.TaskOrImageResponse;
 import com.ll.demo03.member.domain.Member;
 import com.ll.demo03.oauth.domain.PrincipalDetails;
-import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.util.CursorBasedPageable;
 import com.ll.demo03.global.util.PageResponse;
+import com.ll.demo03.webhook.ImageWebhookProcessor;
 import com.ll.demo03.webhook.ImageWebhookProcessorImpl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +28,7 @@ import java.util.List;
 @Slf4j
 public class ImageTaskController {
 
-    private final ImageWebhookProcessorImpl imageWebhookProcessor;
+    private final ImageWebhookProcessor imageWebhookProcessor;
     private final ImageTaskService imageTaskService;
 
     @PostMapping(value = "/create")

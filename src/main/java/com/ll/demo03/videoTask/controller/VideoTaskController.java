@@ -12,6 +12,7 @@ import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.util.CursorBasedPageable;
 import com.ll.demo03.global.util.PageResponse;
 import com.ll.demo03.webhook.VideoWebhookProcessorImpl;
+import com.ll.demo03.webhook.WebhookProcessor;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +31,7 @@ import java.util.List;
 @Slf4j
 public class VideoTaskController {
 
-    private final VideoWebhookProcessorImpl videoWebhookProcessor;
+    private final WebhookProcessor videoWebhookProcessor;
     private final VideoTaskService videoTaskService;
 
     @PostMapping(value = "/create/t2v")

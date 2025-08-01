@@ -19,6 +19,8 @@ public class ImageTaskDto {
     private String lora;
     private Status status;
     private String runpodId;
+    private int width;
+    private int height;
     private LocalDateTime createdAt;
 
     public static ImageTaskDto from(ImageTask task) {
@@ -28,6 +30,8 @@ public class ImageTaskDto {
                 .lora(task.getLora())
                 .status(task.getStatus())
                 .runpodId(task.getRunpodId())
+                .width(task.getResolutionProfile().getWidth())
+                .height(task.getResolutionProfile().getHeight())
                 .createdAt(ImageTaskEntity.from(task).getCreatedAt())
                 .build();
     }

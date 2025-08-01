@@ -1,5 +1,6 @@
 package com.ll.demo03.imageTask.infrastructure;
 
+import com.ll.demo03.global.domain.ResolutionProfile;
 import com.ll.demo03.global.domain.Status;
 import com.ll.demo03.imageTask.domain.ImageTask;
 import com.ll.demo03.member.infrastructure.MemberEntity;
@@ -30,6 +31,9 @@ public class ImageTaskEntity {
     private String runpodId;
 
     @Enumerated(EnumType.STRING)
+    private ResolutionProfile resolutionProfile;
+
+    @Enumerated(EnumType.STRING)
     private Status status;
 
     @CreatedDate
@@ -50,6 +54,7 @@ public class ImageTaskEntity {
         taskEntity.lora = task.getLora();
         taskEntity.prompt = task.getPrompt();
         taskEntity.runpodId = task.getRunpodId();
+        taskEntity.resolutionProfile = task.getResolutionProfile();
         taskEntity.status = task.getStatus();
         taskEntity.createdAt = task.getCreatedAt();
         taskEntity.modifiedAt = task.getModifiedAt();
@@ -64,6 +69,7 @@ public class ImageTaskEntity {
                 .prompt(prompt)
                 .lora(lora)
                 .runpodId(runpodId)
+                .resolutionProfile(resolutionProfile)
                 .status(status)
                 .createdAt(createdAt)
                 .modifiedAt(modifiedAt)

@@ -23,7 +23,7 @@ import java.util.List;
 @Slf4j
 @Transactional
 @RequiredArgsConstructor
-public abstract class ImageWebhookProcessorImpl implements WebhookProcessor<WebhookEvent> {
+public class ImageWebhookProcessorImpl implements ImageWebhookProcessor<ImageWebhookEvent> {
 
     private final ImageTaskRepository taskRepository;
     private final UGCRepository UGCRepository;
@@ -71,7 +71,7 @@ public abstract class ImageWebhookProcessorImpl implements WebhookProcessor<Webh
             task = task.updateStatus(Status.FAILED, runpodId);
 
             Member member = task.getCreator();
-            member.increaseCredit( 1);
+            member.increaseCredit( task.getResolutionProfile().getBaseCreditCost());
             Long memberId = member.getId();
 
             redisService.publishNotificationToOtherServers(memberId, taskId, "", "이미지 생성에 실패했습니다.");

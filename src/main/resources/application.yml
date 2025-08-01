@@ -43,7 +43,7 @@ spring:
       port: 6379
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true
@@ -79,7 +79,7 @@ logging:
 #    org.springframework.security.oauth2: DEBUG
 #    org.springframework.web.client: DEBUG
 custom:
-  webhook-url: https://03666c77864c.ngrok-free.app
+  webhook-url: https://5332c4322614.ngrok-free.app
   site:
     name: "My Site Prod"
 

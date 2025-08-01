@@ -5,14 +5,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class NotificationMessage {
+public class BatchNotificationMessage {
     private String type;
     private long memberId;
-    private String imageUrl;
+    private List<String> imageUrl;
     private Long taskId;
     private String prompt;
 }

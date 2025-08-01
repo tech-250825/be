@@ -65,7 +65,7 @@ public class VideoWebhookProcessorImpl implements WebhookProcessor<WebhookEvent>
             task = task.updateStatus(Status.FAILED, runpodId);
 
             Member member = task.getCreator();
-            member.increaseCredit( 1);
+            member.increaseCredit( task.getResolutionProfile().getBaseCreditCost() * (int) Math.ceil(task.getNumFrames() / 40.0));
 
             redisService.publishNotificationToOtherServers(member.getId(), taskId, "이미지 생성에 실패했습니다", "");
             redisService.removeFromQueue("video", taskId);

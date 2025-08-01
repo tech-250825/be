@@ -1,9 +1,13 @@
 package com.ll.demo03.sse.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ll.demo03.notification.controller.response.NotificationMessage;
 import com.ll.demo03.notification.controller.response.NotificationResponse;
+import com.ll.demo03.notification.handler.NotificationHandler;
+import com.ll.demo03.notification.handler.NotificationHandlerRegistry;
+import com.ll.demo03.notification.service.NotificationMessageFactory;
 import com.ll.demo03.sse.repository.SseEmitterRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +40,7 @@ public class SseController {
     private final StringRedisTemplate redisTemplate;
     private final RedisMessageListenerContainer redisMessageListenerContainer;
     private final ObjectMapper objectMapper;
+    private final NotificationHandlerRegistry notificationHandlerRegistry;
 
     public void registerSession(String memberId, String sessionId) {
         redisTemplate.opsForList().rightPush("sse:member:" + memberId, sessionId);
@@ -78,27 +83,21 @@ public class SseController {
         try {
             redisMessageListenerContainer.addMessageListener((message, pattern) -> {
                 String msgBody = new String(message.getBody(), StandardCharsets.UTF_8);
-                NotificationMessage notificationMessage = parseNotificationMessage(msgBody);
 
-                String memberKey = "sse:member:" + notificationMessage.getMemberId();
-                List<String> sessionIds = redisTemplate.opsForList().range(memberKey, 0, -1);
+                try {
+                    JsonNode root = objectMapper.readTree(msgBody);
+                    String type = root.get("type").asText();
 
-                if (sessionIds != null) {
-                    for (String sessionId : sessionIds) {
-                        SseEmitter emitter = sseEmitterRepository.get(sessionId);
-                        if (emitter != null) {
-                            try {
-                                emitter.send(SseEmitter.event().data(notificationMessage));
-                            } catch (Exception e) {
-                                log.error("❌ SSE 전송 실패: sessionId={}, error={}", sessionId, e.getMessage());
-                                sseEmitterRepository.remove(sessionId);
-                                redisTemplate.opsForList().remove(memberKey, 1, sessionId);
-                            }
-                        } else {
-                            redisTemplate.opsForList().remove(memberKey, 1, sessionId);
-                        }
+                    NotificationHandler handler = notificationHandlerRegistry.getHandler(type);
+                    if (handler != null) {
+                        handler.handle(msgBody);
+                    } else {
+                        log.warn("⚠ 핸들러 없음: {}", type);
                     }
+                } catch (Exception e) {
+                    log.error("❌ 메시지 처리 실패: {}", e.getMessage(), e);
                 }
+
             }, new ChannelTopic("sse-notification-channel"));
 
         } catch (Exception e) {
@@ -108,11 +107,4 @@ public class SseController {
         }
     }
 
-    private NotificationMessage parseNotificationMessage(String message) {
-        try {
-            return objectMapper.readValue(message, NotificationMessage.class);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Redis 메시지 파싱 실패: " + message, e);
-        }
-    }
 }

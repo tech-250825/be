@@ -98,7 +98,7 @@ public class NetworkImpl implements Network {
 
             String jsonBody = objectMapper.writeValueAsString(requestBody);
 
-            HttpResponse<String> response = Unirest.post("https://api.runpod.ai/v2/dv20fz38sl3z7t/run")
+            HttpResponse<String> response = Unirest.post("https://api.runpod.ai/v2/ldkbvglhy10oq4/run")
                     .header("accept", "application/json")
                     .header("authorization", runpodApiKey)
                     .header("content-type", "application/json")
