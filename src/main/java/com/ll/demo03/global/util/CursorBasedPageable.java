@@ -15,6 +15,7 @@ import static org.apache.commons.lang3.StringUtils.substringBetween;
 public class CursorBasedPageable {
 
     private int size = 5;
+    private String cursor;
     private String nextPageCursor;
     private String prevPageCursor;
 
@@ -22,7 +23,12 @@ public class CursorBasedPageable {
     public CursorBasedPageable() {}
 
     public boolean hasNextPageCursor() {
-        return nextPageCursor != null && !nextPageCursor.isEmpty();
+        return (nextPageCursor != null && !nextPageCursor.isEmpty()) || 
+               (cursor != null && !cursor.isEmpty());
+    }
+
+    public String getNextPageCursor() {
+        return nextPageCursor != null ? nextPageCursor : cursor;
     }
 
     public boolean hasPrevPageCursor() {
@@ -30,7 +36,7 @@ public class CursorBasedPageable {
     }
 
     public boolean hasCursors() {
-        return hasPrevPageCursor() || hasNextPageCursor();
+        return hasPrevPageCursor() || hasNextPageCursor() || (cursor != null && !cursor.isEmpty());
     }
 
     public String getDecodedCursor(String cursorValue) {
@@ -56,8 +62,12 @@ public class CursorBasedPageable {
     public String getSearchValue() {
         if (!hasCursors()) return null;
 
-        return hasPrevPageCursor()
-                ? getDecodedCursor(prevPageCursor)
-                : getDecodedCursor(nextPageCursor);
+        if (hasPrevPageCursor()) {
+            return getDecodedCursor(prevPageCursor);
+        } else if (hasNextPageCursor()) {
+            return getDecodedCursor(getNextPageCursor());
+        } else {
+            return getDecodedCursor(cursor);
+        }
     }
 }
