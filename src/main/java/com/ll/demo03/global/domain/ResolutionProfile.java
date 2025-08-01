@@ -11,7 +11,9 @@ public enum ResolutionProfile {
     RATIO_16_9_SD(854, 480, 5),
     RATIO_16_9_HD(1280, 720, 10),
     RATIO_9_16_SD(480, 854, 5),
-    RATIO_9_16_HD(720, 1280, 10);
+    RATIO_9_16_HD(720, 1280, 10),
+    I2V_SD(0,0,5),
+    I2V_HD(0,0,10);
 
     private final int width;
     private final int height;
