@@ -37,6 +37,7 @@ public class LoraEntity {
 
     private String triggerWord;
 
+    @Column(columnDefinition = "TEXT")
     private String prompt;
 
     public Lora toModel() {

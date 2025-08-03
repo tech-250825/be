@@ -22,6 +22,8 @@ import com.ll.demo03.lora.domain.Lora;
 import com.ll.demo03.lora.service.port.LoraRepository;
 import com.ll.demo03.member.domain.Member;
 import com.ll.demo03.member.service.port.MemberRepository;
+import com.ll.demo03.UGC.domain.UGC;
+import com.ll.demo03.UGC.service.port.UGCRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.Builder;
@@ -48,6 +50,7 @@ public class ImageTaskServiceImpl implements ImageTaskService {
     private final ImageTaskResponseConverter responseConverter;
     private final LoraRepository loraRepository;
     private final LoraService loraService;
+    private final UGCRepository ugcRepository;
 
     @Value("${custom.webhook-url}")
     private String webhookUrl;
@@ -94,5 +97,16 @@ public class ImageTaskServiceImpl implements ImageTaskService {
     @Override
     public PageResponse<List<TaskOrImageResponse>> getMyTasks(Member member, CursorBasedPageable pageable) {
         return paginationService.getPagedContent(member, pageable, paginationStrategy, responseConverter);
+    }
+
+    @Override
+    public void delete(Long taskId) {
+        ImageTask task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+
+        List<UGC> ugcs = ugcRepository.findAllByImageTaskId(task.getId());
+        ugcRepository.deleteAll(ugcs);
+
+        taskRepository.delete(task);
     }
 }

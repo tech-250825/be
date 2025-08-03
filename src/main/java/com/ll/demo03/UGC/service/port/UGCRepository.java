@@ -35,6 +35,8 @@ public interface UGCRepository {
     UGC save(UGC ugc);
 
     List<UGC> findAllByVideoTaskId(Long id);
+    
+    List<UGC> findAllByImageTaskId(Long id);
 
     void deleteAll(List<UGC> ugcs);
     

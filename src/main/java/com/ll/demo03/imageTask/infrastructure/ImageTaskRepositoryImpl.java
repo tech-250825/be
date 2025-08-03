@@ -63,5 +63,9 @@ public class ImageTaskRepositoryImpl implements ImageTaskRepository {
         return jpaRepository.findAll(spec, pageable).map(ImageTaskEntity::toModel);
     }
 
+    @Override
+    public void delete(ImageTask task) {
+        jpaRepository.deleteById(task.getId());
+    }
 
 }

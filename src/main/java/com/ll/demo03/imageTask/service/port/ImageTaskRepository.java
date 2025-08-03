@@ -27,4 +27,6 @@ public interface ImageTaskRepository {
     Slice<ImageTask> findCreatedBefore(Member member, LocalDateTime createdAt, Pageable pageable);
 
     Optional<ImageTask> findById(Long taskId);
+    
+    void delete(ImageTask task);
 }

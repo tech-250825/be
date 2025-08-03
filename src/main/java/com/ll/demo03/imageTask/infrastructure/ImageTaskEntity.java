@@ -24,6 +24,7 @@ public class ImageTaskEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(columnDefinition = "TEXT")
     private String prompt;
 
     private String lora;

@@ -34,6 +34,8 @@ public interface UGCJpaRepository extends JpaRepository<UGCEntity, Long>, JpaSpe
     List<UGCEntity> findByVideoTaskIn(@Param("tasks") List<VideoTaskEntity> tasks);
 
     List<UGCEntity> findAllByVideoTask_Id(Long id);
+    
+    List<UGCEntity> findAllByImageTask_Id(Long id);
 
     // Methods for filtering by type
     Slice<UGCEntity> findByMemberIdAndImageTaskIsNotNullAndVideoTaskIsNullOrderByIdDesc(Long memberId, Pageable pageRequest);
