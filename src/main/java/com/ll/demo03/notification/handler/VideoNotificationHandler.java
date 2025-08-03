@@ -19,9 +19,9 @@ public class VideoNotificationHandler implements NotificationHandler {
     @Override
     public void handle(String jsonMessage) {
         try {
-            NotificationMessage notification = objectMapper.readValue(jsonMessage, NotificationMessage.class);
-            long memberId = notification.getMemberId();
-            sseService.sendToEmitters(memberId, notification);
+            NotificationMessage message = objectMapper.readValue(jsonMessage, NotificationMessage.class);
+            long memberId = message.getMemberId();
+            sseService.sendToEmitters(memberId, message);
         } catch (Exception e) {
             log.error("❌ VideoNotificationHandler 파싱/전송 실패: {}", e.getMessage(), e);
         }

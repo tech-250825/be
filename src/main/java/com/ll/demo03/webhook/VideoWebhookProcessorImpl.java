@@ -68,8 +68,13 @@ public class VideoWebhookProcessorImpl implements WebhookProcessor<WebhookEvent>
             member.increaseCredit( task.getResolutionProfile().getBaseCreditCost() * (int) Math.ceil(task.getNumFrames() / 40.0));
 
             Long boardId = task.getBoard() != null ? task.getBoard().getId() : null;
-            redisService.publishNotificationToOtherServers(member.getId(), boardId, taskId, "이미지 생성에 실패했습니다", "");
-            redisService.removeFromQueue("video", taskId);
+            if (boardId != null) {
+                redisService.publishNotificationToOtherServers(member.getId(), boardId, taskId, "이미지 생성에 실패했습니다", "");
+                redisService.removeFromQueue("board", taskId);
+            } else{
+                redisService.publishNotificationToOtherServers(member.getId(), taskId, "이미지 생성에 실패했습니다", "");
+                redisService.removeFromQueue("video", taskId);
+            }
             taskRepository.save(task);
         } catch (Exception e) {
             log.error("SSE 알림 전송 중 오류 발생: {}", e.getMessage(), e);
@@ -83,15 +88,20 @@ public class VideoWebhookProcessorImpl implements WebhookProcessor<WebhookEvent>
 
             task = task.updateStatus(Status.COMPLETED, runpodId); //task.updateStatus는 POJO를 반환하기 때문에 JPA에서 더티 체킹 안됨. 상태를 바꾸는 대신 새로운 객체를 반환하는 방식이다.  꼭 반환 후 저장 필요!
 
-            Long memberId = task.getCreator().getId(); //이거 셋 dto화 하는게 나을듯 (결과 올 떄 파싱 용도)
+            Member member = task.getCreator(); //이거 셋 dto화 하는게 나을듯 (결과 올 떄 파싱 용도)
             String url = event.getImages();
             String prompt = event.getPrompt();
 
             saveToDatabase(task.getId(), url);
 
             Long boardId = task.getBoard() != null ? task.getBoard().getId() : null;
-            redisService.publishNotificationToOtherServers(memberId, boardId, taskId, prompt, url); //redis에 전송 실패하더라도 db에는 적재될 수 있게 !
-            redisService.removeFromQueue("video", taskId);
+            if (boardId != null) {
+                redisService.publishNotificationToOtherServers(member.getId(), boardId, taskId, prompt, url);
+                redisService.removeFromQueue("board", taskId);
+            } else{
+                redisService.publishNotificationToOtherServers(member.getId(), taskId, prompt, url);
+                redisService.removeFromQueue("video", taskId);
+            }
             taskRepository.save(task);
         } catch (Exception e) {
             log.error("SSE 알림 전송 중 오류 발생: {}", e.getMessage(), e);

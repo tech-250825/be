@@ -36,7 +36,7 @@ public enum ErrorCode {
     ILLEGAL_REGISTRATION_ID(HttpStatus.BAD_REQUEST,"해당 사항이 없는 로그인 경로입니다."),
 
 
-    DUPLICATED_METHOD(HttpStatus.METHOD_NOT_ALLOWED, "이미 적용된 사항입니다"),
+    BAD_REQUEST(HttpStatus.BAD_REQUEST, "적절하지 않은 요청입니다."),
 
     DUPLICATED_NICKNAME(HttpStatus.BAD_REQUEST, "이미 존재하는 닉네임입니다."),
 

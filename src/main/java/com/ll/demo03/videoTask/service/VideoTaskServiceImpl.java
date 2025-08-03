@@ -3,6 +3,8 @@ package com.ll.demo03.videoTask.service;
 
 import com.ll.demo03.UGC.domain.UGC;
 import com.ll.demo03.UGC.service.port.UGCRepository;
+import com.ll.demo03.board.domain.Board;
+import com.ll.demo03.board.service.port.BoardRepository;
 import com.ll.demo03.global.domain.Status;
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
@@ -27,10 +29,13 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -45,11 +50,13 @@ public class VideoTaskServiceImpl implements VideoTaskService {
     private final MessageProducer videoMessageProducer;
     private final CursorPaginationService paginationService;
     private final VideoTaskPaginationStrategy paginationStrategy;
+    private final BoardVideoTaskPaginationStrategy boardPaginationStrategy;
     private final VideoTaskResponseConverter responseConverter;
     private final LoraRepository loraRepository;
     private final S3Service s3Service;
     private final LoraService loraService;
     private final UGCRepository ugcRepository;
+    private final BoardRepository boardRepository;
 
     @Value("${custom.webhook-url}")
     private String webhookUrl;
@@ -120,8 +127,9 @@ public class VideoTaskServiceImpl implements VideoTaskService {
         creator.decreaseCredit(creditCost);
 
         Lora lora = loraRepository.findById(request.getLoraId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
-        VideoTask task = VideoTask.from(member, lora, request, boardId);
+        VideoTask task = VideoTask.from(member, lora, request, board);
         task = task.updateStatus(Status.IN_PROGRESS, null);
         VideoTask saved = videoTaskRepository.save(task);
 
@@ -141,7 +149,9 @@ public class VideoTaskServiceImpl implements VideoTaskService {
 
         String url = s3Service.uploadFile(image);
 
-        VideoTask task = VideoTask.from(member, url, request, boardId);
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+
+        VideoTask task = VideoTask.from(member, url, request, board);
         task = task.updateStatus(Status.IN_PROGRESS, null);
         VideoTask saved = videoTaskRepository.save(task);
 
@@ -189,6 +199,14 @@ public class VideoTaskServiceImpl implements VideoTaskService {
     @Override
     public PageResponse<List<TaskOrVideoResponse>> getMyTasks(Member member, CursorBasedPageable pageable) {
         return paginationService.getPagedContent(member, pageable, paginationStrategy, responseConverter);
+    }
+
+    @Override
+    public PageResponse<List<TaskOrVideoResponse>> getVideoTasksByBoardId(Long boardId, CursorBasedPageable pageable) {
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+        boardPaginationStrategy.setBoard(board);
+
+        return paginationService.getPagedContent(board.getMember(), pageable, boardPaginationStrategy, responseConverter);
     }
 
     @Override

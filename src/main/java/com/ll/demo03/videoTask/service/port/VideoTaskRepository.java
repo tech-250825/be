@@ -1,5 +1,6 @@
 package com.ll.demo03.videoTask.service.port;
 
+import com.ll.demo03.board.domain.Board;
 import com.ll.demo03.imageTask.domain.ImageTask;
 import com.ll.demo03.member.domain.Member;
 import com.ll.demo03.videoTask.domain.VideoTask;
@@ -30,4 +31,8 @@ public interface VideoTaskRepository {
     Slice<VideoTask> findCreatedBefore(Member member, LocalDateTime createdAt, Pageable pageable);
 
     void delete(VideoTask task);
+
+    Slice<VideoTask> findByBoard(Board board, PageRequest pageRequest);
+    
+    Optional<VideoTask> findLatestByBoard(Board board);
 }

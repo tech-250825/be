@@ -1,6 +1,7 @@
 package com.ll.demo03.videoTask.infrastructure;
 
 import com.ll.demo03.UGC.infrastructure.UGCEntity;
+import com.ll.demo03.board.infrastructure.BoardEntity;
 import com.ll.demo03.imageTask.infrastructure.ImageTaskEntity;
 import com.ll.demo03.member.infrastructure.MemberEntity;
 import com.ll.demo03.videoTask.domain.VideoTask;
@@ -24,5 +25,8 @@ public interface VideoTaskJpaRepository extends JpaRepository<VideoTaskEntity, L
 
     boolean existsByMemberAndCreatedAtLessThan(MemberEntity member, LocalDateTime createdAt);
 
+    Slice<VideoTaskEntity> findByBoard(BoardEntity board, PageRequest pageRequest);
+    
+    Optional<VideoTaskEntity> findFirstByBoardOrderByCreatedAtDesc(BoardEntity board);
 
 }

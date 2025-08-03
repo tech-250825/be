@@ -59,14 +59,14 @@ public class VideoTask {
                 .build();
     }
 
-    public static VideoTask from(Member creator, Lora lora, VideoTaskRequest request, Long boardId) {
+    public static VideoTask from(Member creator, Lora lora, VideoTaskRequest request, Board board) {
         return VideoTask.builder()
                 .prompt(request.getPrompt())
                 .lora(lora)
                 .resolutionProfile(request.getResolutionProfile())
                 .numFrames(request.getNumFrames())
                 .creator(creator)
-                .board(boardId != null ? Board.builder().id(boardId).build() : null)
+                .board(board)
                 .build();
     }
 
@@ -90,14 +90,14 @@ public class VideoTask {
                 .build();
     }
 
-    public static VideoTask from(Member creator, String url, VideoTaskRequest request, Long boardId) {
+    public static VideoTask from(Member creator, String url, VideoTaskRequest request, Board board) {
         return VideoTask.builder()
                 .prompt(request.getPrompt())
                 .imageUrl(url)
                 .resolutionProfile(request.getResolutionProfile())
                 .numFrames(request.getNumFrames())
                 .creator(creator)
-                .board(boardId != null ? Board.builder().id(boardId).build() : null)
+                .board(board)
                 .build();
     }
 

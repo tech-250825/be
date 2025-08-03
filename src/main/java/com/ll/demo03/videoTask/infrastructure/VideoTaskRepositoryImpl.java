@@ -1,5 +1,7 @@
 package com.ll.demo03.videoTask.infrastructure;
 
+import com.ll.demo03.board.domain.Board;
+import com.ll.demo03.board.infrastructure.BoardEntity;
 import com.ll.demo03.global.infrastructure.SpecificationUtils;
 import com.ll.demo03.imageTask.domain.ImageTask;
 import com.ll.demo03.imageTask.infrastructure.ImageTaskEntity;
@@ -68,5 +70,16 @@ public class VideoTaskRepositoryImpl  implements VideoTaskRepository {
     @Override
     public void delete(VideoTask task){
         jpaRepository.delete(VideoTaskEntity.from(task));
+    }
+
+    @Override
+    public Slice<VideoTask> findByBoard(Board board, PageRequest pageRequest) {
+        return jpaRepository.findByBoard(BoardEntity.from(board), pageRequest).map(VideoTaskEntity::toModel);
+    }
+
+    @Override
+    public Optional<VideoTask> findLatestByBoard(Board board) {
+        return jpaRepository.findFirstByBoardOrderByCreatedAtDesc(BoardEntity.from(board))
+                .map(VideoTaskEntity::toModel);
     }
 }

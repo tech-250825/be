@@ -13,6 +13,7 @@ public class NotificationHandlerRegistry {
 
     private final VideoNotificationHandler videoHandler;
     private final ImageNotificationHandler imageHandler;
+    private final BoardNotificationHandler boardHandler;
 
     private final Map<String, NotificationHandler> handlerMap = new HashMap<>();
 
@@ -20,6 +21,7 @@ public class NotificationHandlerRegistry {
     public void init() {
         handlerMap.put("video", videoHandler);
         handlerMap.put("image", imageHandler);
+        handlerMap.put("board", boardHandler);
     }
 
     public NotificationHandler getHandler(String type) {

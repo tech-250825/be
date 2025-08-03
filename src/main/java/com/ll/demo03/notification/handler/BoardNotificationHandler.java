@@ -2,6 +2,7 @@ package com.ll.demo03.notification.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ll.demo03.notification.controller.response.BatchNotificationMessage;
+import com.ll.demo03.notification.controller.response.BoardNotificationMessage;
 import com.ll.demo03.sse.service.SseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,15 +11,14 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class ImageNotificationHandler implements NotificationHandler {
-
+public class BoardNotificationHandler  implements NotificationHandler{
     private final ObjectMapper objectMapper;
     private final SseService sseService;
 
     @Override
     public void handle(String jsonMessage) {
         try {
-            BatchNotificationMessage message = objectMapper.readValue(jsonMessage, BatchNotificationMessage.class);
+            BoardNotificationMessage message = objectMapper.readValue(jsonMessage, BoardNotificationMessage.class);
             long memberId = message.getMemberId();
             sseService.sendToEmitters(memberId, message);
         } catch (Exception e) {
