@@ -55,10 +55,11 @@ public class RedisServiceImpl implements RedisService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW) //requires_new로 분리 트랜잭션
-    public void publishNotificationToOtherServers(Long memberId, Long taskId, String prompt, String url) {
+    public void publishNotificationToOtherServers(Long memberId, Long boardId, Long taskId, String prompt, String url ) {
         try {
             Map<String, Object> payload = Map.of(
                     "type", "video",
+                    "boardId", boardId,
                     "memberId", memberId,
                     "taskId", taskId,
                     "prompt", prompt,

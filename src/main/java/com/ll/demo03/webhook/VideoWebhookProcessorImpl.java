@@ -67,7 +67,8 @@ public class VideoWebhookProcessorImpl implements WebhookProcessor<WebhookEvent>
             Member member = task.getCreator();
             member.increaseCredit( task.getResolutionProfile().getBaseCreditCost() * (int) Math.ceil(task.getNumFrames() / 40.0));
 
-            redisService.publishNotificationToOtherServers(member.getId(), taskId, "이미지 생성에 실패했습니다", "");
+            Long boardId = task.getBoard() != null ? task.getBoard().getId() : null;
+            redisService.publishNotificationToOtherServers(member.getId(), boardId, taskId, "이미지 생성에 실패했습니다", "");
             redisService.removeFromQueue("video", taskId);
             taskRepository.save(task);
         } catch (Exception e) {
@@ -88,7 +89,8 @@ public class VideoWebhookProcessorImpl implements WebhookProcessor<WebhookEvent>
 
             saveToDatabase(task.getId(), url);
 
-            redisService.publishNotificationToOtherServers(memberId, taskId, prompt, url); //redis에 전송 실패하더라도 db에는 적재될 수 있게 !
+            Long boardId = task.getBoard() != null ? task.getBoard().getId() : null;
+            redisService.publishNotificationToOtherServers(memberId, boardId, taskId, prompt, url); //redis에 전송 실패하더라도 db에는 적재될 수 있게 !
             redisService.removeFromQueue("video", taskId);
             taskRepository.save(task);
         } catch (Exception e) {

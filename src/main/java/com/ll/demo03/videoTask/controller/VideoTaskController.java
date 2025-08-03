@@ -32,7 +32,7 @@ import java.util.List;
 @Slf4j
 public class VideoTaskController {
 
-    private final WebhookProcessor videoWebhookProcessor;
+    private final VideoWebhookProcessorImpl videoWebhookProcessor;
     private final VideoTaskService videoTaskService;
 
     @PostMapping(value = "/create/t2v")
@@ -86,6 +86,41 @@ public class VideoTaskController {
 
     }
 
+    @PostMapping(value = "/create/t2v/{boardId}")
+    @PreAuthorize("isAuthenticated()")
+    public GlobalResponse createT2VWithBoard(
+            @PathVariable Long boardId,
+            @RequestBody VideoTaskRequest request,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    ) {
+        Member member = principalDetails.user();
+        videoTaskService.initateT2V(request, member, boardId);
+        return GlobalResponse.success();
+
+    }
+
+    @PostMapping(value = "/create/i2v/{boardId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("isAuthenticated()")
+    public GlobalResponse createI2VWithBoard(
+            @PathVariable Long boardId,
+            @RequestPart("request") String requestJson,
+            @RequestPart("image") MultipartFile image,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    ) {
+        try {
+            // 이거 제거할것..
+            ObjectMapper objectMapper = new ObjectMapper();
+            VideoTaskRequest request = objectMapper.readValue(requestJson, VideoTaskRequest.class);
+
+            Member member = principalDetails.user();
+            videoTaskService.initateI2V(request, member, image, boardId);
+            return GlobalResponse.success();
+        } catch (Exception e) {
+            log.error("I2V 처리 중 오류: ", e);
+            return GlobalResponse.error(ErrorCode.INTERNAL_SERVER_ERROR);
+        }
+
+    }
 
 
     @PostMapping("/webhook")

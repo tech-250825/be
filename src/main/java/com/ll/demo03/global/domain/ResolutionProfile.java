@@ -1,10 +1,13 @@
 package com.ll.demo03.global.domain;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.ll.demo03.global.config.ResolutionProfileDeserializer;
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
 import lombok.Getter;
 
 @Getter
+@JsonDeserialize(using = ResolutionProfileDeserializer.class)
 public enum ResolutionProfile {
     RATIO_1_1_SD(480, 480, 5),
     RATIO_1_1_HD(720, 720, 10),
@@ -12,10 +15,8 @@ public enum ResolutionProfile {
     RATIO_16_9_HD(1280, 720, 10),
     RATIO_9_16_SD(480, 854, 5),
     RATIO_9_16_HD(720, 1280, 10),
-    I2V_WIDTH_SD(480, 0, 5),
-    I2V_HEIGHT_HD(0, 720, 10),
-    I2V_WIDTH_HD(720, 0, 10),
-    I2V_HEIGHT_SD(0, 480, 5);
+    I2V_SD(0, 0, 5),
+    I2V_HD(0, 0, 10);
 
     private final int width;
     private final int height;

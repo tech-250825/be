@@ -113,6 +113,46 @@ public class VideoTaskServiceImpl implements VideoTaskService {
     }
 
     @Override
+    public void initateT2V(VideoTaskRequest request, Member member, Long boardId) {
+        Member creator = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
+
+        int creditCost = request.getResolutionProfile().getBaseCreditCost() * (int) Math.ceil(request.getNumFrames() / 40.0);
+        creator.decreaseCredit(creditCost);
+
+        Lora lora = loraRepository.findById(request.getLoraId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+
+        VideoTask task = VideoTask.from(member, lora, request, boardId);
+        task = task.updateStatus(Status.IN_PROGRESS, null);
+        VideoTask saved = videoTaskRepository.save(task);
+
+        String newPrompt = loraService.addTriggerWord(lora.getId(), request.getPrompt());
+
+        T2VQueueRequest queueRequest = VideoTask.toT2VQueueRequest(saved.getId(), request, lora.getModelName(), newPrompt, creator);
+        videoMessageProducer.sendCreationMessage(queueRequest);
+        memberRepository.save(creator);
+    }
+
+    @Override
+    public void initateI2V(VideoTaskRequest request, Member member, MultipartFile image, Long boardId) {
+        Member creator = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
+
+        int creditCost = request.getResolutionProfile().getBaseCreditCost() * (int) Math.ceil(request.getNumFrames() / 40.0);
+        creator.decreaseCredit(creditCost);
+
+        String url = s3Service.uploadFile(image);
+
+        VideoTask task = VideoTask.from(member, url, request, boardId);
+        task = task.updateStatus(Status.IN_PROGRESS, null);
+        VideoTask saved = videoTaskRepository.save(task);
+
+        String newPrompt = request.getPrompt();
+
+        I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request, url, newPrompt, creator);
+        videoMessageProducer.sendCreationMessage(queueRequest);
+        memberRepository.save(creator);
+    }
+
+    @Override
     public void process(T2VQueueRequest message) { //이건 비동기므로 에러가 나도 /api/videos/create에서 에러 반환 못받는다ㅜㅜ 해결책 고안할 것 .
         Long taskId = message.getTaskId();
 

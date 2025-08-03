@@ -12,5 +12,6 @@ public interface RedisService {
     void removeFromQueue(String type, Long taskId);
     void publishNotificationToOtherServers(Long memberId, Long taskId, String prompt, String url);
     void publishNotificationToOtherServers(Long memberId, Long taskId, String prompt, List<String> url);
+    void publishNotificationToOtherServers(Long memberId, Long boardId, Long taskId, String prompt, String url);
 }
 
