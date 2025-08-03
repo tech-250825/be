@@ -1,5 +1,6 @@
 package com.ll.demo03.videoTask.infrastructure;
 
+import com.ll.demo03.board.infrastructure.BoardEntity;
 import com.ll.demo03.global.domain.ResolutionProfile;
 import com.ll.demo03.global.domain.Status;
 import com.ll.demo03.lora.infrasturcture.LoraEntity;
@@ -56,6 +57,10 @@ public class VideoTaskEntity {
     @JoinColumn(name = "member_id")
     private MemberEntity member;
 
+    @ManyToOne
+    @JoinColumn(name = "board_id", nullable = true)
+    private BoardEntity board;
+
     public static VideoTaskEntity from(VideoTask task) {
         VideoTaskEntity taskEntity = new VideoTaskEntity();
         taskEntity.id = task.getId();
@@ -69,6 +74,7 @@ public class VideoTaskEntity {
         taskEntity.member = MemberEntity.from(task.getCreator());
         taskEntity.resolutionProfile= task.getResolutionProfile();
         taskEntity.numFrames = task.getNumFrames();
+        taskEntity.board = task.getBoard() != null ? BoardEntity.from(task.getBoard()) : null;
 
         return taskEntity;
     }
@@ -86,6 +92,7 @@ public class VideoTaskEntity {
                 .creator(member.toModel())
                 .resolutionProfile(resolutionProfile)
                 .numFrames(numFrames)
+                .board(board != null ? board.toModel() : null)
                 .build();
     }
 

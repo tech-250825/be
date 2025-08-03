@@ -1,5 +1,6 @@
 package com.ll.demo03.videoTask.domain;
 
+import com.ll.demo03.board.domain.Board;
 import com.ll.demo03.global.domain.Status;
 import com.ll.demo03.global.domain.ResolutionProfile;
 import com.ll.demo03.global.port.Network;
@@ -27,11 +28,12 @@ public class VideoTask {
     private final Member creator;
     private final ResolutionProfile resolutionProfile;
     private final int numFrames;
+    private final Board board;
 
     @Builder
     public VideoTask(Long id, String prompt, Lora lora, String imageUrl, String runpodId, Status status,
                      LocalDateTime createdAt, LocalDateTime modifiedAt, Member creator,
-                     ResolutionProfile resolutionProfile, int numFrames) {
+                     ResolutionProfile resolutionProfile, int numFrames, Board board) {
         this.id = id;
         this.prompt = prompt;
         this.lora = lora;
@@ -43,6 +45,7 @@ public class VideoTask {
         this.creator = creator;
         this.resolutionProfile = resolutionProfile;
         this.numFrames = numFrames;
+        this.board = board;
     }
 
     public static VideoTask from(Member creator, Lora lora, VideoTaskRequest request) {
@@ -55,6 +58,17 @@ public class VideoTask {
                 .build();
     }
 
+    public static VideoTask from(Member creator, Lora lora, VideoTaskRequest request, Long boardId) {
+        return VideoTask.builder()
+                .prompt(request.getPrompt())
+                .lora(lora)
+                .resolutionProfile(request.getResolutionProfile())
+                .numFrames(request.getNumFrames())
+                .creator(creator)
+                .board(boardId != null ? Board.builder().id(boardId).build() : null)
+                .build();
+    }
+
     public static VideoTask from(Member creator, String url, VideoTaskRequest request) {
         return VideoTask.builder()
                 .prompt(request.getPrompt())
@@ -62,6 +76,17 @@ public class VideoTask {
                 .resolutionProfile(request.getResolutionProfile())
                 .numFrames(request.getNumFrames())
                 .creator(creator)
+                .build();
+    }
+
+    public static VideoTask from(Member creator, String url, VideoTaskRequest request, Long boardId) {
+        return VideoTask.builder()
+                .prompt(request.getPrompt())
+                .imageUrl(url)
+                .resolutionProfile(request.getResolutionProfile())
+                .numFrames(request.getNumFrames())
+                .creator(creator)
+                .board(boardId != null ? Board.builder().id(boardId).build() : null)
                 .build();
     }
 
@@ -78,6 +103,7 @@ public class VideoTask {
                 .creator(creator)
                 .resolutionProfile(resolutionProfile)
                 .numFrames(numFrames)
+                .board(board)
                 .build();
     }
 
