@@ -105,6 +105,14 @@ public class UGCRepositoryImpl implements UGCRepository {
     }
 
     @Override
+    public List<UGC> findAllByImageTaskId(Long id){
+        List<UGCEntity> entities = ugcJpaRepository.findAllByImageTask_Id(id);
+        return entities.stream()
+                .map(UGCEntity::toModel)
+                .toList();
+    }
+
+    @Override
     public void deleteAll(List<UGC> ugcs) {
         List<UGCEntity> entities = ugcs.stream()
                 .map(UGCEntity::from)

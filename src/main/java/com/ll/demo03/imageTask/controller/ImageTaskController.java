@@ -62,4 +62,10 @@ public class ImageTaskController {
 
         return GlobalResponse.success(result);
     }
+
+    @DeleteMapping("/{taskId}")
+    public GlobalResponse delete(@PathVariable Long taskId) {
+        imageTaskService.delete(taskId);
+        return GlobalResponse.success("삭제 완료되었습니다.");
+    }
 }
