@@ -1,6 +1,6 @@
 app:
   client:
-    url: http://localhost:8090
+    url: http://localhost:3000/*
 server:
   port: 8090
   shutdown: graceful
@@ -79,7 +79,7 @@ logging:
 #    org.springframework.security.oauth2: DEBUG
 #    org.springframework.web.client: DEBUG
 custom:
-  webhook-url: https://b4b0e1ee9f78.ngrok-free.app
+  webhook-url: https://fbf136feb600.ngrok-free.app
   site:
     name: "My Site Prod"
 
