@@ -18,6 +18,7 @@ public interface VideoTaskService {
     void initateI2V(VideoTaskRequest request, Member member, MultipartFile image);
     void initateI2V(I2VTaskRequest request, Member member);
     void initateI2V(VideoTaskRequest request, Member member, MultipartFile image, Long boardId);
+    void initateI2VFromLatestFrame(VideoTaskRequest request, Member member, String videoUrl, Long boardId);
     void process(T2VQueueRequest message);
     void process(I2VQueueRequest message);
     PageResponse<List<TaskOrVideoResponse>> getMyTasks(Member member, CursorBasedPageable pageable);

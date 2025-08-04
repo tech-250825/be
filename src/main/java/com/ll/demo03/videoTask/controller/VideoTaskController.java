@@ -114,7 +114,25 @@ public class VideoTaskController {
         }
     }
 
+    @PostMapping(value = "/create/i2v-from-latest-frame/{boardId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("isAuthenticated()")
+    public GlobalResponse createI2VFromLatestFrame(
+            @PathVariable Long boardId,
+            @RequestPart("request") String requestJson,
+            @RequestPart("videoUrl") String videoUrl,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    ) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            VideoTaskRequest request = objectMapper.readValue(requestJson, VideoTaskRequest.class);
 
+            Member member = principalDetails.user();
+            videoTaskService.initateI2VFromLatestFrame(request, member, videoUrl, boardId);
+            return GlobalResponse.success();
+        } catch (JsonProcessingException e) {
+            throw new CustomException(ErrorCode.BAD_REQUEST);
+        }
+    }
 
     @PostMapping("/webhook")
     public GlobalResponse handleT2VWebhook(
