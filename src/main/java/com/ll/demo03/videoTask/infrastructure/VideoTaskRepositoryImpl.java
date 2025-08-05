@@ -2,6 +2,7 @@ package com.ll.demo03.videoTask.infrastructure;
 
 import com.ll.demo03.board.domain.Board;
 import com.ll.demo03.board.infrastructure.BoardEntity;
+import com.ll.demo03.global.domain.Status;
 import com.ll.demo03.global.infrastructure.SpecificationUtils;
 import com.ll.demo03.imageTask.domain.ImageTask;
 import com.ll.demo03.imageTask.infrastructure.ImageTaskEntity;
@@ -17,7 +18,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -75,6 +78,20 @@ public class VideoTaskRepositoryImpl  implements VideoTaskRepository {
     @Override
     public Slice<VideoTask> findByBoard(Board board, PageRequest pageRequest) {
         return jpaRepository.findByBoard(BoardEntity.from(board), pageRequest).map(VideoTaskEntity::toModel);
+    }
+
+    @Override
+    public Slice<VideoTask> findByBoardIdAndStatus(Long boardId, Status status, PageRequest pageRequest) {
+        return jpaRepository.findByBoardIdAndStatusOrderByCreatedAtAsc(boardId, status, pageRequest)
+                .map(VideoTaskEntity::toModel);
+    }
+
+    @Override
+    public List<VideoTask> findAllByBoardIdAndStatus(Long boardId, Status status) {
+        return jpaRepository.findByBoardIdAndStatusOrderByCreatedAtAsc(boardId, status)
+                .stream()
+                .map(VideoTaskEntity::toModel)
+                .collect(Collectors.toList());
     }
 
     @Override

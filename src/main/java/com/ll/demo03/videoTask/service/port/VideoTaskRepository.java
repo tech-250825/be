@@ -1,6 +1,7 @@
 package com.ll.demo03.videoTask.service.port;
 
 import com.ll.demo03.board.domain.Board;
+import com.ll.demo03.global.domain.Status;
 import com.ll.demo03.imageTask.domain.ImageTask;
 import com.ll.demo03.member.domain.Member;
 import com.ll.demo03.videoTask.domain.VideoTask;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public interface VideoTaskRepository {
@@ -33,6 +35,10 @@ public interface VideoTaskRepository {
     void delete(VideoTask task);
 
     Slice<VideoTask> findByBoard(Board board, PageRequest pageRequest);
+    
+    Slice<VideoTask> findByBoardIdAndStatus(Long boardId, Status status, PageRequest pageRequest);
+    
+    List<VideoTask> findAllByBoardIdAndStatus(Long boardId, Status status);
     
     Optional<VideoTask> findLatestByBoard(Board board);
 }

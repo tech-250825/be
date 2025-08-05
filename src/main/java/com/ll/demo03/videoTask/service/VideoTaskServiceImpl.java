@@ -6,6 +6,7 @@ import com.ll.demo03.UGC.service.port.UGCRepository;
 import com.ll.demo03.board.domain.Board;
 import com.ll.demo03.board.service.port.BoardRepository;
 import com.ll.demo03.global.domain.Status;
+import com.ll.demo03.global.port.VideoProcessingService;
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
 import com.ll.demo03.global.port.*;
@@ -57,6 +58,7 @@ public class VideoTaskServiceImpl implements VideoTaskService {
     private final LoraService loraService;
     private final UGCRepository ugcRepository;
     private final BoardRepository boardRepository;
+    private final VideoProcessingService videoProcessingService;
 
     @Value("${custom.webhook-url}")
     private String webhookUrl;
@@ -148,6 +150,32 @@ public class VideoTaskServiceImpl implements VideoTaskService {
         creator.decreaseCredit(creditCost);
 
         String url = s3Service.uploadFile(image);
+
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+
+        VideoTask task = VideoTask.from(member, url, request, board);
+        task = task.updateStatus(Status.IN_PROGRESS, null);
+        VideoTask saved = videoTaskRepository.save(task);
+
+        String newPrompt = request.getPrompt();
+
+        I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request, url, newPrompt, creator);
+        videoMessageProducer.sendCreationMessage(queueRequest);
+        memberRepository.save(creator);
+    }
+
+    @Override
+    public void initateI2VFromLatestFrame(VideoTaskRequest request, Member member, String videoUrl, Long boardId) {
+        Member creator = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
+
+        int creditCost = request.getResolutionProfile().getBaseCreditCost() * (int) Math.ceil(request.getNumFrames() / 40.0);
+        creator.decreaseCredit(creditCost);
+
+        // Extract latest frame from video
+        MultipartFile latestFrame = videoProcessingService.extractLatestFrameFromVideo(videoUrl);
+        
+        // Upload extracted frame to S3
+        String url = s3Service.uploadFile(latestFrame);
 
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
