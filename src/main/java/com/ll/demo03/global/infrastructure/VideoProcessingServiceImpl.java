@@ -12,6 +12,8 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -114,6 +116,12 @@ public class VideoProcessingServiceImpl implements VideoProcessingService {
     
     private Path downloadVideo(String videoUrl) throws IOException {
         log.info("🔄 Downloading video from URL: {}", videoUrl);
+        
+        // Add null and empty check
+        if (videoUrl == null || videoUrl.trim().isEmpty()) {
+            log.error("❌ Video URL is null or empty: {}", videoUrl);
+            throw new IllegalArgumentException("Video URL must not be null or empty");
+        }
         
         try {
             URL url = new URL(videoUrl);
@@ -324,6 +332,160 @@ public class VideoProcessingServiceImpl implements VideoProcessingService {
         }
         
         throw new RuntimeException("FFmpeg not found in any common locations. Please install FFmpeg or add it to PATH.");
+    }
+    
+    @Override
+    public MultipartFile concatenateVideos(List<String> videoUrls, String quality) {
+        log.info("Starting video concatenation - {} videos, quality: {}", videoUrls.size(), quality);
+        
+        if (videoUrls.isEmpty()) {
+            throw new CustomException(ErrorCode.BAD_REQUEST);
+        }
+        
+        List<Path> videoFiles = new ArrayList<>();
+        Path concatFile = null;
+        Path outputFile = null;
+        
+        try {
+            // Step 1: Download all videos
+            log.info("Step 1: Downloading {} videos...", videoUrls.size());
+            for (int i = 0; i < videoUrls.size(); i++) {
+                String videoUrl = videoUrls.get(i);
+                log.info("Downloading video {} of {}: {}", i + 1, videoUrls.size(), videoUrl);
+                Path videoFile = downloadVideo(videoUrl);
+                videoFiles.add(videoFile);
+            }
+            log.info("✅ All videos downloaded successfully");
+            
+            // Step 2: Create concat file for FFmpeg
+            log.info("Step 2: Creating FFmpeg concat file...");
+            concatFile = createConcatFile(videoFiles);
+            log.info("✅ Concat file created: {}", concatFile);
+            
+            // Step 3: Concatenate videos using FFmpeg
+            log.info("Step 3: Concatenating videos...");
+            outputFile = concatenateWithFFmpeg(concatFile, quality);
+            log.info("✅ Video concatenation successful: {} bytes", Files.size(outputFile));
+            
+            // Step 4: Convert to MultipartFile
+            log.info("Step 4: Converting to MultipartFile...");
+            byte[] videoBytes = Files.readAllBytes(outputFile);
+            MultipartFile multipartFile = new CustomMultipartFile(
+                "concatenated_video.mp4",
+                "concatenated_video.mp4",
+                "video/mp4",
+                videoBytes
+            );
+            log.info("✅ MultipartFile created successfully: {} bytes", multipartFile.getSize());
+            
+            return multipartFile;
+            
+        } catch (IOException e) {
+            log.error("❌ IO Error during video concatenation: {}", e.getMessage(), e);
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
+        } catch (InterruptedException e) {
+            log.error("❌ FFmpeg process interrupted: {}", e.getMessage(), e);
+            Thread.currentThread().interrupt();
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            log.error("❌ Unexpected error during video concatenation: {}", e.getMessage(), e);
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
+        } finally {
+            // Clean up all temporary files
+            List<Path> allTempFiles = new ArrayList<>(videoFiles);
+            if (concatFile != null) allTempFiles.add(concatFile);
+            if (outputFile != null) allTempFiles.add(outputFile);
+            cleanupTempFiles(allTempFiles.toArray(new Path[0]));
+        }
+    }
+    
+    private Path createConcatFile(List<Path> videoFiles) throws IOException {
+        Path concatFile = Files.createTempFile("concat_" + UUID.randomUUID(), ".txt");
+        
+        try (BufferedWriter writer = Files.newBufferedWriter(concatFile)) {
+            for (Path videoFile : videoFiles) {
+                // Escape single quotes and write file path
+                String escapedPath = videoFile.toString().replace("'", "'\"'\"'");
+                writer.write("file '" + escapedPath + "'");
+                writer.newLine();
+            }
+        }
+        
+        log.info("Created concat file with {} video entries", videoFiles.size());
+        return concatFile;
+    }
+    
+    private Path concatenateWithFFmpeg(Path concatFile, String quality) throws IOException, InterruptedException {
+        String ffmpegPath = findFFmpeg();
+        Path outputFile = Files.createTempFile("concatenated_" + UUID.randomUUID(), ".mp4");
+        
+        // Build quality settings
+        String[] qualitySettings = getQualitySettings(quality);
+        
+        // Build FFmpeg command
+        List<String> command = new ArrayList<>();
+        command.add(ffmpegPath);
+        command.add("-f");
+        command.add("concat");
+        command.add("-safe");
+        command.add("0");
+        command.add("-i");
+        command.add(concatFile.toString());
+        
+        // Add quality settings
+        for (String setting : qualitySettings) {
+            command.add(setting);
+        }
+        
+        command.add("-y"); // Overwrite output file
+        command.add(outputFile.toString());
+        
+        log.info("🔧 FFmpeg concatenation command: {}", String.join(" ", command));
+        
+        ProcessBuilder processBuilder = new ProcessBuilder(command);
+        processBuilder.redirectErrorStream(true);
+        Process process = processBuilder.start();
+        
+        // Read process output
+        StringBuilder ffmpegOutput = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                ffmpegOutput.append(line).append("\n");
+                log.debug("FFmpeg: {}", line);
+            }
+        }
+        
+        int exitCode = process.waitFor();
+        log.info("FFmpeg concatenation exit code: {}", exitCode);
+        
+        if (exitCode != 0) {
+            log.error("❌ FFmpeg concatenation failed with exit code: {}", exitCode);
+            log.error("FFmpeg output:\n{}", ffmpegOutput.toString());
+            throw new RuntimeException("Video concatenation failed with exit code: " + exitCode + "\nOutput: " + ffmpegOutput.toString());
+        }
+        
+        // Verify output file
+        if (!Files.exists(outputFile) || Files.size(outputFile) == 0) {
+            log.error("❌ Video concatenation failed - output file is empty or doesn't exist");
+            throw new RuntimeException("Video concatenation failed - no output file generated");
+        }
+        
+        log.info("✅ Videos concatenated successfully: {} bytes", Files.size(outputFile));
+        return outputFile;
+    }
+    
+    private String[] getQualitySettings(String quality) {
+        switch (quality.toLowerCase()) {
+            case "high":
+                return new String[]{"-c:v", "libx264", "-preset", "medium", "-crf", "18", "-c:a", "aac", "-b:a", "192k"};
+            case "medium":
+                return new String[]{"-c:v", "libx264", "-preset", "fast", "-crf", "23", "-c:a", "aac", "-b:a", "128k"};
+            case "low":
+                return new String[]{"-c:v", "libx264", "-preset", "ultrafast", "-crf", "28", "-c:a", "aac", "-b:a", "96k"};
+            default:
+                return new String[]{"-c:v", "libx264", "-preset", "medium", "-crf", "23", "-c:a", "aac", "-b:a", "128k"};
+        }
     }
     
     private void cleanupTempFiles(Path... files) {
