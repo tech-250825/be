@@ -1,4 +1,4 @@
-package com.ll.demo03.lora.controller.request;
+package com.ll.demo03.weight.controller.request;
 
 
 import lombok.AllArgsConstructor;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoraPromptRequest {
+public class WeightPromptRequest {
     private Long loraId;
     private String prompt;
 }

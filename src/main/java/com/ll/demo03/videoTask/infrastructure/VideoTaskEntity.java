@@ -3,13 +3,12 @@ package com.ll.demo03.videoTask.infrastructure;
 import com.ll.demo03.board.infrastructure.BoardEntity;
 import com.ll.demo03.global.domain.ResolutionProfile;
 import com.ll.demo03.global.domain.Status;
-import com.ll.demo03.lora.infrasturcture.LoraEntity;
+import com.ll.demo03.weight.infrasturcture.WeightEntity;
 import com.ll.demo03.member.infrastructure.MemberEntity;
 import com.ll.demo03.videoTask.domain.VideoTask;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -31,7 +30,7 @@ public class VideoTaskEntity {
 
     @ManyToOne
     @JoinColumn(name = "lora_id", nullable = true)
-    private LoraEntity lora;
+    private WeightEntity lora;
 
     @Column(nullable = true)
     private String url;
@@ -66,7 +65,7 @@ public class VideoTaskEntity {
         VideoTaskEntity taskEntity = new VideoTaskEntity();
         taskEntity.id = task.getId();
         taskEntity.prompt = task.getPrompt();
-        taskEntity.lora = task.getLora() != null ? LoraEntity.from(task.getLora()) : null;
+        taskEntity.lora = task.getLora() != null ? WeightEntity.from(task.getLora()) : null;
         taskEntity.url = task.getImageUrl();
         taskEntity.runpodId = task.getRunpodId();
         taskEntity.createdAt = task.getCreatedAt();

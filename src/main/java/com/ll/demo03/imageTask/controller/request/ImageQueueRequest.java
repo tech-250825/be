@@ -7,6 +7,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ImageQueueRequest {
+    private String checkpoint;
     private String lora;
     private String prompt;
     private int width;

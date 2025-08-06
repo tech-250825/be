@@ -13,7 +13,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ImageTaskRequest {
-    @NotNull(message = "LoRA ID는 필수입니다.")
+    @NotNull(message = "Checkpoint ID는 필수입니다.")
+    private Long checkpointId;
+
+    @NotNull(message = "Lora ID는 필수입니다.")
     private Long loraId;
     
     @NotBlank(message = "프롬프트는 공백일 수 없습니다.")

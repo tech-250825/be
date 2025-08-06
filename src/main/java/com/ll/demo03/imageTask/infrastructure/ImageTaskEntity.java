@@ -27,6 +27,8 @@ public class ImageTaskEntity {
     @Column(columnDefinition = "TEXT")
     private String prompt;
 
+    private String checkpoint;
+
     private String lora;
 
     private String runpodId;
@@ -52,6 +54,7 @@ public class ImageTaskEntity {
     public static ImageTaskEntity from(ImageTask task) {
         ImageTaskEntity taskEntity = new ImageTaskEntity();
         taskEntity.id = task.getId();
+        taskEntity.checkpoint = task.getCheckpoint();
         taskEntity.lora = task.getLora();
         taskEntity.prompt = task.getPrompt();
         taskEntity.runpodId = task.getRunpodId();
@@ -68,6 +71,7 @@ public class ImageTaskEntity {
         return ImageTask.builder()
                 .id(id)
                 .prompt(prompt)
+                .checkpoint(checkpoint)
                 .lora(lora)
                 .runpodId(runpodId)
                 .resolutionProfile(resolutionProfile)

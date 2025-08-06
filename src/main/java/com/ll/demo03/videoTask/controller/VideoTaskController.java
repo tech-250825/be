@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ll.demo03.global.controller.request.WebhookEvent;
 import com.ll.demo03.global.dto.GlobalResponse;
 import com.ll.demo03.global.exception.CustomException;
+import com.ll.demo03.global.util.JsonParser;
 import com.ll.demo03.member.domain.Member;
 import com.ll.demo03.videoTask.controller.port.VideoTaskService;
 import com.ll.demo03.videoTask.controller.request.I2VTaskRequest;
@@ -15,7 +16,6 @@ import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.util.CursorBasedPageable;
 import com.ll.demo03.global.util.PageResponse;
 import com.ll.demo03.webhook.VideoWebhookProcessorImpl;
-import com.ll.demo03.webhook.WebhookProcessor;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +38,6 @@ public class VideoTaskController {
     private final VideoTaskService videoTaskService;
 
     @PostMapping(value = "/create/t2v")
-    @PreAuthorize("isAuthenticated()")
     public GlobalResponse createT2V(
             @RequestBody VideoTaskRequest request,
             @AuthenticationPrincipal PrincipalDetails principalDetails
@@ -49,28 +48,19 @@ public class VideoTaskController {
     }
 
     @PostMapping(value = "/create/i2v" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("isAuthenticated()")
     public GlobalResponse createI2V(
             @RequestPart("request") String requestJson,
             @RequestPart("image") MultipartFile image,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
-        try {
-            // 이거 제거할것..
-            ObjectMapper objectMapper = new ObjectMapper();
-            VideoTaskRequest request = objectMapper.readValue(requestJson, VideoTaskRequest.class);
+            VideoTaskRequest request = JsonParser.parseJson(requestJson, VideoTaskRequest.class);
 
             Member member = principalDetails.user();
             videoTaskService.initateI2V(request, member, image);
             return GlobalResponse.success();
-        } catch (JsonProcessingException e) {
-            throw new CustomException(ErrorCode.BAD_REQUEST);
-        }
-
     }
 
     @PostMapping(value = "/create/i2v/v2")
-    @PreAuthorize("isAuthenticated()")
     public GlobalResponse createI2V(
             @RequestBody I2VTaskRequest request,
             @AuthenticationPrincipal PrincipalDetails principalDetails
@@ -81,7 +71,6 @@ public class VideoTaskController {
     }
 
     @PostMapping(value = "/create/i2v/v2/{boardId}")
-    @PreAuthorize("isAuthenticated()")
     public GlobalResponse createI2VWithBoard(
             @PathVariable Long boardId,
             @RequestBody I2VTaskRequest request,
@@ -93,7 +82,6 @@ public class VideoTaskController {
     }
 
     @PostMapping(value = "/create/t2v/{boardId}")
-    @PreAuthorize("isAuthenticated()")
     public GlobalResponse createT2VWithBoard(
             @PathVariable Long boardId,
             @RequestBody VideoTaskRequest request,
@@ -105,43 +93,31 @@ public class VideoTaskController {
     }
 
     @PostMapping(value = "/create/i2v/{boardId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("isAuthenticated()")
     public GlobalResponse createI2VWithBoard(
             @PathVariable Long boardId,
             @RequestPart("request") String requestJson,
             @RequestPart("image") MultipartFile image,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            VideoTaskRequest request = objectMapper.readValue(requestJson, VideoTaskRequest.class);
+            VideoTaskRequest request = JsonParser.parseJson(requestJson, VideoTaskRequest.class);
 
             Member member = principalDetails.user();
             videoTaskService.initateI2V(request, member, image, boardId);
             return GlobalResponse.success();
-        } catch (JsonProcessingException e) {
-            throw new CustomException(ErrorCode.BAD_REQUEST);
-        }
     }
 
     @PostMapping(value = "/create/i2v-from-latest-frame/{boardId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("isAuthenticated()")
     public GlobalResponse createI2VFromLatestFrame(
             @PathVariable Long boardId,
             @RequestPart("request") String requestJson,
             @RequestPart("videoUrl") String videoUrl,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            VideoTaskRequest request = objectMapper.readValue(requestJson, VideoTaskRequest.class);
+        VideoTaskRequest request = JsonParser.parseJson(requestJson, VideoTaskRequest.class);
 
-            Member member = principalDetails.user();
-            videoTaskService.initateI2VFromLatestFrame(request, member, videoUrl, boardId);
-            return GlobalResponse.success();
-        } catch (JsonProcessingException e) {
-            throw new CustomException(ErrorCode.BAD_REQUEST);
-        }
+        Member member = principalDetails.user();
+        videoTaskService.initateI2VFromLatestFrame(request, member, videoUrl, boardId);
+        return GlobalResponse.success();
     }
 
     @PostMapping("/webhook")

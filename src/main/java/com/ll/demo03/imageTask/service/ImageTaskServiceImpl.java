@@ -4,7 +4,6 @@ package com.ll.demo03.imageTask.service;
 import com.ll.demo03.global.domain.Status;
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
-import com.ll.demo03.global.infrastructure.MessageProducerImpl;
 import com.ll.demo03.global.port.CursorPaginationService;
 import com.ll.demo03.global.port.MessageProducer;
 import com.ll.demo03.global.port.RedisService;
@@ -17,16 +16,15 @@ import com.ll.demo03.global.port.Network;
 import com.ll.demo03.imageTask.service.port.ImageTaskRepository;
 import com.ll.demo03.global.util.CursorBasedPageable;
 import com.ll.demo03.global.util.PageResponse;
-import com.ll.demo03.lora.controller.port.LoraService;
-import com.ll.demo03.lora.domain.Lora;
-import com.ll.demo03.lora.service.port.LoraRepository;
+import com.ll.demo03.weight.controller.port.WeightService;
+import com.ll.demo03.weight.domain.Weight;
+import com.ll.demo03.weight.service.port.WeightRepository;
 import com.ll.demo03.member.domain.Member;
 import com.ll.demo03.member.service.port.MemberRepository;
 import com.ll.demo03.UGC.domain.UGC;
 import com.ll.demo03.UGC.service.port.UGCRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,8 +46,8 @@ public class ImageTaskServiceImpl implements ImageTaskService {
     private final CursorPaginationService paginationService;
     private final ImageTaskPaginationStrategy paginationStrategy;
     private final ImageTaskResponseConverter responseConverter;
-    private final LoraRepository loraRepository;
-    private final LoraService loraService;
+    private final WeightRepository weightRepository;
+    private final WeightService weightService;
     private final UGCRepository ugcRepository;
 
     @Value("${custom.webhook-url}")
@@ -63,11 +61,15 @@ public class ImageTaskServiceImpl implements ImageTaskService {
         int creditCost = request.getResolutionProfile().getBaseCreditCost();
         creator.decreaseCredit(creditCost);
 
-        Lora lora = loraRepository.findById(request.getLoraId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+        Weight checkpoint = weightRepository.findById(request.getCheckpointId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+
+        Weight lora = weightRepository.findById(request.getLoraId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
         
-        String newPrompt = loraService.addTriggerWord(lora.getId(), request.getPrompt());
+        String newPrompt = request.getPrompt();
+
+        newPrompt = weightService.addTriggerWord(lora.getId(), newPrompt);
         
-        ImageQueueRequest imageQueueRequest = ImageTask.toImageQueueRequest(request, lora.getModelName(), newPrompt, member);
+        ImageQueueRequest imageQueueRequest = ImageTask.toImageQueueRequest(request, checkpoint.getModelName(), lora.getModelName(), newPrompt, member);
         messageProducer.sendImageCreationMessage(imageQueueRequest);
         memberRepository.save(creator);
     }
@@ -86,6 +88,7 @@ public class ImageTaskServiceImpl implements ImageTaskService {
 
         network.createImage(
                 taskId,
+                message.getCheckpoint(),
                 message.getLora(),
                 message.getPrompt(),
                 message.getWidth(),

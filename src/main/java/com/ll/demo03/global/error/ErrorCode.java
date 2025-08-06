@@ -24,8 +24,6 @@ public enum ErrorCode {
     //크레딧
     NO_CREDIT(HttpStatus.PAYMENT_REQUIRED, "크레딧이 부족합니다."),
 
-    // 이미지 없음
-    IMAGE_NOT_FOUND(HttpStatus.BAD_REQUEST, "해당 이미지가 존재하지 않습니다."),
 
 
     // User 관련 에러
@@ -38,9 +36,7 @@ public enum ErrorCode {
 
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "적절하지 않은 요청입니다."),
 
-    DUPLICATED_NICKNAME(HttpStatus.BAD_REQUEST, "이미 존재하는 닉네임입니다."),
-
-    INAPPROPRIATE_CONTENT(HttpStatus.BAD_REQUEST, "부적절한 프롬프트입니다."),
+    INVALID_JSON_FORMAT(HttpStatus.BAD_REQUEST, "적절하지 않은 JSON 형식입니다."),
 
     //결제 실패
     PAYMENT_CONFIRMATION_FAILED(HttpStatus.BAD_REQUEST, "결제에 실패했습니다."),

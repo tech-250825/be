@@ -33,7 +33,7 @@ public class FakeNetwork implements Network {
     }
 
     @Override
-    public String createImage(Long taskId, String lora, String prompt, int width, int height, String webhook) {
+    public String createImage(Long taskId, String checkpoint, String lora, String prompt, int width, int height, String webhook) {
         imageCalls.add(new ImageCall(taskId, lora, prompt, width, height, webhook));  // 호출 기록
         return String.format("{\"status\":\"ok\",\"type\":\"image\",\"task_id\":%d}", taskId);
     }

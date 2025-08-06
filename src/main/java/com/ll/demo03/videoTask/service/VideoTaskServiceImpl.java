@@ -10,9 +10,9 @@ import com.ll.demo03.global.port.VideoProcessingService;
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
 import com.ll.demo03.global.port.*;
-import com.ll.demo03.lora.controller.port.LoraService;
-import com.ll.demo03.lora.domain.Lora;
-import com.ll.demo03.lora.service.port.LoraRepository;
+import com.ll.demo03.weight.controller.port.WeightService;
+import com.ll.demo03.weight.domain.Weight;
+import com.ll.demo03.weight.service.port.WeightRepository;
 import com.ll.demo03.member.domain.Member;
 import com.ll.demo03.member.service.port.MemberRepository;
 import com.ll.demo03.videoTask.controller.port.VideoTaskService;
@@ -25,18 +25,14 @@ import com.ll.demo03.videoTask.controller.request.VideoTaskRequest;
 import com.ll.demo03.videoTask.controller.response.TaskOrVideoResponse;
 import com.ll.demo03.videoTask.domain.VideoTask;
 import com.ll.demo03.videoTask.service.port.VideoTaskRepository;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -53,9 +49,9 @@ public class VideoTaskServiceImpl implements VideoTaskService {
     private final VideoTaskPaginationStrategy paginationStrategy;
     private final BoardVideoTaskPaginationStrategy boardPaginationStrategy;
     private final VideoTaskResponseConverter responseConverter;
-    private final LoraRepository loraRepository;
+    private final WeightRepository weightRepository;
     private final S3Service s3Service;
-    private final LoraService loraService;
+    private final WeightService weightService;
     private final UGCRepository ugcRepository;
     private final BoardRepository boardRepository;
     private final VideoProcessingService videoProcessingService;
@@ -70,15 +66,13 @@ public class VideoTaskServiceImpl implements VideoTaskService {
         int creditCost = request.getResolutionProfile().getBaseCreditCost() * (int) Math.ceil(request.getNumFrames() / 40.0);
         creator.decreaseCredit(creditCost);
 
-        // Set default loraId to 1 if not provided
-        Long loraId = request.getLoraId() != null ? request.getLoraId() : 1L;
-        Lora lora = loraRepository.findById(loraId).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+        Weight lora = weightRepository.findById(request.getLoraId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
         VideoTask task = VideoTask.from(member, lora, request);
         task = task.updateStatus(Status.IN_PROGRESS, null);
         VideoTask saved = videoTaskRepository.save(task);
 
-        String newPrompt = loraService.addTriggerWord(lora.getId(), request.getPrompt());
+        String newPrompt = weightService.addTriggerWord(lora.getId(), request.getPrompt());
 
         T2VQueueRequest queueRequest = VideoTask.toT2VQueueRequest(saved.getId(), request, lora.getModelName(), newPrompt, creator);
         videoMessageProducer.sendCreationMessage(queueRequest);
@@ -150,16 +144,14 @@ public class VideoTaskServiceImpl implements VideoTaskService {
         int creditCost = request.getResolutionProfile().getBaseCreditCost() * (int) Math.ceil(request.getNumFrames() / 40.0);
         creator.decreaseCredit(creditCost);
 
-        // Set default loraId to 1 if not provided
-        Long loraId = request.getLoraId() != null ? request.getLoraId() : 1L;
-        Lora lora = loraRepository.findById(loraId).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+        Weight lora = weightRepository.findById(request.getLoraId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
         VideoTask task = VideoTask.from(member, lora, request, board);
         task = task.updateStatus(Status.IN_PROGRESS, null);
         VideoTask saved = videoTaskRepository.save(task);
 
-        String newPrompt = loraService.addTriggerWord(lora.getId(), request.getPrompt());
+        String newPrompt = weightService.addTriggerWord(lora.getId(), request.getPrompt());
 
         T2VQueueRequest queueRequest = VideoTask.toT2VQueueRequest(saved.getId(), request, lora.getModelName(), newPrompt, creator);
         videoMessageProducer.sendCreationMessage(queueRequest);
@@ -195,10 +187,7 @@ public class VideoTaskServiceImpl implements VideoTaskService {
         int creditCost = request.getResolutionProfile().getBaseCreditCost() * (int) Math.ceil(request.getNumFrames() / 40.0);
         creator.decreaseCredit(creditCost);
 
-        // Extract latest frame from video
         MultipartFile latestFrame = videoProcessingService.extractLatestFrameFromVideo(videoUrl);
-        
-        // Upload extracted frame to S3
         String url = s3Service.uploadFile(latestFrame);
 
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));

@@ -74,20 +74,21 @@ public class NetworkImpl implements Network {
         }
     }
 
-    public String createImage(Long taskId, String lora, String prompt, int width, int height, String webhook) {
+    public String createImage(Long taskId, String checkpoint, String lora, String prompt, int width, int height, String webhook) {
         try {
             Unirest.setTimeouts(0, 0);
 
             Map<String, Object> payload = Map.of(
                     "task_id", taskId,
                     "positive_prompt", prompt,
+                    "checkpoint", checkpoint,
                     "lora", lora,
                     "width", width,
                     "height", height
             );
 
             Map<String, Object> input = Map.of(
-                    "workflow", "illustrious_image",
+                    "workflow", "face_detailer",
                     "payload", payload
             );
 
@@ -98,7 +99,7 @@ public class NetworkImpl implements Network {
 
             String jsonBody = objectMapper.writeValueAsString(requestBody);
 
-            HttpResponse<String> response = Unirest.post("https://api.runpod.ai/v2/ldkbvglhy10oq4/run")
+            HttpResponse<String> response = Unirest.post("https://api.runpod.ai/v2/eas066udr3krkq/status/10b328b2-06d8-454c-acb3-21ecb497bb4d-e1")
                     .header("accept", "application/json")
                     .header("authorization", runpodApiKey)
                     .header("content-type", "application/json")

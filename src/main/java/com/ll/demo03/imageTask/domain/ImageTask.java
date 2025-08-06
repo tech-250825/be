@@ -16,6 +16,7 @@ public class ImageTask {
 
     private final Long id;
     private final String prompt;
+    private final String checkpoint;
     private final String lora;
     private final String runpodId;
     private final Status status;
@@ -25,9 +26,10 @@ public class ImageTask {
     private final ResolutionProfile resolutionProfile;
 
     @Builder
-    public ImageTask(Long id, String prompt, String lora, String runpodId, Status status, LocalDateTime createdAt, LocalDateTime modifiedAt, Member creator, ResolutionProfile resolutionProfile) {
+    public ImageTask(Long id, String prompt, String checkpoint, String lora, String runpodId, Status status, LocalDateTime createdAt, LocalDateTime modifiedAt, Member creator, ResolutionProfile resolutionProfile) {
         this.id = id;
         this.prompt = prompt;
+        this.checkpoint = checkpoint;
         this.lora = lora;
         this.runpodId = runpodId;
         this.status = status;
@@ -41,6 +43,7 @@ public class ImageTask {
         ResolutionProfile profile = ResolutionProfile.fromDimensions(queueRequest.getWidth(), queueRequest.getHeight());
         return ImageTask.builder()
                 .prompt(queueRequest.getPrompt())
+                .checkpoint(queueRequest.getCheckpoint())
                 .lora(queueRequest.getLora())
                 .resolutionProfile(profile)
                 .creator(creator)
@@ -51,6 +54,7 @@ public class ImageTask {
         return ImageTask.builder()
                 .id(id)
                 .prompt(prompt)
+                .checkpoint(checkpoint)
                 .lora(lora)
                 .runpodId(runpodId)
                 .status(status)
@@ -61,7 +65,7 @@ public class ImageTask {
                 .build();
     }
 
-    public static ImageQueueRequest toImageQueueRequest(ImageTaskRequest imageTaskRequest, String lora, String newPrompt, Member creator) {
-        return new ImageQueueRequest(lora, newPrompt, imageTaskRequest.getResolutionProfile().getWidth(), imageTaskRequest.getResolutionProfile().getHeight(), creator.getId());
+    public static ImageQueueRequest toImageQueueRequest(ImageTaskRequest imageTaskRequest, String checkpoint, String lora, String newPrompt, Member creator) {
+        return new ImageQueueRequest(checkpoint, lora, newPrompt, imageTaskRequest.getResolutionProfile().getWidth(), imageTaskRequest.getResolutionProfile().getHeight(), creator.getId());
     }
 }

@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class I2VTaskRequest {
-    private Long loraId = 1L; // Default to LoRA ID 1 (Studio Ghibli style)
     private String prompt;
     private String imageUrl;
     private ResolutionProfile resolutionProfile;

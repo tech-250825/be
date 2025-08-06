@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class VideoTaskRequest {
     @NotNull(message = "LoRA ID는 필수입니다.")
-    private Long loraId;
+    private Long loraId = 1L;;
     
     @NotBlank(message = "프롬프트는 공백일 수 없습니다.")
     private String prompt;

@@ -1,4 +1,4 @@
-package com.ll.demo03.lora.domain;
+package com.ll.demo03.weight.domain;
 
 public enum StyleType {
     STYLE, CHARACTER

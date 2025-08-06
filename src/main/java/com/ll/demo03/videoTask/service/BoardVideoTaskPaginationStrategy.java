@@ -7,6 +7,9 @@ import com.ll.demo03.global.util.CursorBasedPageable;
 import com.ll.demo03.member.domain.Member;
 import com.ll.demo03.videoTask.domain.VideoTask;
 import com.ll.demo03.videoTask.service.port.VideoTaskRepository;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
@@ -19,26 +22,20 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Getter
+@Setter
 @Component
+@RequiredArgsConstructor
 public class BoardVideoTaskPaginationStrategy implements CursorPaginationStrategy<VideoTask> {
     private final VideoTaskRepository taskRepository;
     private Board board;
-
-    public BoardVideoTaskPaginationStrategy(VideoTaskRepository videoTaskRepository) {
-        this.taskRepository = videoTaskRepository;
-    }
-
-    public void setBoard(Board board) {
-        this.board = board;
-    }
 
     @Override
     public Slice<VideoTask> getFirstPage(Member member, CursorBasedPageable pageable) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         PageRequest pageRequest = PageRequest.of(0, pageable.getSize(), sort);
         Slice<VideoTask> allTasks = taskRepository.findByMember(member, pageRequest);
-        
-        // board로 필터링
+
         List<VideoTask> filteredTasks = allTasks.getContent().stream()
                 .filter(task -> task.getBoard() != null && task.getBoard().getId().equals(board.getId()))
                 .collect(Collectors.toList());
@@ -55,7 +52,6 @@ public class BoardVideoTaskPaginationStrategy implements CursorPaginationStrateg
         PageRequest pageRequest = PageRequest.of(0, pageable.getSize(), sort);
         Slice<VideoTask> taskPage = taskRepository.findCreatedAfter(member, cursorCreatedAt, pageRequest);
 
-        // board로 필터링
         List<VideoTask> filteredTasks = taskPage.getContent().stream()
                 .filter(task -> task.getBoard() != null && task.getBoard().getId().equals(board.getId()))
                 .collect(Collectors.toList());
@@ -73,7 +69,6 @@ public class BoardVideoTaskPaginationStrategy implements CursorPaginationStrateg
         PageRequest pageRequest = PageRequest.of(0, pageable.getSize(), sort);
         Slice<VideoTask> taskPage = taskRepository.findCreatedBefore(member, cursorCreatedAt, pageRequest);
 
-        // board로 필터링
         List<VideoTask> filteredTasks = taskPage.getContent().stream()
                 .filter(task -> task.getBoard() != null && task.getBoard().getId().equals(board.getId()))
                 .collect(Collectors.toList());

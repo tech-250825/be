@@ -3,8 +3,7 @@ package com.ll.demo03.videoTask.domain;
 import com.ll.demo03.board.domain.Board;
 import com.ll.demo03.global.domain.Status;
 import com.ll.demo03.global.domain.ResolutionProfile;
-import com.ll.demo03.global.port.Network;
-import com.ll.demo03.lora.domain.Lora;
+import com.ll.demo03.weight.domain.Weight;
 import com.ll.demo03.member.domain.Member;
 import com.ll.demo03.videoTask.controller.request.I2VQueueRequest;
 import com.ll.demo03.videoTask.controller.request.I2VTaskRequest;
@@ -20,7 +19,7 @@ public class VideoTask {
 
     private final Long id;
     private final String prompt;
-    private final Lora lora;
+    private final Weight lora;
     private final String imageUrl;
     private final String runpodId;
     private final Status status;
@@ -32,7 +31,7 @@ public class VideoTask {
     private final Board board;
 
     @Builder
-    public VideoTask(Long id, String prompt, Lora lora, String imageUrl, String runpodId, Status status,
+    public VideoTask(Long id, String prompt, Weight lora, String imageUrl, String runpodId, Status status,
                      LocalDateTime createdAt, LocalDateTime modifiedAt, Member creator,
                      ResolutionProfile resolutionProfile, int numFrames, Board board) {
         this.id = id;
@@ -49,7 +48,7 @@ public class VideoTask {
         this.board = board;
     }
 
-    public static VideoTask from(Member creator, Lora lora, VideoTaskRequest request) {
+    public static VideoTask from(Member creator, Weight lora, VideoTaskRequest request) {
         return VideoTask.builder()
                 .prompt(request.getPrompt())
                 .lora(lora)
@@ -59,7 +58,7 @@ public class VideoTask {
                 .build();
     }
 
-    public static VideoTask from(Member creator, Lora lora, VideoTaskRequest request, Board board) {
+    public static VideoTask from(Member creator,  Weight lora, VideoTaskRequest request, Board board) {
         return VideoTask.builder()
                 .prompt(request.getPrompt())
                 .lora(lora)
