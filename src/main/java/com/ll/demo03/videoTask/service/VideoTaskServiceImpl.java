@@ -64,13 +64,15 @@ public class VideoTaskServiceImpl implements VideoTaskService {
     private String webhookUrl;
 
     @Override
-    public void initateT2V(VideoTaskRequest request, Member member){
+    public Long initateT2V(VideoTaskRequest request, Member member){
         Member creator = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
 
         int creditCost = request.getResolutionProfile().getBaseCreditCost() * (int) Math.ceil(request.getNumFrames() / 40.0);
         creator.decreaseCredit(creditCost);
 
-        Lora lora = loraRepository.findById(request.getLoraId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+        // Set default loraId to 1 if not provided
+        Long loraId = request.getLoraId() != null ? request.getLoraId() : 1L;
+        Lora lora = loraRepository.findById(loraId).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
         VideoTask task = VideoTask.from(member, lora, request);
         task = task.updateStatus(Status.IN_PROGRESS, null);
@@ -81,10 +83,12 @@ public class VideoTaskServiceImpl implements VideoTaskService {
         T2VQueueRequest queueRequest = VideoTask.toT2VQueueRequest(saved.getId(), request, lora.getModelName(), newPrompt, creator);
         videoMessageProducer.sendCreationMessage(queueRequest);
         memberRepository.save(creator);
+        
+        return saved.getId();
     }
 
     @Override
-    public void initateI2V(VideoTaskRequest request, Member member, MultipartFile image) {
+    public Long initateI2V(VideoTaskRequest request, Member member, MultipartFile image) {
         Member creator = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
 
         int creditCost = request.getResolutionProfile().getBaseCreditCost() * (int) Math.ceil(request.getNumFrames() / 40.0);
@@ -101,10 +105,12 @@ public class VideoTaskServiceImpl implements VideoTaskService {
         I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request, url, newPrompt, creator);
         videoMessageProducer.sendCreationMessage(queueRequest);
         memberRepository.save(creator);
+        
+        return saved.getId();
     }
 
     @Override
-    public void initateI2V(I2VTaskRequest request, Member member) {
+    public Long initateI2V(I2VTaskRequest request, Member member) {
         Member creator = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
 
         int creditCost = request.getResolutionProfile().getBaseCreditCost() * (int) Math.ceil(request.getNumFrames() / 40.0);
@@ -119,16 +125,42 @@ public class VideoTaskServiceImpl implements VideoTaskService {
         I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request, newPrompt, creator);
         videoMessageProducer.sendCreationMessage(queueRequest);
         memberRepository.save(creator);
+        
+        return saved.getId();
     }
 
     @Override
-    public void initateT2V(VideoTaskRequest request, Member member, Long boardId) {
+    public Long initateI2V(I2VTaskRequest request, Member member, Long boardId) {
         Member creator = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
 
         int creditCost = request.getResolutionProfile().getBaseCreditCost() * (int) Math.ceil(request.getNumFrames() / 40.0);
         creator.decreaseCredit(creditCost);
 
-        Lora lora = loraRepository.findById(request.getLoraId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+
+        VideoTask task = VideoTask.from(member, request, board);
+        task = task.updateStatus(Status.IN_PROGRESS, null);
+        VideoTask saved = videoTaskRepository.save(task);
+
+        String newPrompt = request.getPrompt();
+
+        I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request, newPrompt, creator);
+        videoMessageProducer.sendCreationMessage(queueRequest);
+        memberRepository.save(creator);
+        
+        return saved.getId();
+    }
+
+    @Override
+    public Long initateT2V(VideoTaskRequest request, Member member, Long boardId) {
+        Member creator = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
+
+        int creditCost = request.getResolutionProfile().getBaseCreditCost() * (int) Math.ceil(request.getNumFrames() / 40.0);
+        creator.decreaseCredit(creditCost);
+
+        // Set default loraId to 1 if not provided
+        Long loraId = request.getLoraId() != null ? request.getLoraId() : 1L;
+        Lora lora = loraRepository.findById(loraId).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
         VideoTask task = VideoTask.from(member, lora, request, board);
@@ -140,10 +172,12 @@ public class VideoTaskServiceImpl implements VideoTaskService {
         T2VQueueRequest queueRequest = VideoTask.toT2VQueueRequest(saved.getId(), request, lora.getModelName(), newPrompt, creator);
         videoMessageProducer.sendCreationMessage(queueRequest);
         memberRepository.save(creator);
+        
+        return saved.getId();
     }
 
     @Override
-    public void initateI2V(VideoTaskRequest request, Member member, MultipartFile image, Long boardId) {
+    public Long initateI2V(VideoTaskRequest request, Member member, MultipartFile image, Long boardId) {
         Member creator = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
 
         int creditCost = request.getResolutionProfile().getBaseCreditCost() * (int) Math.ceil(request.getNumFrames() / 40.0);
@@ -162,10 +196,12 @@ public class VideoTaskServiceImpl implements VideoTaskService {
         I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request, url, newPrompt, creator);
         videoMessageProducer.sendCreationMessage(queueRequest);
         memberRepository.save(creator);
+        
+        return saved.getId();
     }
 
     @Override
-    public void initateI2VFromLatestFrame(VideoTaskRequest request, Member member, String videoUrl, Long boardId) {
+    public Long initateI2VFromLatestFrame(VideoTaskRequest request, Member member, String videoUrl, Long boardId) {
         Member creator = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
 
         int creditCost = request.getResolutionProfile().getBaseCreditCost() * (int) Math.ceil(request.getNumFrames() / 40.0);
@@ -188,6 +224,8 @@ public class VideoTaskServiceImpl implements VideoTaskService {
         I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request, url, newPrompt, creator);
         videoMessageProducer.sendCreationMessage(queueRequest);
         memberRepository.save(creator);
+        
+        return saved.getId();
     }
 
     @Override

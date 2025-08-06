@@ -9,6 +9,7 @@ import lombok.Getter;
 @Getter
 @JsonDeserialize(using = ResolutionProfileDeserializer.class)
 public enum ResolutionProfile {
+    // Original profiles (keeping for backward compatibility)
     RATIO_1_1_SD(480, 480, 5),
     RATIO_1_1_HD(720, 720, 10),
     RATIO_16_9_SD(854, 480, 5),
@@ -16,7 +17,15 @@ public enum ResolutionProfile {
     RATIO_9_16_SD(480, 854, 5),
     RATIO_9_16_HD(720, 1280, 10),
     I2V_SD(0, 0, 5),
-    I2V_HD(0, 0, 10);
+    I2V_HD(0, 0, 10),
+    
+    // New frontend-friendly profiles
+    HD_16_9(1280, 720, 10),
+    HD_9_16(720, 1280, 10),
+    HD_1_1(720, 720, 10),
+    SD_16_9(854, 480, 5),
+    SD_9_16(480, 854, 5),
+    SD_1_1(480, 480, 5);
 
     private final int width;
     private final int height;

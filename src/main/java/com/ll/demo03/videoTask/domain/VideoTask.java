@@ -80,6 +80,17 @@ public class VideoTask {
                 .build();
     }
 
+    public static VideoTask from(Member creator, I2VTaskRequest request, Board board) {
+        return VideoTask.builder()
+                .prompt(request.getPrompt())
+                .imageUrl(request.getImageUrl())
+                .resolutionProfile(request.getResolutionProfile())
+                .numFrames(request.getNumFrames())
+                .creator(creator)
+                .board(board)
+                .build();
+    }
+
     public static VideoTask from(Member creator, String url, VideoTaskRequest request) {
         return VideoTask.builder()
                 .prompt(request.getPrompt())
