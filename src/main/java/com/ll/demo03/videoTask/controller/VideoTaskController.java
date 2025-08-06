@@ -9,7 +9,6 @@ import com.ll.demo03.member.domain.Member;
 import com.ll.demo03.videoTask.controller.port.VideoTaskService;
 import com.ll.demo03.videoTask.controller.request.I2VTaskRequest;
 import com.ll.demo03.videoTask.controller.response.TaskOrVideoResponse;
-import com.ll.demo03.videoTask.controller.response.VideoTaskCreationResponse;
 import com.ll.demo03.oauth.domain.PrincipalDetails;
 import com.ll.demo03.videoTask.controller.request.VideoTaskRequest;
 import com.ll.demo03.global.error.ErrorCode;
@@ -40,13 +39,13 @@ public class VideoTaskController {
 
     @PostMapping(value = "/create/t2v")
     @PreAuthorize("isAuthenticated()")
-    public VideoTaskCreationResponse createT2V(
+    public GlobalResponse createT2V(
             @RequestBody VideoTaskRequest request,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
             Member member = principalDetails.user();
-            Long taskId = videoTaskService.initateT2V(request, member);
-            return VideoTaskCreationResponse.success(taskId);
+            videoTaskService.initateT2V(request, member);
+            return GlobalResponse.success();
     }
 
     @PostMapping(value = "/create/i2v" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -72,37 +71,37 @@ public class VideoTaskController {
 
     @PostMapping(value = "/create/i2v/v2")
     @PreAuthorize("isAuthenticated()")
-    public VideoTaskCreationResponse createI2V(
+    public GlobalResponse createI2V(
             @RequestBody I2VTaskRequest request,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
             Member member = principalDetails.user();
-            Long taskId = videoTaskService.initateI2V(request, member);
-            return VideoTaskCreationResponse.success(taskId);
+            videoTaskService.initateI2V(request, member);
+            return GlobalResponse.success();
     }
 
     @PostMapping(value = "/create/i2v/v2/{boardId}")
     @PreAuthorize("isAuthenticated()")
-    public VideoTaskCreationResponse createI2VWithBoard(
+    public GlobalResponse createI2VWithBoard(
             @PathVariable Long boardId,
             @RequestBody I2VTaskRequest request,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
             Member member = principalDetails.user();
-            Long taskId = videoTaskService.initateI2V(request, member, boardId);
-            return VideoTaskCreationResponse.success(taskId);
+            videoTaskService.initateI2V(request, member, boardId);
+            return GlobalResponse.success();
     }
 
     @PostMapping(value = "/create/t2v/{boardId}")
     @PreAuthorize("isAuthenticated()")
-    public VideoTaskCreationResponse createT2VWithBoard(
+    public GlobalResponse createT2VWithBoard(
             @PathVariable Long boardId,
             @RequestBody VideoTaskRequest request,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
         Member member = principalDetails.user();
-        Long taskId = videoTaskService.initateT2V(request, member, boardId);
-        return VideoTaskCreationResponse.success(taskId);
+        videoTaskService.initateT2V(request, member, boardId);
+        return GlobalResponse.success();
     }
 
     @PostMapping(value = "/create/i2v/{boardId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
