@@ -50,12 +50,14 @@ public class FakeImageTaskRepository implements ImageTaskRepository {
         ImageTask saved = ImageTask.builder()
                 .id(id)
                 .prompt(imageTask.getPrompt())
+                .checkpoint(imageTask.getCheckpoint())
                 .lora(imageTask.getLora())
                 .runpodId(imageTask.getRunpodId())
                 .status(imageTask.getStatus())
                 .createdAt(imageTask.getCreatedAt())
                 .modifiedAt(imageTask.getModifiedAt())
                 .creator(imageTask.getCreator())
+                .resolutionProfile(imageTask.getResolutionProfile())
                 .build();
 
         storage.put(id, saved);
@@ -85,6 +87,11 @@ public class FakeImageTaskRepository implements ImageTaskRepository {
     @Override
     public Optional<ImageTask> findById(Long taskId) {
         return Optional.ofNullable(storage.get(taskId));
+    }
+
+    @Override
+    public void delete(ImageTask task) {
+        storage.remove(task.getId());
     }
 
     private Slice<ImageTask> getSlice(List<ImageTask> list, Pageable pageable) {

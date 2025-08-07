@@ -130,4 +130,67 @@ public class FakeUGCRepository implements UGCRepository {
         }
     }
 
+    @Override
+    public List<UGC> findAllByImageTaskId(Long id) {
+        return storage.values().stream()
+                .filter(ugc -> ugc.getImageTask() != null && ugc.getImageTask().getId().equals(id))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Slice<UGC> findByMemberIdAndTypeOrderByIdDesc(Long memberId, String type, Pageable pageRequest) {
+        List<UGC> filtered = storage.values().stream()
+                .filter(ugc -> ugc.getCreator().getId().equals(memberId) && getUGCType(ugc).equals(type))
+                .sorted(Comparator.comparingLong(UGC::getId).reversed())
+                .collect(Collectors.toList());
+        return getSlice(filtered, pageRequest);
+    }
+
+    @Override
+    public Slice<UGC> findByMemberIdAndTypeAndIdLessThanOrderByIdDesc(Long memberId, String type, Long cursorId, Pageable pageRequest) {
+        List<UGC> filtered = storage.values().stream()
+                .filter(ugc -> ugc.getCreator().getId().equals(memberId) 
+                             && getUGCType(ugc).equals(type) 
+                             && ugc.getId() < cursorId)
+                .sorted(Comparator.comparingLong(UGC::getId).reversed())
+                .collect(Collectors.toList());
+        return getSlice(filtered, pageRequest);
+    }
+
+    @Override
+    public Slice<UGC> findByMemberIdAndTypeAndIdGreaterThanOrderByIdAsc(Long memberId, String type, Long cursorId, Pageable pageRequest) {
+        List<UGC> filtered = storage.values().stream()
+                .filter(ugc -> ugc.getCreator().getId().equals(memberId) 
+                             && getUGCType(ugc).equals(type) 
+                             && ugc.getId() > cursorId)
+                .sorted(Comparator.comparingLong(UGC::getId))
+                .collect(Collectors.toList());
+        return getSlice(filtered, pageRequest);
+    }
+
+    @Override
+    public boolean existsByIdGreaterThanAndMemberIdAndType(Long id, Long memberId, String type) {
+        return storage.values().stream()
+                .anyMatch(ugc -> ugc.getId() > id 
+                              && ugc.getCreator().getId().equals(memberId) 
+                              && getUGCType(ugc).equals(type));
+    }
+
+    @Override
+    public boolean existsByIdLessThanAndMemberIdAndType(Long id, Long memberId, String type) {
+        return storage.values().stream()
+                .anyMatch(ugc -> ugc.getId() < id 
+                              && ugc.getCreator().getId().equals(memberId) 
+                              && getUGCType(ugc).equals(type));
+    }
+
+    private String getUGCType(UGC ugc) {
+        if (ugc.getImageTask() != null) {
+            return "image";
+        } else if (ugc.getVideoTask() != null) {
+            return "video";
+        }
+        return "unknown";
+    }
+
 }

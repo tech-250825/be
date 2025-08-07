@@ -47,6 +47,10 @@ class ImageTaskServiceTest {
         Member member2 = Member.builder().id(2L).credit(0).build();
         memberRepository.save(member1);
         memberRepository.save(member2);
+
+        // Add test Weight data
+        testContainer.fakeWeightRepository.addTestWeight(1L, "test-checkpoint", "checkpoint-trigger");
+        testContainer.fakeWeightRepository.addTestWeight(2L, "test-lora", "lora-trigger");
     }
 
     @Test
@@ -56,7 +60,9 @@ class ImageTaskServiceTest {
 
         ImageTaskRequest request = ImageTaskRequest.builder()
                 .prompt("고양이 사진 그려줘")
-                .lora("test-model")
+                .checkpointId(1L)
+                .loraId(2L)
+                .resolutionProfile(com.ll.demo03.global.domain.ResolutionProfile.RATIO_9_16_SD)
                 .build();
         log.info("감소 전 크레딧: {}, 요청 감소량: {}", member.getCredit(), 1);
 
@@ -66,7 +72,7 @@ class ImageTaskServiceTest {
         // then
         Member updated = memberRepository.findById(1L).get();
         log.info("감소 전 크레딧: {}, 요청 감소량: {}", updated.getCredit(), 1);
-        assertEquals(4, updated.getCredit());
+        assertEquals(0, updated.getCredit());
 
         assertTrue(messageProducer.imageMessages.size() == 1);
         log.info("프롬프트:  {}" ,messageProducer.imageMessages.size());
@@ -82,7 +88,9 @@ class ImageTaskServiceTest {
 
         ImageTaskRequest request = ImageTaskRequest.builder()
                 .prompt("고양이 사진 그려줘")
-                .lora("test-model")
+                .checkpointId(1L)
+                .loraId(2L)
+                .resolutionProfile(com.ll.demo03.global.domain.ResolutionProfile.RATIO_9_16_SD)
                 .build();
 
         // when

@@ -1,6 +1,6 @@
 app:
   client:
-    url: http://localhost:3000/*
+    url: http://localhost:8090
 server:
   port: 8090
   shutdown: graceful
@@ -24,7 +24,7 @@ spring:
   lifecycle:
     timeout-per-shutdown-phase: 1h
   datasource:
-    maximum-pool-size: 5
+    maximum-pool-size: 7
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://hoit-database-1.cdogc6048p9x.ap-northeast-2.rds.amazonaws.com:3306/hoit_test?serverTimezone=Asia/Seoul
     username: hoituser
@@ -35,22 +35,21 @@ spring:
           google:
             redirect-uri: http://localhost:8090/auth/google/redirect
   rabbitmq:
-    host: localhost
+    host: 192.168.56.101
     port: 5672
   data:
     redis:
-      host: localhost
+      host: 192.168.56.101
       port: 6379
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true
         highlight_sql: false
         use_sql_comments: true
         dialect: org.hibernate.dialect.MySQLDialect
-# :small_blue_diamond: Actuator 설정 추가 (서버 설정 바로 아래 or 최하단)
 management:
   endpoints:
     web:
@@ -67,19 +66,8 @@ logging:
   level:
     root: INFO
     org.springframework.security: DEBUG
-#    org.hibernate.SQL: DEBUG
-#    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-#    org.hibernate.orm.jdbc.bind: INFO
-#    org.hibernate.orm.jdbc.extract: INFO
-#    org.springframework.transaction.interceptor: INFO
-#    org.springframework.security: DEBUG
-#    org.springframework.core.env: DEBUG
-#    com.zaxxer.hikari.HikariConfig: DEBUG
-#    com.zaxxer.hikari.HikariDataSource: DEBUG
-#    org.springframework.security.oauth2: DEBUG
-#    org.springframework.web.client: DEBUG
 custom:
-  webhook-url: https://fbf136feb600.ngrok-free.app
+  webhook-url: https://d7c24f9c1837.ngrok-free.app
   site:
     name: "My Site Prod"
 

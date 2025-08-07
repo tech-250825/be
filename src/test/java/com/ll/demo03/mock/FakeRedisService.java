@@ -46,6 +46,20 @@ public class FakeRedisService implements RedisService {
         publishedMessages.add(fakeMessage);
     }
 
+    @Override
+    public void publishNotificationToOtherServers(Long memberId, Long taskId, String prompt, java.util.List<String> urls) {
+        String fakeMessage = String.format("Published: memberId=%d, taskId=%d, prompt=%s, imageUrls=%s",
+                memberId, taskId, prompt, String.join(",", urls));
+        publishedMessages.add(fakeMessage);
+    }
+
+    @Override
+    public void publishNotificationToOtherServers(Long memberId, Long boardId, Long taskId, String prompt, String url) {
+        String fakeMessage = String.format("Published: memberId=%d, boardId=%d, taskId=%d, prompt=%s, imageUrl=%s",
+                memberId, boardId, taskId, prompt, url);
+        publishedMessages.add(fakeMessage);
+    }
+
     // 테스트 검증용 헬퍼 메서드들
     public boolean queueContains(String type, Long taskId) {
         List<String> queue = queues.getOrDefault(type + ":queue", List.of());

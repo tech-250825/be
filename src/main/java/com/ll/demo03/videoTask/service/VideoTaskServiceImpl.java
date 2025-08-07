@@ -181,18 +181,18 @@ public class VideoTaskServiceImpl implements VideoTaskService {
     }
 
     @Override
-    public void initateI2VFromLatestFrame(VideoTaskRequest request, Member member, String videoUrl, Long boardId) {
+    public void initateI2VFromLatestFrame(I2VTaskRequest request, Member member, Long boardId) {
         Member creator = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
 
         int creditCost = request.getResolutionProfile().getBaseCreditCost() * (int) Math.ceil(request.getNumFrames() / 40.0);
         creator.decreaseCredit(creditCost);
 
-        MultipartFile latestFrame = videoProcessingService.extractLatestFrameFromVideo(videoUrl);
+        MultipartFile latestFrame = videoProcessingService.extractLatestFrameFromVideo(request.getImageUrl());
         String url = s3Service.uploadFile(latestFrame);
 
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
-        VideoTask task = VideoTask.from(member, url, request, board);
+        VideoTask task = VideoTask.from(member, request, board);
         task = task.updateStatus(Status.IN_PROGRESS, null);
         VideoTask saved = videoTaskRepository.save(task);
 

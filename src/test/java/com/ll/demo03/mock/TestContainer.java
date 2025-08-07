@@ -9,6 +9,8 @@ import com.ll.demo03.imageTask.service.ImageTaskResponseConverter;
 import com.ll.demo03.imageTask.service.ImageTaskServiceImpl;
 import com.ll.demo03.imageTask.service.port.ImageTaskRepository;
 import com.ll.demo03.member.service.port.MemberRepository;
+import com.ll.demo03.weight.service.port.WeightRepository;
+import com.ll.demo03.weight.controller.port.WeightService;
 import lombok.Builder;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -24,6 +26,8 @@ public class TestContainer {
     public final FakeMessageProducer fakeMessageProducer;
     public final FakeRedisService fakeRedisService;
     public final FakeNetwork fakeNetwork;
+    public final FakeWeightRepository fakeWeightRepository;
+    public final FakeWeightService fakeWeightService;
 
     @Builder
     public TestContainer(){
@@ -35,6 +39,8 @@ public class TestContainer {
         this.imageTaskResponseConverter = new ImageTaskResponseConverter(this.ugcRepository);
         this.fakeRedisService = new FakeRedisService();
         this.fakeNetwork = new FakeNetwork();
+        this.fakeWeightRepository = new FakeWeightRepository();
+        this.fakeWeightService = new FakeWeightService();
         this.imageTaskService = new ImageTaskServiceImpl(
                 imageTaskRepository,
                 memberRepository,
@@ -43,7 +49,10 @@ public class TestContainer {
                 fakeMessageProducer,
                 new CursorPaginationService(),
                 imageTaskPaginationStrategy,
-                imageTaskResponseConverter
+                imageTaskResponseConverter,
+                fakeWeightRepository,
+                fakeWeightService,
+                ugcRepository
         );
 
         ReflectionTestUtils.setField(imageTaskService, "webhookUrl", "/fake-url");

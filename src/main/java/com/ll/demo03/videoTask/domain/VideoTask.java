@@ -152,6 +152,18 @@ public class VideoTask {
         );
     }
 
+    public static I2VQueueRequest toI2VQueueRequest(Long taskId, I2VTaskRequest request, String url, String newPrompt, Member creator) {
+        return new I2VQueueRequest(
+                taskId,
+                newPrompt,
+                url,
+                request.getResolutionProfile().getWidth(),
+                request.getResolutionProfile().getHeight(),
+                request.getNumFrames(),
+                creator.getId()
+        );
+    }
+
     public static I2VQueueRequest toI2VQueueRequest(Long taskId, I2VTaskRequest request, String newPrompt, Member creator) {
         return new I2VQueueRequest(
                 taskId,

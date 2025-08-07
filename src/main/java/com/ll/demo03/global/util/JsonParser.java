@@ -15,4 +15,5 @@ public class JsonParser {
             throw new CustomException(ErrorCode.INVALID_JSON_FORMAT);
         }
     }
+
 }

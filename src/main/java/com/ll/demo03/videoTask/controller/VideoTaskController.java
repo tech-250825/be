@@ -106,17 +106,14 @@ public class VideoTaskController {
             return GlobalResponse.success();
     }
 
-    @PostMapping(value = "/create/i2v-from-latest-frame/{boardId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/create/i2v/v3/{boardId}")
     public GlobalResponse createI2VFromLatestFrame(
             @PathVariable Long boardId,
-            @RequestPart("request") String requestJson,
-            @RequestPart("videoUrl") String videoUrl,
+            @RequestBody I2VTaskRequest request,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
-        VideoTaskRequest request = JsonParser.parseJson(requestJson, VideoTaskRequest.class);
-
         Member member = principalDetails.user();
-        videoTaskService.initateI2VFromLatestFrame(request, member, videoUrl, boardId);
+        videoTaskService.initateI2VFromLatestFrame(request, member, boardId);
         return GlobalResponse.success();
     }
 
@@ -134,8 +131,6 @@ public class VideoTaskController {
         videoTaskService.delete(taskId);
         return GlobalResponse.success("삭제 완료되었습니다. ");
     }
-
-
 
     @GetMapping("/task")
     public GlobalResponse handle(

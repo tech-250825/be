@@ -9,14 +9,16 @@ public class FakeNetwork implements Network {
 
     public static class ImageCall {
         public final Long taskId;
+        public final String checkpoint;
         public final String lora;
         public final String prompt;
         public final int width;
         public final int height;
         public final String webhook;
 
-        public ImageCall(Long taskId, String lora, String prompt, int width, int height, String webhook) {
+        public ImageCall(Long taskId, String checkpoint, String lora, String prompt, int width, int height, String webhook) {
             this.taskId = taskId;
+            this.checkpoint = checkpoint;
             this.lora = lora;
             this.prompt = prompt;
             this.width = width;
@@ -34,7 +36,7 @@ public class FakeNetwork implements Network {
 
     @Override
     public String createImage(Long taskId, String checkpoint, String lora, String prompt, int width, int height, String webhook) {
-        imageCalls.add(new ImageCall(taskId, lora, prompt, width, height, webhook));  // 호출 기록
+        imageCalls.add(new ImageCall(taskId, checkpoint, lora, prompt, width, height, webhook));  // 호출 기록
         return String.format("{\"status\":\"ok\",\"type\":\"image\",\"task_id\":%d}", taskId);
     }
 
