@@ -60,8 +60,8 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public Binding faceDetailerBinding(@Qualifier("facedetailerQueue") Queue queue,
-                                @Qualifier("facedetailerExchange") TopicExchange topicExchange) {
+    public Binding faceDetailerBinding(@Qualifier("faceDetailerQueue") Queue queue,
+                                @Qualifier("faceDetailerExchange") TopicExchange topicExchange) {
         return BindingBuilder.bind(queue).to(topicExchange).with(FACE_DETAILER_CREATE_ROUTING_KEY);
     }
 
