@@ -20,6 +20,10 @@ public class FakeMessageProducer implements MessageProducer {
     }
 
     @Override
+    public void sendFaceDetailerCreationMessage(ImageQueueRequest message) {
+        imageMessages.add(message);}
+
+    @Override
     public void sendCreationMessage(T2VQueueRequest message) {
         t2vMessages.add(message);
     }
