@@ -17,6 +17,10 @@ public class RabbitMQConfig {
     public static final String IMAGE_QUEUE = "image.queue";
     public static final String IMAGE_CREATE_ROUTING_KEY = "image.create";
 
+    public static final String FACE_DETAILER_EXCHANGE = "facedetailer.exchange";
+    public static final String FACE_DETAILER_QUEUE = "facedetailer.queue";
+    public static final String FACE_DETAILER_CREATE_ROUTING_KEY = "facedetailer.create";
+
     public static final String T2V_EXCHANGE = "t2v.exchange";
     public static final String T2V_QUEUE = "t2v.queue";
     public static final String T2V_ROUTING_KEY = "t2v.create";
@@ -43,6 +47,22 @@ public class RabbitMQConfig {
     public Binding imageBinding(@Qualifier("imageQueue") Queue queue,
                                 @Qualifier("imageExchange") TopicExchange topicExchange) {
         return BindingBuilder.bind(queue).to(topicExchange).with(IMAGE_CREATE_ROUTING_KEY);
+    }
+
+    @Bean
+    public Queue faceDetailerQueue() {
+        return new Queue(FACE_DETAILER_QUEUE, true);
+    }
+
+    @Bean
+    public TopicExchange faceDetailerExchange() {
+        return new TopicExchange(FACE_DETAILER_EXCHANGE);
+    }
+
+    @Bean
+    public Binding faceDetailerBinding(@Qualifier("facedetailerQueue") Queue queue,
+                                @Qualifier("facedetailerExchange") TopicExchange topicExchange) {
+        return BindingBuilder.bind(queue).to(topicExchange).with(FACE_DETAILER_CREATE_ROUTING_KEY);
     }
 
 

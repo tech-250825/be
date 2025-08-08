@@ -12,6 +12,8 @@ import java.util.List;
 
 public interface ImageTaskService {
     void initate(ImageTaskRequest request, Member member);
+    void initateFaceDetailer(ImageTaskRequest request, Member member);
+    void processImageCreationFaceDetailer(ImageQueueRequest message);
     void processImageCreationTransactional(ImageQueueRequest message);
     PageResponse<List<TaskOrImageResponse>> getMyTasks(Member member, CursorBasedPageable pageable);
     void delete(Long taskId);

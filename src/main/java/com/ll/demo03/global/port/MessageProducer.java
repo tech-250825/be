@@ -7,6 +7,8 @@ public interface MessageProducer {
 
     void sendImageCreationMessage(ImageQueueRequest message);
 
+    void sendFaceDetailerCreationMessage(ImageQueueRequest message);
+
     void sendCreationMessage(T2VQueueRequest message);
 
     void sendCreationMessage(I2VQueueRequest message);

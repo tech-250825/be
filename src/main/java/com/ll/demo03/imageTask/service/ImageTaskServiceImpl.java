@@ -53,9 +53,29 @@ public class ImageTaskServiceImpl implements ImageTaskService {
     @Value("${custom.webhook-url}")
     private String webhookUrl;
 
-
     @Override
     public void initate(ImageTaskRequest request, Member member){
+        Member creator = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
+
+        int creditCost = request.getResolutionProfile().getBaseCreditCost();
+        creator.decreaseCredit(creditCost);
+        memberRepository.save(creator);
+
+        Weight checkpoint = weightRepository.findById(request.getCheckpointId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+
+        Weight lora = weightRepository.findById(request.getLoraId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+
+        String newPrompt = request.getPrompt();
+
+        newPrompt = weightService.addTriggerWord(lora.getId(), newPrompt);
+
+        ImageQueueRequest imageQueueRequest = ImageTask.toImageQueueRequest(request, checkpoint.getModelName(), lora.getModelName(), newPrompt, member);
+        messageProducer.sendImageCreationMessage(imageQueueRequest);
+    }
+
+
+    @Override
+    public void initateFaceDetailer(ImageTaskRequest request, Member member){
         Member creator = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
 
         int creditCost = request.getResolutionProfile().getBaseCreditCost();
@@ -71,7 +91,30 @@ public class ImageTaskServiceImpl implements ImageTaskService {
         newPrompt = weightService.addTriggerWord(lora.getId(), newPrompt);
         
         ImageQueueRequest imageQueueRequest = ImageTask.toImageQueueRequest(request, checkpoint.getModelName(), lora.getModelName(), newPrompt, member);
-        messageProducer.sendImageCreationMessage(imageQueueRequest);
+        messageProducer.sendFaceDetailerCreationMessage(imageQueueRequest);
+    }
+
+    @Override
+    public void processImageCreationFaceDetailer(ImageQueueRequest message) { //비동기 에러나면 어칼껀데
+
+        Member member = memberRepository.findById(message.getMemberId()).orElseThrow(() -> new EntityNotFoundException("Member not found")); //rabbitmq TLS화하여 보안설정 하기
+
+        ImageTask task = ImageTask.from(member, message);
+        task = task.updateStatus(Status.IN_PROGRESS, null);
+        ImageTask saved = taskRepository.save(task);
+        Long taskId = saved.getId();
+
+        redisService.pushToQueue("image", taskId);
+
+        network.createImageFaceDetailer(
+                taskId,
+                message.getCheckpoint(),
+                message.getLora(),
+                message.getPrompt(),
+                message.getWidth(),
+                message.getHeight(),
+                webhookUrl + "/api/images/webhook"
+        );
     }
 
     @Override

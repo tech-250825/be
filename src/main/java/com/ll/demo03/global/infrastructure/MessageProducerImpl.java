@@ -27,6 +27,15 @@ public class MessageProducerImpl implements MessageProducer {
     }
 
     @Override
+    public void sendFaceDetailerCreationMessage(ImageQueueRequest message) {
+        rabbitTemplate.convertAndSend(
+                RabbitMQConfig.FACE_DETAILER_EXCHANGE,
+                RabbitMQConfig.FACE_DETAILER_CREATE_ROUTING_KEY,
+                message
+        );
+    }
+
+    @Override
     public void sendCreationMessage(T2VQueueRequest message) {
         rabbitTemplate.convertAndSend(
                 RabbitMQConfig.T2V_EXCHANGE,

@@ -75,6 +75,44 @@ public class NetworkImpl implements Network {
     }
 
     public String createImage(Long taskId, String checkpoint, String lora, String prompt, int width, int height, String webhook) {
+
+        try {
+            Unirest.setTimeouts(0, 0);
+            Map<String, Object> payload = Map.of(
+                    "task_id", taskId,
+                    "positive_prompt", prompt,
+                    "checkpoint", checkpoint,
+                    "lora", lora,
+                    "width", width,
+                    "height", height
+            );
+            Map<String, Object> input = Map.of(
+                    "workflow", "illustrious_image",
+                    "payload", payload
+            );
+
+            Map<String, Object> requestBody = Map.of(
+                    "webhook", webhook,
+                    "input", input
+            );
+
+            String jsonBody = objectMapper.writeValueAsString(requestBody);
+            HttpResponse<String> response = Unirest.post("https://api.runpod.ai/v2/ldkbvglhy10oq4/run")
+                    .header("accept", "application/json")
+                    .header("authorization", runpodApiKey)
+
+                    .header("content-type", "application/json")
+                    .body(jsonBody)
+                    .asString();
+
+            return response.getBody();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public String createImageFaceDetailer(Long taskId, String checkpoint, String lora, String prompt, int width, int height, String webhook) {
         try {
             Unirest.setTimeouts(0, 0);
 
@@ -99,7 +137,7 @@ public class NetworkImpl implements Network {
 
             String jsonBody = objectMapper.writeValueAsString(requestBody);
 
-            HttpResponse<String> response = Unirest.post("https://api.runpod.ai/v2/eas066udr3krkq/status/10b328b2-06d8-454c-acb3-21ecb497bb4d-e1")
+            HttpResponse<String> response = Unirest.post("https://api.runpod.ai/v2/eas066udr3krkq/run")
                     .header("accept", "application/json")
                     .header("authorization", runpodApiKey)
                     .header("content-type", "application/json")

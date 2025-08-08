@@ -37,11 +37,21 @@ public class ImageTaskController {
             @RequestBody ImageTaskRequest request,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
-            Member member = principalDetails.user();
-            imageTaskService.initate(request, member);
-            return GlobalResponse.success();
+        Member member = principalDetails.user();
+        imageTaskService.initate(request, member);
+        return GlobalResponse.success();
     }
 
+    @PostMapping(value = "/create/v2")
+    @PreAuthorize("isAuthenticated()")
+    public GlobalResponse createFaceDetailerImages(
+            @RequestBody ImageTaskRequest request,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    ) {
+            Member member = principalDetails.user();
+            imageTaskService.initateFaceDetailer(request, member);
+            return GlobalResponse.success();
+    }
 
     @PostMapping("/webhook")
     public GlobalResponse handleWebhook(
