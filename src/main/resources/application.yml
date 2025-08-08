@@ -49,6 +49,7 @@ spring:
         format_sql: true
         highlight_sql: false
         use_sql_comments: true
+#        show-sql: true
         dialect: org.hibernate.dialect.MySQLDialect
 management:
   endpoints:
@@ -66,6 +67,7 @@ logging:
   level:
     root: INFO
     org.springframework.security: DEBUG
+#    org.hibernate.SQL: DEBUG
 custom:
   webhook-url: https://d7c24f9c1837.ngrok-free.app
   site:

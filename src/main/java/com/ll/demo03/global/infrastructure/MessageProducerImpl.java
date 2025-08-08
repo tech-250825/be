@@ -43,4 +43,13 @@ public class MessageProducerImpl implements MessageProducer {
                 message
         );
     }
+
+    @Override
+    public void sendLastFrameMessage(I2VQueueRequest message) {
+        rabbitTemplate.convertAndSend(
+                RabbitMQConfig.DOWNLOAD_EXCHANGE,
+                RabbitMQConfig.DOWNLOAD_ROUTING_KEY,
+                message
+        );
+    }
 }

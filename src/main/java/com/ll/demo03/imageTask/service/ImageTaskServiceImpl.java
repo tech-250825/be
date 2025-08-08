@@ -60,6 +60,7 @@ public class ImageTaskServiceImpl implements ImageTaskService {
 
         int creditCost = request.getResolutionProfile().getBaseCreditCost();
         creator.decreaseCredit(creditCost);
+        memberRepository.save(creator);
 
         Weight checkpoint = weightRepository.findById(request.getCheckpointId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
@@ -71,7 +72,6 @@ public class ImageTaskServiceImpl implements ImageTaskService {
         
         ImageQueueRequest imageQueueRequest = ImageTask.toImageQueueRequest(request, checkpoint.getModelName(), lora.getModelName(), newPrompt, member);
         messageProducer.sendImageCreationMessage(imageQueueRequest);
-        memberRepository.save(creator);
     }
 
     @Override

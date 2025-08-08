@@ -1,6 +1,8 @@
 package com.ll.demo03.global.exception;
 
+import com.ll.demo03.global.port.AlertService;
 import jakarta.validation.ConstraintViolationException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.error.ErrorResponse;
@@ -16,8 +18,11 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import java.sql.SQLIntegrityConstraintViolationException;
 //
 @Slf4j
+@RequiredArgsConstructor
 @RestControllerAdvice
 public class ExceptionControllerAdvice {
+
+    private final AlertService alertService;
 
     @ExceptionHandler(value = {ConstraintViolationException.class, MethodArgumentNotValidException.class, MethodArgumentTypeMismatchException.class})
     public ResponseEntity<ErrorResponse> handleValidationExceptions(Exception e) {
@@ -34,6 +39,7 @@ public class ExceptionControllerAdvice {
     @ExceptionHandler(value = CustomException.class)
     protected ResponseEntity<ErrorResponse> handleCustomException(CustomException e) {
         log.error("Custom Exception: {}", e.getErrorCode(), e);
+        alertService.sendAlert("[VideoTask FAILED] Error {}" + e.getErrorCode()+  e);
         return ErrorResponse.toResponseEntity(e.getErrorCode());
     }
 

@@ -5,6 +5,7 @@ import com.ll.demo03.UGC.service.port.UGCRepository;
 import com.ll.demo03.global.controller.request.ImageWebhookEvent;
 import com.ll.demo03.global.controller.request.WebhookEvent;
 import com.ll.demo03.global.domain.Status;
+import com.ll.demo03.global.port.AlertService;
 import com.ll.demo03.global.port.RedisService;
 import com.ll.demo03.imageTask.domain.ImageTask;
 import com.ll.demo03.imageTask.service.port.ImageTaskRepository;
@@ -29,6 +30,7 @@ public class ImageWebhookProcessorImpl implements ImageWebhookProcessor<ImageWeb
     private final UGCRepository UGCRepository;
     private final RedisService redisService;
     private final MemberRepository memberRepository;
+    private final AlertService alertService;
 
     public void processWebhookEvent(ImageWebhookEvent event) {
         Long taskId = event.getTaskId();
@@ -69,6 +71,7 @@ public class ImageWebhookProcessorImpl implements ImageWebhookProcessor<ImageWeb
                     .orElseThrow(() -> new EntityNotFoundException("Image task not found"));
 
             task = task.updateStatus(Status.FAILED, runpodId);
+            alertService.sendAlert("이미지 생성에 실패했습니다" + taskId);
 
             Member member = task.getCreator();
             member.increaseCredit( task.getResolutionProfile().getBaseCreditCost());

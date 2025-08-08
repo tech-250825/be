@@ -4,6 +4,7 @@ import com.ll.demo03.UGC.domain.UGC;
 import com.ll.demo03.UGC.service.port.UGCRepository;
 import com.ll.demo03.global.controller.request.WebhookEvent;
 import com.ll.demo03.global.domain.Status;
+import com.ll.demo03.global.port.AlertService;
 import com.ll.demo03.global.port.RedisService;
 import com.ll.demo03.member.domain.Member;
 import com.ll.demo03.videoTask.domain.VideoTask;
@@ -23,6 +24,7 @@ public class VideoWebhookProcessorImpl implements WebhookProcessor<WebhookEvent>
     private final VideoTaskRepository taskRepository;
     private final UGCRepository UGCRepository;
     private final RedisService redisService;
+    private final AlertService alertService;
 
     public void processWebhookEvent(WebhookEvent event) {
         Long taskId = event.getTaskId();
@@ -36,7 +38,7 @@ public class VideoWebhookProcessorImpl implements WebhookProcessor<WebhookEvent>
                 default -> handleFailed(taskId, runpodId);
             }
         } catch (Exception e) {
-            log.error("웹훅 이벤트 처리 중 오류 발생: {}", e.getMessage(), e);
+            alertService.sendAlert("[웹훅 이벤트 처리 중 오류 발생: " + e.getMessage() + e);
             handleFailed(taskId, runpodId);
         }
     }
@@ -52,7 +54,7 @@ public class VideoWebhookProcessorImpl implements WebhookProcessor<WebhookEvent>
 
             log.info("✅ DB 저장 완료: taskId={}, videoUrl={}", taskId, ugc);
         } catch (Exception e) {
-            log.error("DB 저장 중 오류 발생: {}", e.getMessage(), e);
+            alertService.sendAlert("DB 저장 중 오류 발생: " + e.getMessage() + e);
         }
     }
 
@@ -63,6 +65,7 @@ public class VideoWebhookProcessorImpl implements WebhookProcessor<WebhookEvent>
                     .orElseThrow(() -> new EntityNotFoundException("Video task not found"));
 
             task = task.updateStatus(Status.FAILED, runpodId);
+            alertService.sendAlert("동영상 생성에 실패했습니다" + taskId);
 
             Member member = task.getCreator();
             member.increaseCredit( task.getResolutionProfile().getBaseCreditCost() * (int) Math.ceil(task.getNumFrames() / 40.0));

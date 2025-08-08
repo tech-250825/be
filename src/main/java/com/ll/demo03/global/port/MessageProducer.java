@@ -10,4 +10,6 @@ public interface MessageProducer {
     void sendCreationMessage(T2VQueueRequest message);
 
     void sendCreationMessage(I2VQueueRequest message);
+
+    void sendLastFrameMessage(I2VQueueRequest message);
 }

@@ -54,7 +54,6 @@ public class VideoTaskServiceImpl implements VideoTaskService {
     private final WeightService weightService;
     private final UGCRepository ugcRepository;
     private final BoardRepository boardRepository;
-    private final VideoProcessingService videoProcessingService;
 
     @Value("${custom.webhook-url}")
     private String webhookUrl;
@@ -65,6 +64,7 @@ public class VideoTaskServiceImpl implements VideoTaskService {
 
         int creditCost = request.getResolutionProfile().getBaseCreditCost() * (int) Math.ceil(request.getNumFrames() / 40.0);
         creator.decreaseCredit(creditCost);
+        memberRepository.save(creator);
 
         Weight lora = weightRepository.findById(request.getLoraId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
@@ -76,7 +76,6 @@ public class VideoTaskServiceImpl implements VideoTaskService {
 
         T2VQueueRequest queueRequest = VideoTask.toT2VQueueRequest(saved.getId(), request, lora.getModelName(), newPrompt, creator);
         videoMessageProducer.sendCreationMessage(queueRequest);
-        memberRepository.save(creator);
     }
 
     @Override
@@ -85,6 +84,7 @@ public class VideoTaskServiceImpl implements VideoTaskService {
 
         int creditCost = request.getResolutionProfile().getBaseCreditCost() * (int) Math.ceil(request.getNumFrames() / 40.0);
         creator.decreaseCredit(creditCost);
+        memberRepository.save(creator);
 
         String url = s3Service.uploadFile(image);
 
@@ -96,7 +96,6 @@ public class VideoTaskServiceImpl implements VideoTaskService {
 
         I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request, url, newPrompt, creator);
         videoMessageProducer.sendCreationMessage(queueRequest);
-        memberRepository.save(creator);
     }
 
     @Override
@@ -105,6 +104,7 @@ public class VideoTaskServiceImpl implements VideoTaskService {
 
         int creditCost = request.getResolutionProfile().getBaseCreditCost() * (int) Math.ceil(request.getNumFrames() / 40.0);
         creator.decreaseCredit(creditCost);
+        memberRepository.save(creator);
 
         VideoTask task = VideoTask.from(member, request);
         task = task.updateStatus(Status.IN_PROGRESS, null);
@@ -114,7 +114,6 @@ public class VideoTaskServiceImpl implements VideoTaskService {
 
         I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request, newPrompt, creator);
         videoMessageProducer.sendCreationMessage(queueRequest);
-        memberRepository.save(creator);
     }
 
     @Override
@@ -123,6 +122,7 @@ public class VideoTaskServiceImpl implements VideoTaskService {
 
         int creditCost = request.getResolutionProfile().getBaseCreditCost() * (int) Math.ceil(request.getNumFrames() / 40.0);
         creator.decreaseCredit(creditCost);
+        memberRepository.save(creator);
 
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
@@ -134,7 +134,6 @@ public class VideoTaskServiceImpl implements VideoTaskService {
 
         I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request, newPrompt, creator);
         videoMessageProducer.sendCreationMessage(queueRequest);
-        memberRepository.save(creator);
     }
 
     @Override
@@ -143,6 +142,7 @@ public class VideoTaskServiceImpl implements VideoTaskService {
 
         int creditCost = request.getResolutionProfile().getBaseCreditCost() * (int) Math.ceil(request.getNumFrames() / 40.0);
         creator.decreaseCredit(creditCost);
+        memberRepository.save(creator);
 
         Weight lora = weightRepository.findById(request.getLoraId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
@@ -155,7 +155,6 @@ public class VideoTaskServiceImpl implements VideoTaskService {
 
         T2VQueueRequest queueRequest = VideoTask.toT2VQueueRequest(saved.getId(), request, lora.getModelName(), newPrompt, creator);
         videoMessageProducer.sendCreationMessage(queueRequest);
-        memberRepository.save(creator);
     }
 
     @Override
@@ -164,6 +163,7 @@ public class VideoTaskServiceImpl implements VideoTaskService {
 
         int creditCost = request.getResolutionProfile().getBaseCreditCost() * (int) Math.ceil(request.getNumFrames() / 40.0);
         creator.decreaseCredit(creditCost);
+        memberRepository.save(creator);
 
         String url = s3Service.uploadFile(image);
 
@@ -177,7 +177,6 @@ public class VideoTaskServiceImpl implements VideoTaskService {
 
         I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request, url, newPrompt, creator);
         videoMessageProducer.sendCreationMessage(queueRequest);
-        memberRepository.save(creator);
     }
 
     @Override
@@ -186,9 +185,7 @@ public class VideoTaskServiceImpl implements VideoTaskService {
 
         int creditCost = request.getResolutionProfile().getBaseCreditCost() * (int) Math.ceil(request.getNumFrames() / 40.0);
         creator.decreaseCredit(creditCost);
-
-        MultipartFile latestFrame = videoProcessingService.extractLatestFrameFromVideo(request.getImageUrl());
-        String url = s3Service.uploadFile(latestFrame);
+        memberRepository.save(creator);
 
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
@@ -198,9 +195,8 @@ public class VideoTaskServiceImpl implements VideoTaskService {
 
         String newPrompt = request.getPrompt();
 
-        I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request, url, newPrompt, creator);
-        videoMessageProducer.sendCreationMessage(queueRequest);
-        memberRepository.save(creator);
+        I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request, newPrompt, creator);
+        videoMessageProducer.sendLastFrameMessage(queueRequest);
     }
 
     @Override
