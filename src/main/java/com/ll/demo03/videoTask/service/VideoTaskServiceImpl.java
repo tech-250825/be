@@ -6,7 +6,6 @@ import com.ll.demo03.UGC.service.port.UGCRepository;
 import com.ll.demo03.board.domain.Board;
 import com.ll.demo03.board.service.port.BoardRepository;
 import com.ll.demo03.global.domain.Status;
-import com.ll.demo03.global.port.VideoProcessingService;
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
 import com.ll.demo03.global.port.*;
@@ -54,6 +53,7 @@ public class VideoTaskServiceImpl implements VideoTaskService {
     private final WeightService weightService;
     private final UGCRepository ugcRepository;
     private final BoardRepository boardRepository;
+    private final VideoProcessingService processingService;
 
     @Value("${custom.webhook-url}")
     private String webhookUrl;
@@ -92,9 +92,7 @@ public class VideoTaskServiceImpl implements VideoTaskService {
         task = task.updateStatus(Status.IN_PROGRESS, null);
         VideoTask saved = videoTaskRepository.save(task);
 
-        String newPrompt = request.getPrompt();
-
-        I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request, url, newPrompt, creator);
+        I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request, url, creator);
         videoMessageProducer.sendCreationMessage(queueRequest);
     }
 
@@ -110,9 +108,7 @@ public class VideoTaskServiceImpl implements VideoTaskService {
         task = task.updateStatus(Status.IN_PROGRESS, null);
         VideoTask saved = videoTaskRepository.save(task);
 
-        String newPrompt = request.getPrompt();
-
-        I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request, newPrompt, creator);
+        I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request,  creator);
         videoMessageProducer.sendCreationMessage(queueRequest);
     }
 
@@ -130,9 +126,7 @@ public class VideoTaskServiceImpl implements VideoTaskService {
         task = task.updateStatus(Status.IN_PROGRESS, null);
         VideoTask saved = videoTaskRepository.save(task);
 
-        String newPrompt = request.getPrompt();
-
-        I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request, newPrompt, creator);
+        I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request, creator);
         videoMessageProducer.sendCreationMessage(queueRequest);
     }
 
@@ -173,9 +167,7 @@ public class VideoTaskServiceImpl implements VideoTaskService {
         task = task.updateStatus(Status.IN_PROGRESS, null);
         VideoTask saved = videoTaskRepository.save(task);
 
-        String newPrompt = request.getPrompt();
-
-        I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request, url, newPrompt, creator);
+        I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request, url, creator);
         videoMessageProducer.sendCreationMessage(queueRequest);
     }
 
@@ -193,10 +185,11 @@ public class VideoTaskServiceImpl implements VideoTaskService {
         task = task.updateStatus(Status.IN_PROGRESS, null);
         VideoTask saved = videoTaskRepository.save(task);
 
-        String newPrompt = request.getPrompt();
+        MultipartFile file = processingService.extractLatestFrameFromVideo(request.getImageUrl());
+        String url = s3Service.uploadFile(file);
 
-        I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request, newPrompt, creator);
-        videoMessageProducer.sendLastFrameMessage(queueRequest);
+        I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request, url, creator);
+        videoMessageProducer.sendCreationMessage(queueRequest);
     }
 
     @Override

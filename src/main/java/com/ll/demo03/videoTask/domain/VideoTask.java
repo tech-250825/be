@@ -140,10 +140,10 @@ public class VideoTask {
         );
     }
 
-    public static I2VQueueRequest toI2VQueueRequest(Long taskId, VideoTaskRequest request, String url, String newPrompt, Member creator) {
+    public static I2VQueueRequest toI2VQueueRequest(Long taskId, VideoTaskRequest request, String url, Member creator) {
         return new I2VQueueRequest(
                 taskId,
-                newPrompt,
+                request.getPrompt(),
                 url,
                 request.getResolutionProfile().getWidth(),
                 request.getResolutionProfile().getHeight(),
@@ -152,10 +152,10 @@ public class VideoTask {
         );
     }
 
-    public static I2VQueueRequest toI2VQueueRequest(Long taskId, I2VTaskRequest request, String url, String newPrompt, Member creator) {
+    public static I2VQueueRequest toI2VQueueRequest(Long taskId, I2VTaskRequest request, String url, Member creator) {
         return new I2VQueueRequest(
                 taskId,
-                newPrompt,
+                request.getPrompt(),
                 url,
                 request.getResolutionProfile().getWidth(),
                 request.getResolutionProfile().getHeight(),
@@ -164,10 +164,10 @@ public class VideoTask {
         );
     }
 
-    public static I2VQueueRequest toI2VQueueRequest(Long taskId, I2VTaskRequest request, String newPrompt, Member creator) {
+    public static I2VQueueRequest toI2VQueueRequest(Long taskId, I2VTaskRequest request, Member creator) {
         return new I2VQueueRequest(
                 taskId,
-                newPrompt,
+                request.getPrompt(),
                 request.getImageUrl(),
                 request.getResolutionProfile().getWidth(),
                 request.getResolutionProfile().getHeight(),
