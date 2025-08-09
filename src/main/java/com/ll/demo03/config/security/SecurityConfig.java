@@ -63,8 +63,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request ->
                                 request.requestMatchers(
                                                 "/",
-                                                "/api/shared-images",
-                                                "/api/shared-images/{imageId}",
                                                 "/api/images/webhook",
                                                 "/api/videos/webhook",
                                                 "/api/upscale-images/webhook",

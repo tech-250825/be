@@ -32,11 +32,5 @@ public class FakeMessageProducer implements MessageProducer {
     public void sendCreationMessage(I2VQueueRequest message) {
         i2vMessages.add(message);
     }
-
-    @Override
-    public void sendLastFrameMessage(I2VQueueRequest message) {
-        i2vMessages.add(message);
-    }
-
 }
 
