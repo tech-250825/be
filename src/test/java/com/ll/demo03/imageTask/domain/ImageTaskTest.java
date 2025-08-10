@@ -21,7 +21,7 @@ public class ImageTaskTest {
                 .email("ninetale22@gmail.com")
                 .name("한유림")
                 .profile("profile.url")
-                .credit(2000)
+                .credit(200)
                 .role(Role.USER)
                 .provider(AuthProvider.GOOGLE)
                 .providerId("12344321")
