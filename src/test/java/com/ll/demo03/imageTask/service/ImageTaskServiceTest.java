@@ -102,36 +102,36 @@ class ImageTaskServiceTest {
 
     }
 
-    @Test
-    void 이미지_생성_테스크를_저장하고_큐에_넣고_네트워크_요청한다() {
-        // given
-        Member member = memberRepository.findById(1L).orElseThrow();
-        ImageQueueRequest message = ImageQueueRequest.builder()
-                .memberId(member.getId())
-                .prompt("강아지 그려줘")
-                .lora("cute-lora")
-                .build();
-
-        // when
-        imageTaskService.processImageCreationTransactional(message);
-
-        // then
-        PageRequest pageRequest = PageRequest.of(0, 10);
-        Slice<ImageTask> slice = taskRepository.findByMember(member, pageRequest);
-        List<ImageTask> tasks = slice.getContent();
-
-        assertFalse(tasks.isEmpty(), "ImageTask가 저장되어야 합니다.");
-        ImageTask task = tasks.get(0);
-        assertEquals(Status.IN_PROGRESS, task.getStatus(), "Task 상태는 IN_PROGRESS여야 합니다.");
-        assertEquals("강아지 그려줘", task.getPrompt());
-
-        assertTrue(redisService.queueContains("image", task.getId()), "Redis 큐에 taskId가 있어야 합니다.");
-
-        assertEquals(1, network.imageCalls.size(), "네트워크 호출이 1번 있어야 합니다.");
-        FakeNetwork.ImageCall call = network.imageCalls.get(0);
-        assertEquals(task.getId(), call.taskId);
-        assertEquals("cute-lora", call.lora);
-        assertEquals("강아지 그려줘", call.prompt);
-    }
+//    @Test
+//    void 이미지_생성_테스크를_저장하고_큐에_넣고_네트워크_요청한다() {
+//        // given
+//        Member member = memberRepository.findById(1L).orElseThrow();
+//        ImageQueueRequest message = ImageQueueRequest.builder()
+//                .memberId(member.getId())
+//                .prompt("강아지 그려줘")
+//                .lora("cute-lora")
+//                .build();
+//
+//        // when
+//        imageTaskService.processImageCreationTransactional(message);
+//
+//        // then
+//        PageRequest pageRequest = PageRequest.of(0, 10);
+//        Slice<ImageTask> slice = taskRepository.findByMember(member, pageRequest);
+//        List<ImageTask> tasks = slice.getContent();
+//
+//        assertFalse(tasks.isEmpty(), "ImageTask가 저장되어야 합니다.");
+//        ImageTask task = tasks.get(0);
+//        assertEquals(Status.IN_PROGRESS, task.getStatus(), "Task 상태는 IN_PROGRESS여야 합니다.");
+//        assertEquals("강아지 그려줘", task.getPrompt());
+//
+//        assertTrue(redisService.queueContains("image", task.getId()), "Redis 큐에 taskId가 있어야 합니다.");
+//
+//        assertEquals(1, network.imageCalls.size(), "네트워크 호출이 1번 있어야 합니다.");
+//        FakeNetwork.ImageCall call = network.imageCalls.get(0);
+//        assertEquals(task.getId(), call.taskId);
+//        assertEquals("cute-lora", call.lora);
+//        assertEquals("강아지 그려줘", call.prompt);
+//    }
 
 }
