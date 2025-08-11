@@ -5,7 +5,6 @@ import com.ll.demo03.global.util.PageResponse;
 import com.ll.demo03.imageTask.controller.request.ImageQueueRequest;
 import com.ll.demo03.imageTask.controller.request.ImageTaskRequest;
 import com.ll.demo03.imageTask.controller.response.TaskOrImageResponse;
-import com.ll.demo03.imageTask.domain.ImageTaskInitiate;
 import com.ll.demo03.member.domain.Member;
 
 import java.util.List;

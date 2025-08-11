@@ -2,10 +2,13 @@ package com.ll.demo03.imageTask.controller;
 
 import com.ll.demo03.global.controller.request.ImageWebhookEvent;
 import com.ll.demo03.global.dto.GlobalResponse;
+import com.ll.demo03.global.error.ErrorCode;
+import com.ll.demo03.global.exception.CustomException;
 import com.ll.demo03.imageTask.controller.port.ImageTaskService;
 import com.ll.demo03.imageTask.controller.request.ImageTaskRequest;
 import com.ll.demo03.imageTask.controller.response.TaskOrImageResponse;
 import com.ll.demo03.member.domain.Member;
+import com.ll.demo03.member.service.port.MemberRepository;
 import com.ll.demo03.oauth.domain.PrincipalDetails;
 import com.ll.demo03.global.util.CursorBasedPageable;
 import com.ll.demo03.global.util.PageResponse;
@@ -29,6 +32,7 @@ import java.util.List;
 public class ImageTaskController {
 
     private final ImageWebhookProcessor imageWebhookProcessor;
+    private final MemberRepository memberRepository;
     private final ImageTaskService imageTaskService;
 
     @PostMapping(value = "/create")
@@ -60,6 +64,16 @@ public class ImageTaskController {
             imageWebhookProcessor.processWebhookEvent(event);
 
             return GlobalResponse.success();
+    }
+
+    @GetMapping("/public")
+    public GlobalResponse handle(
+            CursorBasedPageable cursorBasedPageable) {
+
+        Member member = memberRepository.findById(1L).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
+        PageResponse<List<TaskOrImageResponse>> result = imageTaskService.getMyTasks(member, cursorBasedPageable);
+
+        return GlobalResponse.success(result);
     }
 
     @GetMapping("/task")

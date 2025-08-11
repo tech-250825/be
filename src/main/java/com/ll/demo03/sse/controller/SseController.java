@@ -42,10 +42,6 @@ public class SseController {
     private final ObjectMapper objectMapper;
     private final NotificationHandlerRegistry notificationHandlerRegistry;
 
-    public void registerSession(String memberId, String sessionId) {
-        redisTemplate.opsForList().rightPush("sse:member:" + memberId, sessionId);
-    }
-
     @GetMapping("/{memberId}")
     public SseEmitter connect(HttpServletRequest request, @PathVariable("memberId") String memberId) throws IOException {
         String sessionId = request.getSession(true).getId();
@@ -71,7 +67,6 @@ public class SseController {
         } catch (IOException e) {
             emitter.completeWithError(e);
         }
-
         return emitter;
     }
 
@@ -106,5 +101,4 @@ public class SseController {
             System.out.println("=== Redis 연결 실패로 리스너 등록 건너뜀 ===");
         }
     }
-
 }

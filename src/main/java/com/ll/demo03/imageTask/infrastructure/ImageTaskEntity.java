@@ -4,6 +4,8 @@ import com.ll.demo03.global.domain.ResolutionProfile;
 import com.ll.demo03.global.domain.Status;
 import com.ll.demo03.imageTask.domain.ImageTask;
 import com.ll.demo03.member.infrastructure.MemberEntity;
+import com.ll.demo03.weight.domain.Weight;
+import com.ll.demo03.weight.infrasturcture.WeightEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,9 +29,13 @@ public class ImageTaskEntity {
     @Column(columnDefinition = "TEXT")
     private String prompt;
 
-    private String checkpoint;
+    @ManyToOne
+    @JoinColumn(name = "checkpoint_id", nullable = true)
+    private WeightEntity checkpoint;
 
-    private String lora;
+    @ManyToOne
+    @JoinColumn(name = "lora_id", nullable = true)
+    private WeightEntity lora;
 
     private String runpodId;
 
@@ -54,8 +60,8 @@ public class ImageTaskEntity {
     public static ImageTaskEntity from(ImageTask task) {
         ImageTaskEntity taskEntity = new ImageTaskEntity();
         taskEntity.id = task.getId();
-        taskEntity.checkpoint = task.getCheckpoint();
-        taskEntity.lora = task.getLora();
+        taskEntity.checkpoint = task.getCheckpoint() != null ? WeightEntity.from(task.getCheckpoint()) : null;
+        taskEntity.lora = task.getLora() != null ? WeightEntity.from(task.getLora()) : null;
         taskEntity.prompt = task.getPrompt();
         taskEntity.runpodId = task.getRunpodId();
         taskEntity.resolutionProfile = task.getResolutionProfile();
@@ -71,8 +77,8 @@ public class ImageTaskEntity {
         return ImageTask.builder()
                 .id(id)
                 .prompt(prompt)
-                .checkpoint(checkpoint)
-                .lora(lora)
+                .checkpoint(checkpoint != null ? checkpoint.toModel():null )
+                .lora(lora != null ? lora.toModel() : null)
                 .runpodId(runpodId)
                 .resolutionProfile(resolutionProfile)
                 .status(status)

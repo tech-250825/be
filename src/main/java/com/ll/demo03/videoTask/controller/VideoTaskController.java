@@ -7,6 +7,7 @@ import com.ll.demo03.global.dto.GlobalResponse;
 import com.ll.demo03.global.exception.CustomException;
 import com.ll.demo03.global.util.JsonParser;
 import com.ll.demo03.member.domain.Member;
+import com.ll.demo03.member.service.port.MemberRepository;
 import com.ll.demo03.videoTask.controller.port.VideoTaskService;
 import com.ll.demo03.videoTask.controller.request.I2VTaskRequest;
 import com.ll.demo03.videoTask.controller.response.TaskOrVideoResponse;
@@ -36,6 +37,7 @@ public class VideoTaskController {
 
     private final VideoWebhookProcessorImpl videoWebhookProcessor;
     private final VideoTaskService videoTaskService;
+    private final MemberRepository memberRepository;
 
     @PostMapping(value = "/create/t2v")
     public GlobalResponse createT2V(
@@ -130,6 +132,14 @@ public class VideoTaskController {
     public GlobalResponse delete(@PathVariable Long taskId) {
         videoTaskService.delete(taskId);
         return GlobalResponse.success("삭제 완료되었습니다. ");
+    }
+
+    @GetMapping("/public")
+    public GlobalResponse handle(
+            CursorBasedPageable cursorBasedPageable) {
+        Member member = memberRepository.findById(1L).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
+        PageResponse<List<TaskOrVideoResponse>> result = videoTaskService.getMyTasks(member, cursorBasedPageable);
+        return GlobalResponse.success(result);
     }
 
     @GetMapping("/task")

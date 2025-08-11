@@ -16,6 +16,7 @@ import com.ll.demo03.global.port.Network;
 import com.ll.demo03.imageTask.service.port.ImageTaskRepository;
 import com.ll.demo03.global.util.CursorBasedPageable;
 import com.ll.demo03.global.util.PageResponse;
+import com.ll.demo03.videoTask.domain.VideoTask;
 import com.ll.demo03.weight.controller.port.WeightService;
 import com.ll.demo03.weight.domain.Weight;
 import com.ll.demo03.weight.service.port.WeightRepository;
@@ -65,11 +66,13 @@ public class ImageTaskServiceImpl implements ImageTaskService {
 
         Weight lora = weightRepository.findById(request.getLoraId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
-        String newPrompt = request.getPrompt();
+        String newPrompt = weightService.addTriggerWord(lora.getId(), request.getPrompt());
 
-        newPrompt = weightService.addTriggerWord(lora.getId(), newPrompt);
+        ImageTask task = ImageTask.from(member, checkpoint, lora, newPrompt, request.getResolutionProfile());
+        task = task.updateStatus(Status.IN_PROGRESS, null);
+        ImageTask saved = taskRepository.save(task);
 
-        ImageQueueRequest imageQueueRequest = ImageTask.toImageQueueRequest(request, checkpoint.getModelName(), lora.getModelName(), newPrompt, member);
+        ImageQueueRequest imageQueueRequest = ImageTask.toImageQueueRequest(saved.getId(), request, checkpoint.getModelName(), lora.getModelName(), newPrompt, member);
         messageProducer.sendImageCreationMessage(imageQueueRequest);
     }
 
@@ -89,25 +92,22 @@ public class ImageTaskServiceImpl implements ImageTaskService {
         String newPrompt = request.getPrompt();
 
         newPrompt = weightService.addTriggerWord(lora.getId(), newPrompt);
+
+        ImageTask task = ImageTask.from(member, checkpoint, lora, newPrompt, request.getResolutionProfile());
+        task = task.updateStatus(Status.IN_PROGRESS, null);
+        ImageTask saved = taskRepository.save(task);
         
-        ImageQueueRequest imageQueueRequest = ImageTask.toImageQueueRequest(request, checkpoint.getModelName(), lora.getModelName(), newPrompt, member);
+        ImageQueueRequest imageQueueRequest = ImageTask.toImageQueueRequest(saved.getId(), request, checkpoint.getModelName(), lora.getModelName(), newPrompt, member);
         messageProducer.sendFaceDetailerCreationMessage(imageQueueRequest);
     }
 
     @Override
     public void processImageCreationFaceDetailer(ImageQueueRequest message) { //비동기 에러나면 어칼껀데
 
-        Member member = memberRepository.findById(message.getMemberId()).orElseThrow(() -> new EntityNotFoundException("Member not found")); //rabbitmq TLS화하여 보안설정 하기
-
-        ImageTask task = ImageTask.from(member, message);
-        task = task.updateStatus(Status.IN_PROGRESS, null);
-        ImageTask saved = taskRepository.save(task);
-        Long taskId = saved.getId();
-
-        redisService.pushToQueue("image", taskId);
+        redisService.pushToQueue("image", message.getTaskId());
 
         network.createImageFaceDetailer(
-                taskId,
+                message.getTaskId(),
                 message.getCheckpoint(),
                 message.getLora(),
                 message.getPrompt(),
@@ -120,17 +120,10 @@ public class ImageTaskServiceImpl implements ImageTaskService {
     @Override
     public void processImageCreationTransactional(ImageQueueRequest message) { //비동기 에러나면 어칼껀데
 
-        Member member = memberRepository.findById(message.getMemberId()).orElseThrow(() -> new EntityNotFoundException("Member not found")); //rabbitmq TLS화하여 보안설정 하기
-
-        ImageTask task = ImageTask.from(member, message);
-        task = task.updateStatus(Status.IN_PROGRESS, null);
-        ImageTask saved = taskRepository.save(task);
-        Long taskId = saved.getId();
-
-        redisService.pushToQueue("image", taskId);
+        redisService.pushToQueue("image", message.getTaskId());
 
         network.createImage(
-                taskId,
+                message.getTaskId(),
                 message.getCheckpoint(),
                 message.getLora(),
                 message.getPrompt(),

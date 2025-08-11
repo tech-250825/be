@@ -6,6 +6,7 @@ import com.ll.demo03.imageTask.controller.request.ImageQueueRequest;
 import com.ll.demo03.global.port.Network;
 import com.ll.demo03.imageTask.controller.request.ImageTaskRequest;
 import com.ll.demo03.member.domain.Member;
+import com.ll.demo03.weight.domain.Weight;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -16,8 +17,8 @@ public class ImageTask {
 
     private final Long id;
     private final String prompt;
-    private final String checkpoint;
-    private final String lora;
+    private final Weight checkpoint;
+    private final Weight lora;
     private final String runpodId;
     private final Status status;
     private final LocalDateTime createdAt;
@@ -26,7 +27,7 @@ public class ImageTask {
     private final ResolutionProfile resolutionProfile;
 
     @Builder
-    public ImageTask(Long id, String prompt, String checkpoint, String lora, String runpodId, Status status, LocalDateTime createdAt, LocalDateTime modifiedAt, Member creator, ResolutionProfile resolutionProfile) {
+    public ImageTask(Long id, String prompt, Weight checkpoint, Weight lora, String runpodId, Status status, LocalDateTime createdAt, LocalDateTime modifiedAt, Member creator, ResolutionProfile resolutionProfile) {
         this.id = id;
         this.prompt = prompt;
         this.checkpoint = checkpoint;
@@ -39,12 +40,11 @@ public class ImageTask {
         this.resolutionProfile = resolutionProfile;
     }
 
-    public static ImageTask from(Member creator, ImageQueueRequest queueRequest) {
-        ResolutionProfile profile = ResolutionProfile.fromDimensions(queueRequest.getWidth(), queueRequest.getHeight());
+    public static ImageTask from(Member creator, Weight lora, Weight checkpoint, String prompt, ResolutionProfile profile) {
         return ImageTask.builder()
-                .prompt(queueRequest.getPrompt())
-                .checkpoint(queueRequest.getCheckpoint())
-                .lora(queueRequest.getLora())
+                .prompt(prompt)
+                .checkpoint(checkpoint)
+                .lora(lora)
                 .resolutionProfile(profile)
                 .creator(creator)
                 .build();
@@ -65,7 +65,7 @@ public class ImageTask {
                 .build();
     }
 
-    public static ImageQueueRequest toImageQueueRequest(ImageTaskRequest imageTaskRequest, String checkpoint, String lora, String newPrompt, Member creator) {
-        return new ImageQueueRequest(checkpoint, lora, newPrompt, imageTaskRequest.getResolutionProfile().getWidth(), imageTaskRequest.getResolutionProfile().getHeight(), creator.getId());
+    public static ImageQueueRequest toImageQueueRequest(Long taskId, ImageTaskRequest imageTaskRequest, String checkpoint, String lora, String newPrompt, Member creator) {
+        return new ImageQueueRequest(taskId, checkpoint, lora, newPrompt, imageTaskRequest.getResolutionProfile().getWidth(), imageTaskRequest.getResolutionProfile().getHeight(), creator.getId());
     }
 }

@@ -27,7 +27,7 @@ public class ImageTaskDto {
         return ImageTaskDto.builder()
                 .id(task.getId())
                 .prompt(task.getPrompt())
-                .lora(task.getLora())
+                .lora(task.getCheckpoint().getName())
                 .status(task.getStatus())
                 .runpodId(task.getRunpodId())
                 .width(task.getResolutionProfile().getWidth())

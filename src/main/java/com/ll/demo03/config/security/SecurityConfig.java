@@ -74,6 +74,8 @@ public class SecurityConfig {
                                                 "/home/**",
                                                 "/actuator/health",
                                         "/actuator/prometheus",
+                                        "/api/videos/public",
+                                        "/api/images/public",
                                         "/sse/**",
                                                 "/api/lora"
 
