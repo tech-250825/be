@@ -5,6 +5,7 @@ import com.ll.demo03.imageTask.domain.ImageTask;
 import com.ll.demo03.member.domain.AuthProvider;
 import com.ll.demo03.member.domain.Member;
 import com.ll.demo03.member.domain.Role;
+import com.ll.demo03.weight.domain.Weight;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
@@ -27,10 +28,21 @@ public class ImageTaskTest {
                 .providerId("12344321")
                 .build();
 
+        Weight testLora = Weight.builder()
+                .id(1L)
+                .name("test lora")
+                .build();
+
+        Weight testCheckpoint = Weight.builder()
+                .id(2L)
+                .name("test checkpoint")
+                .build();
+
         ImageTask task = ImageTask.builder()
                 .id(1L)
                 .prompt("prompt")
-                .lora("lora")
+                .lora(testLora)
+                .checkpoint(testCheckpoint)
                 .status(Status.IN_PROGRESS)
                 .createdAt(LocalDateTime.now())
                 .modifiedAt(LocalDateTime.now()) //일단 시간은 db에서 저장되므로 쩔수없 ㅠ

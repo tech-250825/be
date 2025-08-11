@@ -27,7 +27,7 @@ public class TokenController {
     public ResponseEntity<GlobalResponse<String>> getToken(@RequestBody AccessTokenRequest request , HttpServletResponse response) {
         String accessToken = tokenGenerator.generateAccessTokenFromRefreshToken(request.get_hrauth());
 
-        addCookie(response, "_hoauth", accessToken, 3600);
+        addCookie(response, "_hoauth", accessToken, 604800);
 
         return ResponseEntity.ok()
                 .body(GlobalResponse.success("재인증되었습니다."));

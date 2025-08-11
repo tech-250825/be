@@ -40,7 +40,7 @@ public class ImageTask {
         this.resolutionProfile = resolutionProfile;
     }
 
-    public static ImageTask from(Member creator, Weight lora, Weight checkpoint, String prompt, ResolutionProfile profile) {
+    public static ImageTask from(Member creator, Weight checkpoint, Weight lora, String prompt, ResolutionProfile profile) {
         return ImageTask.builder()
                 .prompt(prompt)
                 .checkpoint(checkpoint)
