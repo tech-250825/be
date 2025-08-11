@@ -17,7 +17,7 @@ services:
     container_name: redis
     ports:
       - "6379:6379"
-    command: redis-server --requirepass han2024llm
+    command: redis-server --requirepass 1234
     restart: unless-stopped
     networks:
       - hoit-network
@@ -30,7 +30,7 @@ services:
       - "15672:15672"
     environment:
       - RABBITMQ_DEFAULT_USER=admin
-      - RABBITMQ_DEFAULT_PASS=han2024llm
+      - RABBITMQ_DEFAULT_PASS=admin
     restart: unless-stopped
     networks:
       - hoit-network
