@@ -1,1 +1,2 @@
-# sagemaker_example
+# HOIT 서버입니다. 
+
