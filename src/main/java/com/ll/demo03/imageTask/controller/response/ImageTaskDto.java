@@ -26,7 +26,7 @@ public class ImageTaskDto {
     public static ImageTaskDto from(ImageTask task) {
         return ImageTaskDto.builder()
                 .id(task.getId())
-                .prompt(task.getOldPrompt())
+                .prompt(task.getOldPrompt() != null ? task.getOldPrompt() : task.getPrompt())
                 .lora(task.getCheckpoint().getName())
                 .status(task.getStatus())
                 .runpodId(task.getRunpodId())

@@ -30,7 +30,7 @@ public class VideoTaskResponse {
 
         return VideoTaskResponse.builder()
                 .id(task.getId())
-                .prompt(task.getOldPrompt())
+                .prompt(task.getOldPrompt() != null ? task.getOldPrompt() : task.getPrompt())
                 .lora(loraName)
                 .imageUrl(task.getImageUrl())
                 .height(task.getResolutionProfile().getHeight())
