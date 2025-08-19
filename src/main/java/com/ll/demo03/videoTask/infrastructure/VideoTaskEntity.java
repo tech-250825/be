@@ -28,6 +28,9 @@ public class VideoTaskEntity {
     @Column(columnDefinition = "TEXT")
     private String prompt;
 
+    @Column(columnDefinition = "TEXT")
+    private String oldPrompt;
+
     @ManyToOne
     @JoinColumn(name = "lora_id", nullable = true)
     private WeightEntity lora;
@@ -65,6 +68,7 @@ public class VideoTaskEntity {
         VideoTaskEntity taskEntity = new VideoTaskEntity();
         taskEntity.id = task.getId();
         taskEntity.prompt = task.getPrompt();
+        taskEntity.oldPrompt = task.getOldPrompt();
         taskEntity.lora = task.getLora() != null ? WeightEntity.from(task.getLora()) : null;
         taskEntity.url = task.getImageUrl();
         taskEntity.runpodId = task.getRunpodId();
@@ -83,6 +87,7 @@ public class VideoTaskEntity {
         return VideoTask.builder()
                 .id(id)
                 .prompt(prompt)
+                .oldPrompt(oldPrompt)
                 .lora(lora != null ? lora.toModel() : null)
                 .imageUrl(url)
                 .runpodId(runpodId)

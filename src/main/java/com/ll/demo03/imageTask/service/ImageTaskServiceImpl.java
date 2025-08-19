@@ -9,7 +9,9 @@ import com.ll.demo03.global.port.MessageProducer;
 import com.ll.demo03.global.port.RedisService;
 import com.ll.demo03.imageTask.controller.port.ImageTaskService;
 import com.ll.demo03.imageTask.controller.request.ImageQueueRequest;
+import com.ll.demo03.imageTask.controller.request.ImageQueueV3Request;
 import com.ll.demo03.imageTask.controller.request.ImageTaskRequest;
+import com.ll.demo03.imageTask.controller.request.ImageTaskV3Request;
 import com.ll.demo03.imageTask.controller.response.TaskOrImageResponse;
 import com.ll.demo03.imageTask.domain.ImageTask;
 import com.ll.demo03.global.port.Network;
@@ -66,13 +68,15 @@ public class ImageTaskServiceImpl implements ImageTaskService {
 
         Weight lora = weightRepository.findById(request.getLoraId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
-        String newPrompt = weightService.addTriggerWord(lora.getId(), request.getPrompt());
+        String gptPrompt = weightService.updatePrompt(lora.getId(), request.getPrompt());
 
-        ImageTask task = ImageTask.from(member, checkpoint, lora, newPrompt, request.getResolutionProfile());
+        String newPrompt = weightService.addTriggerWord(lora.getId(), gptPrompt);
+
+        ImageTask task = ImageTask.from(member, checkpoint, lora, request.getPrompt(),  newPrompt, request.getResolutionProfile());
         task = task.updateStatus(Status.IN_PROGRESS, null);
         ImageTask saved = taskRepository.save(task);
 
-        ImageQueueRequest imageQueueRequest = ImageTask.toImageQueueRequest(saved.getId(), request, checkpoint.getModelName(), lora.getModelName(), newPrompt, member);
+        ImageQueueRequest imageQueueRequest = ImageTask.toImageQueueRequest(saved.getId(), request, checkpoint.getModelName(), lora.getModelName(), newPrompt, lora.getNegativePrompt(), member);
         messageProducer.sendImageCreationMessage(imageQueueRequest);
     }
 
@@ -88,17 +92,39 @@ public class ImageTaskServiceImpl implements ImageTaskService {
         Weight checkpoint = weightRepository.findById(request.getCheckpointId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
         Weight lora = weightRepository.findById(request.getLoraId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
-        
-        String newPrompt = request.getPrompt();
 
-        newPrompt = weightService.addTriggerWord(lora.getId(), newPrompt);
+        String gptPrompt = weightService.updatePrompt(lora.getId(), request.getPrompt());
 
-        ImageTask task = ImageTask.from(member, checkpoint, lora, newPrompt, request.getResolutionProfile());
+        String newPrompt = weightService.addTriggerWord(lora.getId(), gptPrompt);
+
+        ImageTask task = ImageTask.from(member, checkpoint, lora, request.getPrompt(), newPrompt, request.getResolutionProfile());
         task = task.updateStatus(Status.IN_PROGRESS, null);
         ImageTask saved = taskRepository.save(task);
         
-        ImageQueueRequest imageQueueRequest = ImageTask.toImageQueueRequest(saved.getId(), request, checkpoint.getModelName(), lora.getModelName(), newPrompt, member);
+        ImageQueueRequest imageQueueRequest = ImageTask.toImageQueueRequest(saved.getId(), request, checkpoint.getModelName(), lora.getModelName(), newPrompt, lora.getNegativePrompt(), member);
         messageProducer.sendFaceDetailerCreationMessage(imageQueueRequest);
+    }
+
+    @Override
+    public void initatePlainImage(ImageTaskV3Request request, Member member){
+        Member creator = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
+
+        int creditCost = request.getResolutionProfile().getBaseCreditCost();
+        creator.decreaseCredit(creditCost);
+        memberRepository.save(creator);
+
+        Weight checkpoint = weightRepository.findById(request.getCheckpointId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+
+        String gptPrompt = weightService.updatePrompt(checkpoint.getId(), request.getPrompt());
+
+        String newPrompt = weightService.addTriggerWord(checkpoint.getId(), gptPrompt);
+
+        ImageTask task = ImageTask.from(member, checkpoint, request.getPrompt(), newPrompt, request.getResolutionProfile());
+        task = task.updateStatus(Status.IN_PROGRESS, null);
+        ImageTask saved = taskRepository.save(task);
+
+        ImageQueueV3Request imageQueueRequest = ImageTask.toImageQueueRequest(saved.getId(), request, checkpoint.getModelName(), newPrompt, checkpoint.getNegativePrompt(), member);
+        messageProducer.sendPlainCreationMessage(imageQueueRequest);
     }
 
     @Override
@@ -111,6 +137,7 @@ public class ImageTaskServiceImpl implements ImageTaskService {
                 message.getCheckpoint(),
                 message.getLora(),
                 message.getPrompt(),
+                message.getNegativePrompt(),
                 message.getWidth(),
                 message.getHeight(),
                 webhookUrl + "/api/images/webhook"
@@ -127,6 +154,23 @@ public class ImageTaskServiceImpl implements ImageTaskService {
                 message.getCheckpoint(),
                 message.getLora(),
                 message.getPrompt(),
+                message.getNegativePrompt(),
+                message.getWidth(),
+                message.getHeight(),
+                webhookUrl + "/api/images/webhook"
+        );
+    }
+
+    @Override
+    public void processPlainCreationTransactional(ImageQueueV3Request message) { //비동기 에러나면 어칼껀데
+
+        redisService.pushToQueue("image", message.getTaskId());
+
+        network.createImagePlain(
+                message.getTaskId(),
+                message.getCheckpoint(),
+                message.getPrompt(),
+                message.getNegativePrompt(),
                 message.getWidth(),
                 message.getHeight(),
                 webhookUrl + "/api/images/webhook"

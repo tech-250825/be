@@ -68,11 +68,13 @@ public class VideoTaskServiceImpl implements VideoTaskService {
 
         Weight lora = weightRepository.findById(request.getLoraId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
-        VideoTask task = VideoTask.from(member, lora, request);
+        String gptPrompt = weightService.updatePrompt(lora.getId(), request.getPrompt());
+
+        String newPrompt = weightService.addTriggerWord(lora.getId(), gptPrompt);
+
+        VideoTask task = VideoTask.from(member, lora, request, newPrompt);
         task = task.updateStatus(Status.IN_PROGRESS, null);
         VideoTask saved = videoTaskRepository.save(task);
-
-        String newPrompt = weightService.addTriggerWord(lora.getId(), request.getPrompt());
 
         T2VQueueRequest queueRequest = VideoTask.toT2VQueueRequest(saved.getId(), request, lora.getModelName(), newPrompt, creator);
         videoMessageProducer.sendCreationMessage(queueRequest);
@@ -88,11 +90,13 @@ public class VideoTaskServiceImpl implements VideoTaskService {
 
         String url = s3Service.uploadFile(image);
 
-        VideoTask task = VideoTask.from(member, url, request);
+        String gptPrompt = weightService.updatePrompt(request.getPrompt());
+
+        VideoTask task = VideoTask.from(member, url, request, gptPrompt);
         task = task.updateStatus(Status.IN_PROGRESS, null);
         VideoTask saved = videoTaskRepository.save(task);
 
-        I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request, url, creator);
+        I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request, gptPrompt, url, creator);
         videoMessageProducer.sendCreationMessage(queueRequest);
     }
 
@@ -104,11 +108,13 @@ public class VideoTaskServiceImpl implements VideoTaskService {
         creator.decreaseCredit(creditCost);
         memberRepository.save(creator);
 
-        VideoTask task = VideoTask.from(member, request);
+        String gptPrompt = weightService.updatePrompt(request.getPrompt());
+
+        VideoTask task = VideoTask.from(member, request, gptPrompt);
         task = task.updateStatus(Status.IN_PROGRESS, null);
         VideoTask saved = videoTaskRepository.save(task);
 
-        I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request,  creator);
+        I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request, gptPrompt, creator);
         videoMessageProducer.sendCreationMessage(queueRequest);
     }
 
@@ -122,11 +128,13 @@ public class VideoTaskServiceImpl implements VideoTaskService {
 
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
-        VideoTask task = VideoTask.from(member, request, board);
+        String gptPrompt = weightService.updatePrompt(request.getPrompt());
+
+        VideoTask task = VideoTask.from(member, request, board, gptPrompt);
         task = task.updateStatus(Status.IN_PROGRESS, null);
         VideoTask saved = videoTaskRepository.save(task);
 
-        I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request, creator);
+        I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request,gptPrompt, creator);
         videoMessageProducer.sendCreationMessage(queueRequest);
     }
 
@@ -141,11 +149,13 @@ public class VideoTaskServiceImpl implements VideoTaskService {
         Weight lora = weightRepository.findById(request.getLoraId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
-        VideoTask task = VideoTask.from(member, lora, request, board);
+        String gptPrompt = weightService.updatePrompt(lora.getId(), request.getPrompt());
+
+        String newPrompt = weightService.addTriggerWord(lora.getId(), gptPrompt);
+
+        VideoTask task = VideoTask.from(member, lora, request, board, newPrompt);
         task = task.updateStatus(Status.IN_PROGRESS, null);
         VideoTask saved = videoTaskRepository.save(task);
-
-        String newPrompt = weightService.addTriggerWord(lora.getId(), request.getPrompt());
 
         T2VQueueRequest queueRequest = VideoTask.toT2VQueueRequest(saved.getId(), request, lora.getModelName(), newPrompt, creator);
         videoMessageProducer.sendCreationMessage(queueRequest);
@@ -163,11 +173,13 @@ public class VideoTaskServiceImpl implements VideoTaskService {
 
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
-        VideoTask task = VideoTask.from(member, url, request, board);
+        String gptPrompt = weightService.updatePrompt(request.getPrompt());
+
+        VideoTask task = VideoTask.from(member, url, request, board, gptPrompt);
         task = task.updateStatus(Status.IN_PROGRESS, null);
         VideoTask saved = videoTaskRepository.save(task);
 
-        I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request, url, creator);
+        I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request, gptPrompt, url, creator);
         videoMessageProducer.sendCreationMessage(queueRequest);
     }
 
@@ -181,14 +193,16 @@ public class VideoTaskServiceImpl implements VideoTaskService {
 
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
-        VideoTask task = VideoTask.from(member, request, board);
-        task = task.updateStatus(Status.IN_PROGRESS, null);
-        VideoTask saved = videoTaskRepository.save(task);
-
         MultipartFile file = processingService.extractLatestFrameFromVideo(request.getImageUrl());
         String url = s3Service.uploadFile(file);
 
-        I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request, url, creator);
+        String gptPrompt = weightService.updatePrompt(request.getPrompt());
+
+        VideoTask task = VideoTask.from(member, request, board, gptPrompt);
+        task = task.updateStatus(Status.IN_PROGRESS, null);
+        VideoTask saved = videoTaskRepository.save(task);
+
+        I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request, gptPrompt, url, creator);
         videoMessageProducer.sendCreationMessage(queueRequest);
     }
 

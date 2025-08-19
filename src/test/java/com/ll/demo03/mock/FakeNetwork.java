@@ -35,13 +35,18 @@ public class FakeNetwork implements Network {
     }
 
     @Override
-    public String createImage(Long taskId, String checkpoint, String lora, String prompt, int width, int height, String webhook) {
+    public String createImage(Long taskId, String checkpoint, String lora, String prompt, String negativePrompt, int width, int height, String webhook) {
         imageCalls.add(new ImageCall(taskId, checkpoint, lora, prompt, width, height, webhook));  // 호출 기록
         return String.format("{\"status\":\"ok\",\"type\":\"image\",\"task_id\":%d}", taskId);
     }
 
     @Override
-    public String  createImageFaceDetailer(Long taskId, String checkpoint, String lora, String prompt, int width, int height, String webhook){
+    public String  createImageFaceDetailer(Long taskId, String checkpoint, String lora, String prompt,  String negativePrompt, int width, int height, String webhook){
+        return String.format("{\"status\":\"ok\",\"type\":\"video\",\"task_id\":%d}", taskId);
+    }
+
+    @Override
+    public String  createImagePlain(Long taskId, String checkpoint,  String prompt,  String negativePrompt, int width, int height, String webhook){
         return String.format("{\"status\":\"ok\",\"type\":\"video\",\"task_id\":%d}", taskId);
     }
 

@@ -43,6 +43,24 @@ public class WeightServiceImpl implements WeightService {
     }
 
     @Override
+    public String updatePrompt(Long id, String oldPrompt) {
+        String gptPrompt = weightRepository.findPromptById(id)
+                .filter(prompt -> !prompt.isBlank())
+                .orElse("If the user's input is in Korean, translate it into natural English. " +
+                        "If the input is already in English, do not change it. " +
+                        "Do not add any style or artistic interpretation — just translate or preserve as is.");
+
+        return network.modifyPrompt(gptPrompt, oldPrompt);
+    }
+
+    @Override
+    public String updatePrompt(String oldPrompt) {
+        return network.modifyPrompt("If the user's input is in Korean, translate it into natural English. " +
+                "If the input is already in English, do not change it. " +
+                "Do not add any style or artistic interpretation — just translate or preserve as is." , oldPrompt);
+    }
+
+    @Override
     public String addTriggerWord(Long id, String oldPrompt) {
         return weightRepository.findTriggerWordById(id)
                 .filter(word -> !word.isBlank())

@@ -22,6 +22,17 @@ public class FakeWeightService implements WeightService {
     }
 
     @Override
+    public String updatePrompt(String prompt) {
+        return "[FAKE_UPDATED] " + prompt;
+    }
+
+    @Override
+    public String updatePrompt(Long id, String prompt) {
+        return "[FAKE_UPDATED] " + prompt;
+    }
+
+
+    @Override
     public List<WeightResponse> get(MediaType mediaType, StyleType styleType, ModelType modelType) {
         return List.of();
     }

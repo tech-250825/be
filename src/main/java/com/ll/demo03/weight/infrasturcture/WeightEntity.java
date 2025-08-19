@@ -40,6 +40,9 @@ public class WeightEntity {
     @Column(columnDefinition = "TEXT")
     private String prompt;
 
+    @Column(columnDefinition = "TEXT")
+    private String negativePrompt;
+
     public Weight toModel() {
         return Weight.builder()
                 .id(id)
@@ -49,6 +52,8 @@ public class WeightEntity {
                 .modelType(modelType)
                 .image(image)
                 .modelName(modelName)
+                .prompt(prompt)
+                .negativePrompt(negativePrompt)
                 .build();
     }
 
@@ -63,6 +68,7 @@ public class WeightEntity {
         weightEntity.modelName = weight.getModelName();
         weightEntity.triggerWord = weight.getTriggerWord();
         weightEntity.prompt = weight.getPrompt();
+        weightEntity.negativePrompt = weight.getNegativePrompt();
         return weightEntity;
     }
 }

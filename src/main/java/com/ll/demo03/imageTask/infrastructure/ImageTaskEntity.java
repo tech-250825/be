@@ -29,6 +29,9 @@ public class ImageTaskEntity {
     @Column(columnDefinition = "TEXT")
     private String prompt;
 
+    @Column(columnDefinition = "TEXT")
+    private String oldPrompt;
+
     @ManyToOne
     @JoinColumn(name = "checkpoint_id", nullable = true)
     private WeightEntity checkpoint;
@@ -62,6 +65,7 @@ public class ImageTaskEntity {
         taskEntity.id = task.getId();
         taskEntity.checkpoint = task.getCheckpoint() != null ? WeightEntity.from(task.getCheckpoint()) : null;
         taskEntity.lora = task.getLora() != null ? WeightEntity.from(task.getLora()) : null;
+        taskEntity.oldPrompt = task.getOldPrompt();
         taskEntity.prompt = task.getPrompt();
         taskEntity.runpodId = task.getRunpodId();
         taskEntity.resolutionProfile = task.getResolutionProfile();
@@ -77,6 +81,7 @@ public class ImageTaskEntity {
         return ImageTask.builder()
                 .id(id)
                 .prompt(prompt)
+                .oldPrompt(oldPrompt)
                 .checkpoint(checkpoint != null ? checkpoint.toModel():null )
                 .lora(lora != null ? lora.toModel() : null)
                 .runpodId(runpodId)

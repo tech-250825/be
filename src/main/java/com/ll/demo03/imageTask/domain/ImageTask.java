@@ -4,7 +4,9 @@ import com.ll.demo03.global.domain.Status;
 import com.ll.demo03.global.domain.ResolutionProfile;
 import com.ll.demo03.imageTask.controller.request.ImageQueueRequest;
 import com.ll.demo03.global.port.Network;
+import com.ll.demo03.imageTask.controller.request.ImageQueueV3Request;
 import com.ll.demo03.imageTask.controller.request.ImageTaskRequest;
+import com.ll.demo03.imageTask.controller.request.ImageTaskV3Request;
 import com.ll.demo03.member.domain.Member;
 import com.ll.demo03.weight.domain.Weight;
 import lombok.Builder;
@@ -17,6 +19,7 @@ public class ImageTask {
 
     private final Long id;
     private final String prompt;
+    private final String oldPrompt;
     private final Weight checkpoint;
     private final Weight lora;
     private final String runpodId;
@@ -27,9 +30,10 @@ public class ImageTask {
     private final ResolutionProfile resolutionProfile;
 
     @Builder
-    public ImageTask(Long id, String prompt, Weight checkpoint, Weight lora, String runpodId, Status status, LocalDateTime createdAt, LocalDateTime modifiedAt, Member creator, ResolutionProfile resolutionProfile) {
+    public ImageTask(Long id, String prompt, String oldPrompt, Weight checkpoint, Weight lora, String runpodId, Status status, LocalDateTime createdAt, LocalDateTime modifiedAt, Member creator, ResolutionProfile resolutionProfile) {
         this.id = id;
         this.prompt = prompt;
+        this.oldPrompt = oldPrompt;
         this.checkpoint = checkpoint;
         this.lora = lora;
         this.runpodId = runpodId;
@@ -40,11 +44,22 @@ public class ImageTask {
         this.resolutionProfile = resolutionProfile;
     }
 
-    public static ImageTask from(Member creator, Weight checkpoint, Weight lora, String prompt, ResolutionProfile profile) {
+    public static ImageTask from(Member creator, Weight checkpoint, Weight lora, String oldPrompt,  String prompt,ResolutionProfile profile) {
         return ImageTask.builder()
                 .prompt(prompt)
+                .oldPrompt(oldPrompt)
                 .checkpoint(checkpoint)
                 .lora(lora)
+                .resolutionProfile(profile)
+                .creator(creator)
+                .build();
+    }
+
+    public static ImageTask from(Member creator, Weight checkpoint, String oldPrompt, String prompt, ResolutionProfile profile) {
+        return ImageTask.builder()
+                .prompt(prompt)
+                .oldPrompt(oldPrompt)
+                .checkpoint(checkpoint)
                 .resolutionProfile(profile)
                 .creator(creator)
                 .build();
@@ -54,6 +69,7 @@ public class ImageTask {
         return ImageTask.builder()
                 .id(id)
                 .prompt(prompt)
+                .oldPrompt(oldPrompt)
                 .checkpoint(checkpoint)
                 .lora(lora)
                 .runpodId(runpodId)
@@ -65,7 +81,11 @@ public class ImageTask {
                 .build();
     }
 
-    public static ImageQueueRequest toImageQueueRequest(Long taskId, ImageTaskRequest imageTaskRequest, String checkpoint, String lora, String newPrompt, Member creator) {
-        return new ImageQueueRequest(taskId, checkpoint, lora, newPrompt, imageTaskRequest.getResolutionProfile().getWidth(), imageTaskRequest.getResolutionProfile().getHeight(), creator.getId());
+    public static ImageQueueRequest toImageQueueRequest(Long taskId, ImageTaskRequest imageTaskRequest, String checkpoint, String lora, String newPrompt, String negativePrompt, Member creator) {
+        return new ImageQueueRequest(taskId, checkpoint, lora, newPrompt, negativePrompt, imageTaskRequest.getResolutionProfile().getWidth(), imageTaskRequest.getResolutionProfile().getHeight(), creator.getId());
+    }
+
+    public static ImageQueueV3Request toImageQueueRequest(Long taskId, ImageTaskV3Request imageTaskRequest, String checkpoint, String newPrompt, String negativePrompt, Member creator) {
+        return new ImageQueueV3Request(taskId, checkpoint, newPrompt, negativePrompt, imageTaskRequest.getResolutionProfile().getWidth(), imageTaskRequest.getResolutionProfile().getHeight(), creator.getId());
     }
 }

@@ -74,13 +74,14 @@ public class NetworkImpl implements Network {
         }
     }
 
-    public String createImage(Long taskId, String checkpoint, String lora, String prompt, int width, int height, String webhook) {
+    public String createImage(Long taskId, String checkpoint, String lora, String prompt, String negativePrompt, int width, int height, String webhook) {
 
         try {
             Unirest.setTimeouts(0, 0);
             Map<String, Object> payload = Map.of(
                     "task_id", taskId,
                     "positive_prompt", prompt,
+                    "negative_prompt" , negativePrompt,
                     "checkpoint", checkpoint,
                     "lora", lora,
                     "width", width,
@@ -112,13 +113,14 @@ public class NetworkImpl implements Network {
         }
     }
 
-    public String createImageFaceDetailer(Long taskId, String checkpoint, String lora, String prompt, int width, int height, String webhook) {
+    public String createImageFaceDetailer(Long taskId, String checkpoint, String lora, String prompt, String negativePrompt, int width, int height, String webhook) {
         try {
             Unirest.setTimeouts(0, 0);
 
             Map<String, Object> payload = Map.of(
                     "task_id", taskId,
                     "positive_prompt", prompt,
+                    "negative_prompt" , negativePrompt,
                     "checkpoint", checkpoint,
                     "lora", lora,
                     "width", width,
@@ -137,9 +139,47 @@ public class NetworkImpl implements Network {
 
             String jsonBody = objectMapper.writeValueAsString(requestBody);
 
-            HttpResponse<String> response = Unirest.post("https://api.runpod.ai/v2/eas066udr3krkq/run")
+            HttpResponse<String> response = Unirest.post("https://api.runpod.ai/v2/hqswi0mxvsd2kt/run")
                     .header("accept", "application/json")
                     .header("authorization", runpodApiKey)
+                    .header("content-type", "application/json")
+                    .body(jsonBody)
+                    .asString();
+
+            return response.getBody();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public String createImagePlain (Long taskId, String checkpoint, String prompt, String negativePrompt, int width, int height, String webhook) {
+
+        try {
+            Unirest.setTimeouts(0, 0);
+            Map<String, Object> payload = Map.of(
+                    "task_id", taskId,
+                    "positive_prompt", prompt,
+                    "negative_prompt" , negativePrompt,
+                    "checkpoint", checkpoint,
+                    "width", width,
+                    "height", height
+            );
+            Map<String, Object> input = Map.of(
+                    "workflow", "SDXL_workflow_no_lora",
+                    "payload", payload
+            );
+
+            Map<String, Object> requestBody = Map.of(
+                    "webhook", webhook,
+                    "input", input
+            );
+
+            String jsonBody = objectMapper.writeValueAsString(requestBody);
+            HttpResponse<String> response = Unirest.post("https://api.runpod.ai/v2/yoo61r5n5h2vdy/run")
+                    .header("accept", "application/json")
+                    .header("authorization", runpodApiKey)
+
                     .header("content-type", "application/json")
                     .body(jsonBody)
                     .asString();

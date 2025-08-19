@@ -19,6 +19,7 @@ public class VideoTask {
 
     private final Long id;
     private final String prompt;
+    private final String oldPrompt;
     private final Weight lora;
     private final String imageUrl;
     private final String runpodId;
@@ -31,11 +32,12 @@ public class VideoTask {
     private final Board board;
 
     @Builder
-    public VideoTask(Long id, String prompt, Weight lora, String imageUrl, String runpodId, Status status,
+    public VideoTask(Long id, String prompt, String oldPrompt,  Weight lora, String imageUrl, String runpodId, Status status,
                      LocalDateTime createdAt, LocalDateTime modifiedAt, Member creator,
                      ResolutionProfile resolutionProfile, int numFrames, Board board) {
         this.id = id;
         this.prompt = prompt;
+        this.oldPrompt = oldPrompt;
         this.lora = lora;
         this.imageUrl = imageUrl;
         this.runpodId = runpodId;
@@ -48,9 +50,10 @@ public class VideoTask {
         this.board = board;
     }
 
-    public static VideoTask from(Member creator, Weight lora, VideoTaskRequest request) {
+    public static VideoTask from(Member creator, Weight lora, VideoTaskRequest request, String prompt) {
         return VideoTask.builder()
-                .prompt(request.getPrompt())
+                .oldPrompt(request.getPrompt())
+                .prompt(prompt)
                 .lora(lora)
                 .resolutionProfile(request.getResolutionProfile())
                 .numFrames(request.getNumFrames())
@@ -58,9 +61,10 @@ public class VideoTask {
                 .build();
     }
 
-    public static VideoTask from(Member creator,  Weight lora, VideoTaskRequest request, Board board) {
+    public static VideoTask from(Member creator,  Weight lora, VideoTaskRequest request, Board board, String prompt) {
         return VideoTask.builder()
-                .prompt(request.getPrompt())
+                .oldPrompt(request.getPrompt())
+                .prompt(prompt)
                 .lora(lora)
                 .resolutionProfile(request.getResolutionProfile())
                 .numFrames(request.getNumFrames())
@@ -69,9 +73,10 @@ public class VideoTask {
                 .build();
     }
 
-    public static VideoTask from(Member creator, I2VTaskRequest request) {
+    public static VideoTask from(Member creator, I2VTaskRequest request, String prompt) {
         return VideoTask.builder()
-                .prompt(request.getPrompt())
+                .oldPrompt(request.getPrompt())
+                .prompt(prompt)
                 .imageUrl(request.getImageUrl())
                 .resolutionProfile(request.getResolutionProfile())
                 .numFrames(request.getNumFrames())
@@ -79,9 +84,10 @@ public class VideoTask {
                 .build();
     }
 
-    public static VideoTask from(Member creator, I2VTaskRequest request, Board board) {
+    public static VideoTask from(Member creator, I2VTaskRequest request, Board board, String prompt) {
         return VideoTask.builder()
-                .prompt(request.getPrompt())
+                .oldPrompt(request.getPrompt())
+                .prompt(prompt)
                 .imageUrl(request.getImageUrl())
                 .resolutionProfile(request.getResolutionProfile())
                 .numFrames(request.getNumFrames())
@@ -90,9 +96,10 @@ public class VideoTask {
                 .build();
     }
 
-    public static VideoTask from(Member creator, String url, VideoTaskRequest request) {
+    public static VideoTask from(Member creator, String url, VideoTaskRequest request, String prompt) {
         return VideoTask.builder()
-                .prompt(request.getPrompt())
+                .oldPrompt(request.getPrompt())
+                .prompt(prompt)
                 .imageUrl(url)
                 .resolutionProfile(request.getResolutionProfile())
                 .numFrames(request.getNumFrames())
@@ -100,9 +107,10 @@ public class VideoTask {
                 .build();
     }
 
-    public static VideoTask from(Member creator, String url, VideoTaskRequest request, Board board) {
+    public static VideoTask from(Member creator, String url, VideoTaskRequest request, Board board, String prompt) {
         return VideoTask.builder()
-                .prompt(request.getPrompt())
+                .oldPrompt(request.getPrompt())
+                .prompt(prompt)
                 .imageUrl(url)
                 .resolutionProfile(request.getResolutionProfile())
                 .numFrames(request.getNumFrames())
@@ -115,6 +123,7 @@ public class VideoTask {
         return VideoTask.builder()
                 .id(id)
                 .prompt(prompt)
+                .oldPrompt(oldPrompt)
                 .lora(lora)
                 .imageUrl(imageUrl)
                 .runpodId(runpodId)
@@ -140,10 +149,10 @@ public class VideoTask {
         );
     }
 
-    public static I2VQueueRequest toI2VQueueRequest(Long taskId, VideoTaskRequest request, String url, Member creator) {
+    public static I2VQueueRequest toI2VQueueRequest(Long taskId, VideoTaskRequest request,String gptPrompt, String url, Member creator) {
         return new I2VQueueRequest(
                 taskId,
-                request.getPrompt(),
+                gptPrompt,
                 url,
                 request.getResolutionProfile().getWidth(),
                 request.getResolutionProfile().getHeight(),
@@ -152,10 +161,10 @@ public class VideoTask {
         );
     }
 
-    public static I2VQueueRequest toI2VQueueRequest(Long taskId, I2VTaskRequest request, String url, Member creator) {
+    public static I2VQueueRequest toI2VQueueRequest(Long taskId, I2VTaskRequest request, String gptPrompt, String url, Member creator) {
         return new I2VQueueRequest(
                 taskId,
-                request.getPrompt(),
+                gptPrompt,
                 url,
                 request.getResolutionProfile().getWidth(),
                 request.getResolutionProfile().getHeight(),
@@ -164,10 +173,10 @@ public class VideoTask {
         );
     }
 
-    public static I2VQueueRequest toI2VQueueRequest(Long taskId, I2VTaskRequest request, Member creator) {
+    public static I2VQueueRequest toI2VQueueRequest(Long taskId, I2VTaskRequest request, String gptPrompt, Member creator) {
         return new I2VQueueRequest(
                 taskId,
-                request.getPrompt(),
+                gptPrompt,
                 request.getImageUrl(),
                 request.getResolutionProfile().getWidth(),
                 request.getResolutionProfile().getHeight(),

@@ -6,6 +6,7 @@ import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
 import com.ll.demo03.imageTask.controller.port.ImageTaskService;
 import com.ll.demo03.imageTask.controller.request.ImageTaskRequest;
+import com.ll.demo03.imageTask.controller.request.ImageTaskV3Request;
 import com.ll.demo03.imageTask.controller.response.TaskOrImageResponse;
 import com.ll.demo03.member.domain.Member;
 import com.ll.demo03.member.service.port.MemberRepository;
@@ -55,6 +56,17 @@ public class ImageTaskController {
             Member member = principalDetails.user();
             imageTaskService.initateFaceDetailer(request, member);
             return GlobalResponse.success();
+    }
+
+    @PostMapping(value = "/create/v3")
+    @PreAuthorize("isAuthenticated()")
+    public GlobalResponse createPlainImages(
+            @RequestBody ImageTaskV3Request request,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    ) {
+        Member member = principalDetails.user();
+        imageTaskService.initatePlainImage(request, member);
+        return GlobalResponse.success();
     }
 
     @PostMapping("/webhook")
