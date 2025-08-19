@@ -101,7 +101,7 @@ public class ImageTaskServiceImpl implements ImageTaskService {
         task = task.updateStatus(Status.IN_PROGRESS, null);
         ImageTask saved = taskRepository.save(task);
         
-        ImageQueueRequest imageQueueRequest = ImageTask.toImageQueueRequest(saved.getId(), request, checkpoint.getModelName(), lora.getModelName(), newPrompt, lora.getNegativePrompt(), member);
+        ImageQueueRequest imageQueueRequest = ImageTask.toImageQueueRequest(saved.getId(), request, checkpoint.getModelName(), lora.getModelName(), newPrompt, checkpoint.getNegativePrompt(), member);
         messageProducer.sendFaceDetailerCreationMessage(imageQueueRequest);
     }
 
