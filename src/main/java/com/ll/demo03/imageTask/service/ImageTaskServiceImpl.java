@@ -93,9 +93,9 @@ public class ImageTaskServiceImpl implements ImageTaskService {
 
         Weight lora = weightRepository.findById(request.getLoraId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
-        String gptPrompt = weightService.updatePrompt(lora.getId(), request.getPrompt());
+        String gptPrompt = weightService.updatePrompt(checkpoint.getId(), request.getPrompt());
 
-        String newPrompt = weightService.addTriggerWord(lora.getId(), gptPrompt);
+        String newPrompt = weightService.addTriggerWord(checkpoint.getId(), gptPrompt);
 
         ImageTask task = ImageTask.from(member, checkpoint, lora, request.getPrompt(), newPrompt, request.getResolutionProfile());
         task = task.updateStatus(Status.IN_PROGRESS, null);
