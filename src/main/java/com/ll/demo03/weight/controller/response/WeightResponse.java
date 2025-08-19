@@ -11,6 +11,7 @@ public class WeightResponse {
     private String name;
     private String modelName;
     private String image;
+    private boolean visible;
 
     public static WeightResponse from(Weight weight){
         return WeightResponse.builder()
@@ -18,6 +19,7 @@ public class WeightResponse {
                 .name(weight.getName())
                 .modelName(weight.getModelName())
                 .image(weight.getImage())
+                .visible(weight.isVisible())
                 .build();
     }
 
