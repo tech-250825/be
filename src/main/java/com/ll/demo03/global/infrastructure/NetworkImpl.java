@@ -64,9 +64,70 @@ public class NetworkImpl implements Network {
 
             JsonNode rootNode = objectMapper.readTree(responseBody);
             String result = rootNode.path("choices").get(0).path("message").path("content").asText().trim();
-
-            log.info("OpenAI 프롬프트 개선 응답: {}", result);
             return result;
+
+        }catch (Exception e) {
+            log.error("OpenAI API 호출 실패", e);
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public boolean censorPrompt( String prompt) {
+        String openAiUrl = "https://api.openai.com/v1/chat/completions";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(openAiApiKey);
+
+        try {
+            Map<String, Object> systemMessage = Map.of(
+                    "role", "system",
+                    "content", "You are a binary classifier.  \n" +
+                            "Analyze the input text and decide if it contains inappropriate, sexual, or suggestive content that could be misused for deepfakes.  \n" +
+                            "\n" +
+                            "This includes:\n" +
+                            "- Nudity or partial nudity (e.g., taking off clothes, underwear, topless, naked).  \n" +
+                            "- Sexual acts or references (e.g., sex, erotic, porn, masturbation).  \n" +
+                            "- Suggestive poses or borderline sexual descriptions (e.g., bikini, lingerie, sensual, seductive, bed scene).  \n" +
+                            "- Exploitation-related or abusive sexual content.  \n" +
+                            "\n" +
+                            "If the text falls into any of the above categories → respond only with `true`.  \n" +
+                            "If the text does not fall into these categories → respond only with `false`.  \n" +
+                            "\n" +
+                            "Rules:\n" +
+                            "- Respond strictly with lowercase `true` or `false`.  \n" +
+                            "- Do not explain.  \n" +
+                            "- Do not output anything else.  \n"
+            );
+
+            Map<String, Object> userMessage = Map.of(
+                    "role", "user",
+                    "content", prompt
+            );
+
+            Map<String, Object> body = Map.of(
+                    "model", "gpt-4o-mini",
+                    "temperature", 0,
+                    "messages", List.of(systemMessage, userMessage)
+            );
+
+            String jsonBody = objectMapper.writeValueAsString(body);
+            HttpEntity<String> requestEntity = new HttpEntity<>(jsonBody, headers);
+
+            ResponseEntity<String> responseEntity = restTemplate.exchange(openAiUrl, HttpMethod.POST, requestEntity, String.class);
+            String responseBody = responseEntity.getBody();
+
+            JsonNode rootNode = objectMapper.readTree(responseBody);
+            String result = rootNode.path("choices").get(0).path("message").path("content").asText().trim().toLowerCase();
+
+            if (result.equals("true")){
+                return true;
+            }else if(result.equals(("false"))){
+                return false;
+            }else{
+                log.warn("잘못된 결과물입니다. {}", result);
+                return false;
+            }
 
         }catch (Exception e) {
             log.error("OpenAI API 호출 실패", e);

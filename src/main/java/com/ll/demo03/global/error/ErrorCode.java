@@ -24,7 +24,8 @@ public enum ErrorCode {
     //크레딧
     NO_CREDIT(HttpStatus.PAYMENT_REQUIRED, "크레딧이 부족합니다."),
 
-
+    //invalid prompt
+    COMMUNITY_GUIDELINE_VIOLATION(HttpStatus.FORBIDDEN, "커뮤니티 가이드라인 위반입니다."),
 
     // User 관련 에러
     NOT_FOUND_USER(HttpStatus.BAD_REQUEST, "해당 유저가 존재하지 않습니다"),

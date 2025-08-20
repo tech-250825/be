@@ -89,8 +89,11 @@ public class VideoTaskServiceImpl implements VideoTaskService {
         memberRepository.save(creator);
 
         String url = s3Service.uploadFile(image);
+        String prompt = request.getPrompt();
 
-        String gptPrompt = weightService.updatePrompt(request.getPrompt());
+        boolean result = network.censorPrompt(prompt);
+        if (result== true) {throw new CustomException(ErrorCode.COMMUNITY_GUIDELINE_VIOLATION);}
+        String gptPrompt = weightService.updatePrompt(prompt);
 
         VideoTask task = VideoTask.from(member, url, request, gptPrompt);
         task = task.updateStatus(Status.IN_PROGRESS, null);
@@ -108,13 +111,35 @@ public class VideoTaskServiceImpl implements VideoTaskService {
         creator.decreaseCredit(creditCost);
         memberRepository.save(creator);
 
-        String gptPrompt = weightService.updatePrompt(request.getPrompt());
+        String prompt = request.getPrompt();
+
+        boolean result = network.censorPrompt(prompt);
+        if (result== true) {throw new CustomException(ErrorCode.COMMUNITY_GUIDELINE_VIOLATION);}
+        String gptPrompt = weightService.updatePrompt(prompt);
 
         VideoTask task = VideoTask.from(member, request, gptPrompt);
         task = task.updateStatus(Status.IN_PROGRESS, null);
         VideoTask saved = videoTaskRepository.save(task);
 
         I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request, gptPrompt, creator);
+        videoMessageProducer.sendCreationMessage(queueRequest);
+    }
+
+    @Override
+    public void initateNfswI2V(I2VTaskRequest request, Member member) {
+        Member creator = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
+
+        int creditCost = request.getResolutionProfile().getBaseCreditCost() * (int) Math.ceil(request.getNumFrames() / 40.0);
+        creator.decreaseCredit(creditCost);
+        memberRepository.save(creator);
+
+        String prompt = request.getPrompt();
+
+        VideoTask task = VideoTask.from(member, request, prompt);
+        task = task.updateStatus(Status.IN_PROGRESS, null);
+        VideoTask saved = videoTaskRepository.save(task);
+
+        I2VQueueRequest queueRequest = VideoTask.toI2VQueueRequest(saved.getId(), request, prompt, creator);
         videoMessageProducer.sendCreationMessage(queueRequest);
     }
 
@@ -128,7 +153,11 @@ public class VideoTaskServiceImpl implements VideoTaskService {
 
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
-        String gptPrompt = weightService.updatePrompt(request.getPrompt());
+        String prompt = request.getPrompt();
+
+        boolean result = network.censorPrompt(prompt);
+        if (result== true) {throw new CustomException(ErrorCode.COMMUNITY_GUIDELINE_VIOLATION);}
+        String gptPrompt = weightService.updatePrompt(prompt);
 
         VideoTask task = VideoTask.from(member, request, board, gptPrompt);
         task = task.updateStatus(Status.IN_PROGRESS, null);
@@ -173,7 +202,11 @@ public class VideoTaskServiceImpl implements VideoTaskService {
 
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
-        String gptPrompt = weightService.updatePrompt(request.getPrompt());
+        String prompt = request.getPrompt();
+
+        boolean result = network.censorPrompt(prompt);
+        if (result== true) {throw new CustomException(ErrorCode.COMMUNITY_GUIDELINE_VIOLATION);}
+        String gptPrompt = weightService.updatePrompt(prompt);
 
         VideoTask task = VideoTask.from(member, url, request, board, gptPrompt);
         task = task.updateStatus(Status.IN_PROGRESS, null);

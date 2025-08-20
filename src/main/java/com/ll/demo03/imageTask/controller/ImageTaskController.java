@@ -69,6 +69,28 @@ public class ImageTaskController {
         return GlobalResponse.success();
     }
 
+    @PostMapping(value = "/create/v2/nfsw")
+    @PreAuthorize("isAuthenticated()")
+    public GlobalResponse createNsfwFaceDetailerImages(
+            @RequestBody ImageTaskRequest request,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    ) {
+        Member member = principalDetails.user();
+        imageTaskService.initateNsfwFaceDetailer(request, member);
+        return GlobalResponse.success();
+    }
+
+    @PostMapping(value = "/create/v3/nsfw")
+    @PreAuthorize("isAuthenticated()")
+    public GlobalResponse createNsfwPlainImages(
+            @RequestBody ImageTaskV3Request request,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    ) {
+        Member member = principalDetails.user();
+        imageTaskService.initateNsfwPlainImage(request, member);
+        return GlobalResponse.success();
+    }
+
     @PostMapping("/webhook")
     public GlobalResponse handleWebhook(
             @RequestBody ImageWebhookEvent event) {

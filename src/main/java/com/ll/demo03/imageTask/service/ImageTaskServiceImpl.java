@@ -128,6 +128,48 @@ public class ImageTaskServiceImpl implements ImageTaskService {
     }
 
     @Override
+    public void initateNsfwFaceDetailer(ImageTaskRequest request, Member member){
+        Member creator = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
+
+        int creditCost = request.getResolutionProfile().getBaseCreditCost();
+        creator.decreaseCredit(creditCost);
+        memberRepository.save(creator);
+
+        Weight checkpoint = weightRepository.findById(request.getCheckpointId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+
+        Weight lora = weightRepository.findById(request.getLoraId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+
+        String newPrompt = weightService.addTriggerWord(checkpoint.getId(), request.getPrompt());
+
+        ImageTask task = ImageTask.from(member, checkpoint, lora, request.getPrompt(), newPrompt, request.getResolutionProfile());
+        task = task.updateStatus(Status.IN_PROGRESS, null);
+        ImageTask saved = taskRepository.save(task);
+
+        ImageQueueRequest imageQueueRequest = ImageTask.toImageQueueRequest(saved.getId(), request, checkpoint.getModelName(), lora.getModelName(), newPrompt, checkpoint.getNegativePrompt(), member);
+        messageProducer.sendFaceDetailerCreationMessage(imageQueueRequest);
+    }
+
+    @Override
+    public void initateNsfwPlainImage(ImageTaskV3Request request, Member member){
+        Member creator = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
+
+        int creditCost = request.getResolutionProfile().getBaseCreditCost();
+        creator.decreaseCredit(creditCost);
+        memberRepository.save(creator);
+
+        Weight checkpoint = weightRepository.findById(request.getCheckpointId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+
+        String newPrompt = weightService.addTriggerWord(checkpoint.getId(), request.getPrompt());
+
+        ImageTask task = ImageTask.from(member, checkpoint, request.getPrompt(), newPrompt, request.getResolutionProfile());
+        task = task.updateStatus(Status.IN_PROGRESS, null);
+        ImageTask saved = taskRepository.save(task);
+
+        ImageQueueV3Request imageQueueRequest = ImageTask.toImageQueueRequest(saved.getId(), request, checkpoint.getModelName(), newPrompt, checkpoint.getNegativePrompt(), member);
+        messageProducer.sendPlainCreationMessage(imageQueueRequest);
+    }
+
+    @Override
     public void processImageCreationFaceDetailer(ImageQueueRequest message) { //비동기 에러나면 어칼껀데
 
         redisService.pushToQueue("image", message.getTaskId());
