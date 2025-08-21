@@ -68,7 +68,11 @@ public class VideoTaskServiceImpl implements VideoTaskService {
 
         Weight lora = weightRepository.findById(request.getLoraId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
-        String gptPrompt = weightService.updatePrompt(lora.getId(), request.getPrompt());
+        String prompt = request.getPrompt();
+        boolean result = network.censorPrompt(prompt);
+        if (result== true) {throw new CustomException(ErrorCode.COMMUNITY_GUIDELINE_VIOLATION);}
+
+        String gptPrompt = weightService.updatePrompt(lora.getId(), prompt);
 
         String newPrompt = weightService.addTriggerWord(lora.getId(), gptPrompt);
 
@@ -178,7 +182,11 @@ public class VideoTaskServiceImpl implements VideoTaskService {
         Weight lora = weightRepository.findById(request.getLoraId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
-        String gptPrompt = weightService.updatePrompt(lora.getId(), request.getPrompt());
+        String prompt = request.getPrompt();
+        boolean result = network.censorPrompt(prompt);
+        if (result== true) {throw new CustomException(ErrorCode.COMMUNITY_GUIDELINE_VIOLATION);}
+
+        String gptPrompt = weightService.updatePrompt(lora.getId(), prompt);
 
         String newPrompt = weightService.addTriggerWord(lora.getId(), gptPrompt);
 
