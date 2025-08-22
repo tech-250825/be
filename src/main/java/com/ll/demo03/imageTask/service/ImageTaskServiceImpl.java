@@ -69,7 +69,7 @@ public class ImageTaskServiceImpl implements ImageTaskService {
         Weight lora = weightRepository.findById(request.getLoraId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
         String prompt = request.getPrompt();
-        boolean result = network.censorPrompt(prompt);
+        boolean result = network.censorSoftPrompt(prompt);
         if (result== true) {throw new CustomException(ErrorCode.COMMUNITY_GUIDELINE_VIOLATION);}
 
         String gptPrompt = weightService.updatePrompt(lora.getId(), prompt);
@@ -98,7 +98,7 @@ public class ImageTaskServiceImpl implements ImageTaskService {
         Weight lora = weightRepository.findById(request.getLoraId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
         String prompt = request.getPrompt();
-        boolean result = network.censorPrompt(prompt);
+        boolean result = network.censorSoftPrompt(prompt);
         if (result== true) {throw new CustomException(ErrorCode.COMMUNITY_GUIDELINE_VIOLATION);}
 
         String gptPrompt = weightService.updatePrompt(lora.getId(), prompt);
@@ -124,7 +124,7 @@ public class ImageTaskServiceImpl implements ImageTaskService {
         Weight checkpoint = weightRepository.findById(request.getCheckpointId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
         String prompt = request.getPrompt();
-        boolean result = network.censorPrompt(prompt);
+        boolean result = network.censorSoftPrompt(prompt);
         if (result== true) {throw new CustomException(ErrorCode.COMMUNITY_GUIDELINE_VIOLATION);}
 
         String gptPrompt = weightService.updatePrompt(checkpoint.getId(), prompt);

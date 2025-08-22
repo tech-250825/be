@@ -69,7 +69,7 @@ public class VideoTaskServiceImpl implements VideoTaskService {
         Weight lora = weightRepository.findById(request.getLoraId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
         String prompt = request.getPrompt();
-        boolean result = network.censorPrompt(prompt);
+        boolean result = network.censorSoftPrompt(prompt);
         if (result== true) {throw new CustomException(ErrorCode.COMMUNITY_GUIDELINE_VIOLATION);}
 
         String gptPrompt = weightService.updatePrompt(lora.getId(), prompt);
@@ -183,7 +183,7 @@ public class VideoTaskServiceImpl implements VideoTaskService {
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
         String prompt = request.getPrompt();
-        boolean result = network.censorPrompt(prompt);
+        boolean result = network.censorSoftPrompt(prompt);
         if (result== true) {throw new CustomException(ErrorCode.COMMUNITY_GUIDELINE_VIOLATION);}
 
         String gptPrompt = weightService.updatePrompt(lora.getId(), prompt);
@@ -206,15 +206,15 @@ public class VideoTaskServiceImpl implements VideoTaskService {
         creator.decreaseCredit(creditCost);
         memberRepository.save(creator);
 
-        String url = s3Service.uploadFile(image);
-
-        Board board = boardRepository.findById(boardId).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
-
         String prompt = request.getPrompt();
 
         boolean result = network.censorPrompt(prompt);
         if (result== true) {throw new CustomException(ErrorCode.COMMUNITY_GUIDELINE_VIOLATION);}
         String gptPrompt = weightService.updatePrompt(prompt);
+
+        String url = s3Service.uploadFile(image);
+
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
         VideoTask task = VideoTask.from(member, url, request, board, gptPrompt);
         task = task.updateStatus(Status.IN_PROGRESS, null);
@@ -232,12 +232,17 @@ public class VideoTaskServiceImpl implements VideoTaskService {
         creator.decreaseCredit(creditCost);
         memberRepository.save(creator);
 
+        String prompt = request.getPrompt();
+
+        boolean result = network.censorSoftPrompt(prompt);
+        if (result== true) {throw new CustomException(ErrorCode.COMMUNITY_GUIDELINE_VIOLATION);}
+
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
         MultipartFile file = processingService.extractLatestFrameFromVideo(request.getImageUrl());
         String url = s3Service.uploadFile(file);
 
-        String gptPrompt = weightService.updatePrompt(request.getPrompt());
+        String gptPrompt = weightService.updatePrompt(prompt);
 
         VideoTask task = VideoTask.from(member, request, board, gptPrompt);
         task = task.updateStatus(Status.IN_PROGRESS, null);
