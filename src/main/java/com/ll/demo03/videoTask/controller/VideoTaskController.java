@@ -72,6 +72,16 @@ public class VideoTaskController {
             return GlobalResponse.success();
     }
 
+    @PostMapping(value = "/create/i2v/nfsw")
+    public GlobalResponse createNfswI2V(
+            @RequestBody I2VTaskRequest request,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    ) {
+        Member member = principalDetails.user();
+        videoTaskService.initateNfswI2V(request, member);
+        return GlobalResponse.success();
+    }
+
     @PostMapping(value = "/create/i2v/v2/{boardId}")
     public GlobalResponse createI2VWithBoard(
             @PathVariable Long boardId,

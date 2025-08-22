@@ -68,7 +68,11 @@ public class ImageTaskServiceImpl implements ImageTaskService {
 
         Weight lora = weightRepository.findById(request.getLoraId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
-        String gptPrompt = weightService.updatePrompt(lora.getId(), request.getPrompt());
+        String prompt = request.getPrompt();
+        boolean result = network.censorSoftPrompt(prompt);
+        if (result== true) {throw new CustomException(ErrorCode.COMMUNITY_GUIDELINE_VIOLATION);}
+
+        String gptPrompt = weightService.updatePrompt(lora.getId(), prompt);
 
         String newPrompt = weightService.addTriggerWord(lora.getId(), gptPrompt);
 
@@ -93,7 +97,11 @@ public class ImageTaskServiceImpl implements ImageTaskService {
 
         Weight lora = weightRepository.findById(request.getLoraId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
-        String gptPrompt = weightService.updatePrompt(checkpoint.getId(), request.getPrompt());
+        String prompt = request.getPrompt();
+        boolean result = network.censorSoftPrompt(prompt);
+        if (result== true) {throw new CustomException(ErrorCode.COMMUNITY_GUIDELINE_VIOLATION);}
+
+        String gptPrompt = weightService.updatePrompt(lora.getId(), prompt);
 
         String newPrompt = weightService.addTriggerWord(checkpoint.getId(), gptPrompt);
 
@@ -115,9 +123,55 @@ public class ImageTaskServiceImpl implements ImageTaskService {
 
         Weight checkpoint = weightRepository.findById(request.getCheckpointId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
-        String gptPrompt = weightService.updatePrompt(checkpoint.getId(), request.getPrompt());
+        String prompt = request.getPrompt();
+        boolean result = network.censorSoftPrompt(prompt);
+        if (result== true) {throw new CustomException(ErrorCode.COMMUNITY_GUIDELINE_VIOLATION);}
+
+        String gptPrompt = weightService.updatePrompt(checkpoint.getId(), prompt);
 
         String newPrompt = weightService.addTriggerWord(checkpoint.getId(), gptPrompt);
+
+        ImageTask task = ImageTask.from(member, checkpoint, request.getPrompt(), newPrompt, request.getResolutionProfile());
+        task = task.updateStatus(Status.IN_PROGRESS, null);
+        ImageTask saved = taskRepository.save(task);
+
+        ImageQueueV3Request imageQueueRequest = ImageTask.toImageQueueRequest(saved.getId(), request, checkpoint.getModelName(), newPrompt, checkpoint.getNegativePrompt(), member);
+        messageProducer.sendPlainCreationMessage(imageQueueRequest);
+    }
+
+    @Override
+    public void initateNsfwFaceDetailer(ImageTaskRequest request, Member member){
+        Member creator = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
+
+        int creditCost = request.getResolutionProfile().getBaseCreditCost();
+        creator.decreaseCredit(creditCost);
+        memberRepository.save(creator);
+
+        Weight checkpoint = weightRepository.findById(request.getCheckpointId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+
+        Weight lora = weightRepository.findById(request.getLoraId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+
+        String newPrompt = weightService.addTriggerWord(checkpoint.getId(), request.getPrompt());
+
+        ImageTask task = ImageTask.from(member, checkpoint, lora, request.getPrompt(), newPrompt, request.getResolutionProfile());
+        task = task.updateStatus(Status.IN_PROGRESS, null);
+        ImageTask saved = taskRepository.save(task);
+
+        ImageQueueRequest imageQueueRequest = ImageTask.toImageQueueRequest(saved.getId(), request, checkpoint.getModelName(), lora.getModelName(), newPrompt, checkpoint.getNegativePrompt(), member);
+        messageProducer.sendFaceDetailerCreationMessage(imageQueueRequest);
+    }
+
+    @Override
+    public void initateNsfwPlainImage(ImageTaskV3Request request, Member member){
+        Member creator = memberRepository.findById(member.getId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
+
+        int creditCost = request.getResolutionProfile().getBaseCreditCost();
+        creator.decreaseCredit(creditCost);
+        memberRepository.save(creator);
+
+        Weight checkpoint = weightRepository.findById(request.getCheckpointId()).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+
+        String newPrompt = weightService.addTriggerWord(checkpoint.getId(), request.getPrompt());
 
         ImageTask task = ImageTask.from(member, checkpoint, request.getPrompt(), newPrompt, request.getResolutionProfile());
         task = task.updateStatus(Status.IN_PROGRESS, null);

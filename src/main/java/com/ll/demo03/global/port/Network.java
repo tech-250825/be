@@ -8,5 +8,7 @@ public interface Network {
     String createT2VVideo(Long taskId, String lora, String prompt, int width, int height, int numFrames, String webhook);
     String createI2VVideo(Long taskId, String prompt, String url, int width, int height, int numFrames, String webhook);
     String modifyPrompt(String lora, String prompt);
+    boolean censorPrompt(String prompt);
+    boolean censorSoftPrompt(String prompt);
 
 }

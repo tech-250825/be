@@ -35,6 +35,9 @@ public class FakeNetwork implements Network {
     }
 
     @Override
+    public boolean censorPrompt(String prompt) {return true;};
+
+    @Override
     public String createImage(Long taskId, String checkpoint, String lora, String prompt, String negativePrompt, int width, int height, String webhook) {
         imageCalls.add(new ImageCall(taskId, checkpoint, lora, prompt, width, height, webhook));  // 호출 기록
         return String.format("{\"status\":\"ok\",\"type\":\"image\",\"task_id\":%d}", taskId);
@@ -59,4 +62,5 @@ public class FakeNetwork implements Network {
     public String createI2VVideo(Long taskId, String prompt, String url, int width, int height, int numFrames , String webhook) {
         return String.format("{\"status\":\"ok\",\"type\":\"video\",\"task_id\":%d}", taskId);
     }
+
 }

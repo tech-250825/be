@@ -39,7 +39,7 @@ public class ExceptionControllerAdvice {
     @ExceptionHandler(value = CustomException.class)
     protected ResponseEntity<ErrorResponse> handleCustomException(CustomException e) {
         log.error("Custom Exception: {}", e.getErrorCode(), e);
-        alertService.sendAlert("[VideoTask FAILED] Error {}" + e.getErrorCode()+  e);
+        alertService.sendAlert(" Error {}" + e.getErrorCode()+  e);
         return ErrorResponse.toResponseEntity(e.getErrorCode());
     }
 

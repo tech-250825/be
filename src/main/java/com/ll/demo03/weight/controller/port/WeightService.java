@@ -16,7 +16,7 @@ public interface WeightService {
 
     String updatePrompt(Long id, String oldPrompt);
 
-    String updatePrompt( String oldPrompt);
+    String updatePrompt(String oldPrompt);
 
     String updatePrompt(WeightPromptRequest request);
 }
