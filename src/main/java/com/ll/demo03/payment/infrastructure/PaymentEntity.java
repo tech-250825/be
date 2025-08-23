@@ -10,31 +10,28 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-public class Payment{
+public class PaymentEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String orderId;
+    private String trackId;
 
     @ManyToOne
     private MemberEntity member;
 
     @Column(nullable = false)
-    private String paymentKey;
-
-    @Column(nullable = false)
     private String amount;
 
     @Column(nullable = false)
-    private String status;
+    private Status status;
 
-    @Column
-    private String method;
+    @Column(nullable = false)
+    private Currency currency;
 
-    @Column
+    @Column(nullable = false)
     private LocalDateTime approvedAt;
 
 }
