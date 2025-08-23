@@ -1,15 +1,16 @@
-package com.ll.demo03.payment.service;
+package com.ll.demo03.invoice.service;
 
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
+import com.ll.demo03.invoice.domain.Invoice;
 import com.ll.demo03.member.domain.Member;
 import com.ll.demo03.member.service.port.MemberRepository;
-import com.ll.demo03.payment.controller.request.OxaPayInvoiceRequest;
-import com.ll.demo03.payment.controller.response.OxaPayStatusResponse;
-import com.ll.demo03.payment.domain.Currency;
-import com.ll.demo03.payment.domain.Status;
-import com.ll.demo03.payment.infrastructure.PaymentEntity;
-import com.ll.demo03.payment.infrastructure.PaymentRepository;
+import com.ll.demo03.invoice.controller.request.OxaPayInvoiceRequest;
+import com.ll.demo03.invoice.controller.response.OxaPayStatusResponse;
+import com.ll.demo03.invoice.domain.Currency;
+import com.ll.demo03.invoice.domain.Status;
+import com.ll.demo03.invoice.infrastructure.InvoiceEntity;
+import com.ll.demo03.invoice.infrastructure.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
@@ -68,17 +69,9 @@ public class OxaPayService {
                 JSONObject responseBody = response.getBody();
                 String trackId = (String) responseBody.get("trackId");
                 String payLink = (String) responseBody.get("payLink");
-                
-                // Payment 엔티티에 저장
-                PaymentEntity paymentEntity = new PaymentEntity();
-                paymentEntity.setTrackId(trackId);
-                paymentEntity.setMember(member);
-                paymentEntity.setAmount(request.getAmount().toString());
-                paymentEntity.setStatus(Status.PENDING);
-                paymentEntity.setCurrency(Currency.valueOf(request.getCurrency() != null ? request.getCurrency() : "TRX"));
-                paymentEntity.setApprovedAt(LocalDateTime.now());
-                
-                paymentRepository.save(paymentEntity);
+
+                Invoice invoice = Invoice.from(String trackId, Member member, request.getAmount(), Status.PENDING, LocalDateTime.now())
+                paymentRepository.save(invoiceEntity);
                 
                 logger.info("OxaPay invoice created and saved: orderId={}, trackId={}", orderId, trackId);
             } else {

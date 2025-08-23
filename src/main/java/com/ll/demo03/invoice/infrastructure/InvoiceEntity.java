@@ -1,4 +1,4 @@
-package com.ll.demo03.payment.infrastructure;
+package com.ll.demo03.invoice.infrastructure;
 
 import com.ll.demo03.member.infrastructure.MemberEntity;
 import jakarta.persistence.*;
@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-public class PaymentEntity {
+public class InvoiceEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

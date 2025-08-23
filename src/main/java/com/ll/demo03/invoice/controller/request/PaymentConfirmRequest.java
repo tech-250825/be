@@ -1,4 +1,4 @@
-package com.ll.demo03.payment.controller.request;
+package com.ll.demo03.invoice.controller.request;
 
 import lombok.*;
 

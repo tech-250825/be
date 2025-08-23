@@ -1,4 +1,4 @@
-package com.ll.demo03.payment.controller.response;
+package com.ll.demo03.invoice.controller.response;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

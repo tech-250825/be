@@ -1,15 +1,13 @@
-package com.ll.demo03.payment.controller;
+package com.ll.demo03.invoice.controller;
 
 import com.ll.demo03.global.dto.GlobalResponse;
 import com.ll.demo03.member.domain.Member;
 import com.ll.demo03.oauth.domain.PrincipalDetails;
-import com.ll.demo03.payment.controller.request.OxaPayInvoiceRequest;
-import com.ll.demo03.payment.controller.response.OxaPayInvoiceResponse;
-import com.ll.demo03.payment.controller.response.OxaPayStatusResponse;
-import com.ll.demo03.payment.service.OxaPayService;
+import com.ll.demo03.invoice.controller.request.OxaPayInvoiceRequest;
+import com.ll.demo03.invoice.controller.response.OxaPayStatusResponse;
+import com.ll.demo03.invoice.service.OxaPayService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
