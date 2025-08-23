@@ -39,6 +39,7 @@ public class UGC {
                 .build();
     }
 
+
     public static UGC ofVideo(String url, com.ll.demo03.videoTask.domain.VideoTask videoTask) {
         return UGC.builder()
                 .url(url)
@@ -47,5 +48,4 @@ public class UGC {
                 .creator(videoTask.getCreator())
                 .build();
     }
-
 }

@@ -70,7 +70,7 @@ public class ImageTaskController {
     }
 
     @PostMapping(value = "/create/v2/nfsw")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ADMIN')")
     public GlobalResponse createNsfwFaceDetailerImages(
             @RequestBody ImageTaskRequest request,
             @AuthenticationPrincipal PrincipalDetails principalDetails
@@ -81,7 +81,7 @@ public class ImageTaskController {
     }
 
     @PostMapping(value = "/create/v3/nsfw")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ADMIN')")
     public GlobalResponse createNsfwPlainImages(
             @RequestBody ImageTaskV3Request request,
             @AuthenticationPrincipal PrincipalDetails principalDetails
@@ -94,7 +94,6 @@ public class ImageTaskController {
     @PostMapping("/webhook")
     public GlobalResponse handleWebhook(
             @RequestBody ImageWebhookEvent event) {
-            log.info("Received webhook event: {}", event);
             imageWebhookProcessor.processWebhookEvent(event);
 
             return GlobalResponse.success();

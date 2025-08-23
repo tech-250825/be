@@ -6,6 +6,7 @@ import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
 import com.ll.demo03.member.controller.port.MemberService;
 import com.ll.demo03.member.domain.Member;
+import com.ll.demo03.member.domain.Role;
 import com.ll.demo03.member.service.port.MemberRepository;
 import com.ll.demo03.notification.service.port.NotificationRepository;
 import lombok.RequiredArgsConstructor;
@@ -45,5 +46,11 @@ public class MemberServiceImpl implements MemberService {
         ugcRepository.deleteByMemberId(memberId);
 
         memberRepository.delete(member);
+    }
+
+    public void verify19(Long memberId){
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+        member.upgrade();
     }
 }

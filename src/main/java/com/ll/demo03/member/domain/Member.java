@@ -28,6 +28,12 @@ public class Member  {
         this.providerId = providerId;
     }
 
+    public void upgrade() {
+        if (this.role == Role.USER) {
+            this.role = Role.ADMIN;
+        }
+    }
+
     public boolean canUseCredit(int amount) {
         return amount > 0 && this.credit >= amount;
     }

@@ -4,6 +4,7 @@ import com.ll.demo03.config.RabbitMQConfig;
 import com.ll.demo03.global.port.MessageProducer;
 import com.ll.demo03.imageTask.controller.request.ImageQueueRequest;
 import com.ll.demo03.imageTask.controller.request.ImageQueueV3Request;
+import com.ll.demo03.imageTask.controller.request.I2ITask.I2IQueueRequest;
 import com.ll.demo03.videoTask.controller.request.I2VQueueRequest;
 import com.ll.demo03.videoTask.controller.request.T2VQueueRequest;
 import lombok.RequiredArgsConstructor;
@@ -59,6 +60,15 @@ public class MessageProducerImpl implements MessageProducer {
         rabbitTemplate.convertAndSend(
                 RabbitMQConfig.I2V_EXCHANGE,
                 RabbitMQConfig.I2V_ROUTING_KEY,
+                message
+        );
+    }
+
+    @Override
+    public void sendCreationMessage(I2IQueueRequest message) {
+        rabbitTemplate.convertAndSend(
+                RabbitMQConfig.I2I_EXCHANGE,
+                RabbitMQConfig.I2I_ROUTING_KEY,
                 message
         );
     }

@@ -33,6 +33,10 @@ public class RabbitMQConfig {
     public static final String I2V_QUEUE = "i2v.queue";
     public static final String I2V_ROUTING_KEY = "i2v.create";
 
+    public static final String I2I_EXCHANGE = "i2i.exchange";
+    public static final String I2I_QUEUE = "i2i.queue";
+    public static final String I2I_ROUTING_KEY = "i2i.create";
+
     public static final String DOWNLOAD_EXCHANGE = "download.exchange";
     public static final String DOWNLOAD_QUEUE = "download.queue";
     public static final String DOWNLOAD_ROUTING_KEY = "download.create";
@@ -115,6 +119,22 @@ public class RabbitMQConfig {
     public Binding i2vBinding(@Qualifier("i2vQueue") Queue queue,
                               @Qualifier("i2vExchange") TopicExchange topicExchange) {
         return BindingBuilder.bind(queue).to(topicExchange).with(I2V_ROUTING_KEY);
+    }
+
+    @Bean
+    public Queue i2iQueue() {
+        return new Queue(I2I_QUEUE, true);
+    }
+
+    @Bean
+    public TopicExchange i2iExchange() {
+        return new TopicExchange(I2I_EXCHANGE);
+    }
+
+    @Bean
+    public Binding i2iBinding(@Qualifier("i2iQueue") Queue queue,
+                              @Qualifier("i2iExchange") TopicExchange topicExchange) {
+        return BindingBuilder.bind(queue).to(topicExchange).with(I2I_ROUTING_KEY);
     }
 
     @Bean

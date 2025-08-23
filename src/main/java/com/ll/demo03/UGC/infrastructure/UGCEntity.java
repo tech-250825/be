@@ -68,7 +68,6 @@ public class UGCEntity {
         return ugcEntity;
     }
 
-
     public UGC toModel() {
         return UGC.builder()
                 .id(id)

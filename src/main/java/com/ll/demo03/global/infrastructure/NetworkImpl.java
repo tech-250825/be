@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
+import com.ll.demo03.global.port.AlertService;
 import com.ll.demo03.global.port.Network;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
@@ -25,6 +26,7 @@ public class NetworkImpl implements Network {
 
     private final ObjectMapper objectMapper;
     private final RestTemplate restTemplate;
+    private final AlertService alertService;
 
     @Value("${runpod.api.key}")
     private String runpodApiKey;
@@ -67,8 +69,8 @@ public class NetworkImpl implements Network {
             return result;
 
         }catch (Exception e) {
-            log.error("OpenAI API 호출 실패", e);
-            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
+            alertService.sendAlert("OpenAI API 호출 실패: " + e.getMessage());
+            return oldPrompt;
         }
     }
 
@@ -130,8 +132,8 @@ public class NetworkImpl implements Network {
             }
 
         }catch (Exception e) {
-            log.error("OpenAI API 호출 실패", e);
-            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
+            alertService.sendAlert("OpenAI API 호출 실패: " + e.getMessage());
+            return false;
         }
     }
 
@@ -192,8 +194,8 @@ public class NetworkImpl implements Network {
             }
 
         }catch (Exception e) {
-            log.error("OpenAI API 호출 실패", e);
-            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
+            alertService.sendAlert("OpenAI API 호출 실패: " + e.getMessage());
+            return false;
         }
     }
 
@@ -299,7 +301,7 @@ public class NetworkImpl implements Network {
             );
 
             String jsonBody = objectMapper.writeValueAsString(requestBody);
-            HttpResponse<String> response = Unirest.post("https://api.runpod.ai/v2/yoo61r5n5h2vdy/run")
+            HttpResponse<String> response = Unirest.post("https://api.runpod.ai/v2/5ur6tlm9ltg8hu/run")
                     .header("accept", "application/json")
                     .header("authorization", runpodApiKey)
 
@@ -313,6 +315,43 @@ public class NetworkImpl implements Network {
             throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
+
+    public String createI2I(Long taskId, String imageUrl, String prompt, String webhook) {
+        try {
+            Unirest.setTimeouts(0, 0);
+
+            Map<String, Object> payload = Map.of(
+                    "task_id", taskId,
+                    "positive_prompt", prompt,
+                    "image_url", imageUrl
+            );
+
+            Map<String, Object> input = Map.of(
+                    "workflow", "img2img",
+                    "payload", payload
+            );
+
+            Map<String, Object> requestBody = Map.of(
+                    "webhook", webhook,
+                    "input", input
+            );
+
+            String jsonBody = objectMapper.writeValueAsString(requestBody);
+
+            HttpResponse<String> response = Unirest.post("https://api.runpod.ai/v2/5ur6tlm9ltg8hu/run")
+                    .header("accept", "application/json")
+                    .header("authorization", runpodApiKey)
+                    .header("content-type", "application/json")
+                    .body(jsonBody)
+                    .asString();
+
+            return response.getBody();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
     public String createT2VVideo(Long taskId, String lora, String prompt, int width, int height, int numFrames , String webhook) {
         try {

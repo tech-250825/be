@@ -65,6 +65,7 @@ public class SecurityConfig {
                                                 "/",
                                                 "/api/images/webhook",
                                                 "/api/videos/webhook",
+                                                "/api/img2img/webhook",
                                                 "/api/upscale-images/webhook",
                                                 "/auth/token/verify",
                                                 "/auth/google/redirect",

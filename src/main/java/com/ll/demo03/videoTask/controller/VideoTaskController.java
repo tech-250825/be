@@ -73,6 +73,7 @@ public class VideoTaskController {
     }
 
     @PostMapping(value = "/create/i2v/nfsw")
+    @PreAuthorize("hasRole('ADMIN')")
     public GlobalResponse createNfswI2V(
             @RequestBody I2VTaskRequest request,
             @AuthenticationPrincipal PrincipalDetails principalDetails

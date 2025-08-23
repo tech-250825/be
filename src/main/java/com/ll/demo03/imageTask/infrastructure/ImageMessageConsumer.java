@@ -3,7 +3,6 @@ package com.ll.demo03.imageTask.infrastructure;
 import com.ll.demo03.config.RabbitMQConfig;
 import com.ll.demo03.imageTask.controller.request.ImageQueueRequest;
 import com.ll.demo03.imageTask.controller.request.ImageQueueV3Request;
-import com.ll.demo03.imageTask.domain.ImageTaskInitiate;
 import com.ll.demo03.imageTask.service.ImageTaskServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

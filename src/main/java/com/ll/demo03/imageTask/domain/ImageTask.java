@@ -2,6 +2,7 @@ package com.ll.demo03.imageTask.domain;
 
 import com.ll.demo03.global.domain.Status;
 import com.ll.demo03.global.domain.ResolutionProfile;
+import com.ll.demo03.imageTask.controller.request.I2ITask.I2IQueueRequest;
 import com.ll.demo03.imageTask.controller.request.ImageQueueRequest;
 import com.ll.demo03.global.port.Network;
 import com.ll.demo03.imageTask.controller.request.ImageQueueV3Request;
@@ -20,6 +21,7 @@ public class ImageTask {
     private final Long id;
     private final String prompt;
     private final String oldPrompt;
+    private final String imageUrl;
     private final Weight checkpoint;
     private final Weight lora;
     private final String runpodId;
@@ -30,10 +32,11 @@ public class ImageTask {
     private final ResolutionProfile resolutionProfile;
 
     @Builder
-    public ImageTask(Long id, String prompt, String oldPrompt, Weight checkpoint, Weight lora, String runpodId, Status status, LocalDateTime createdAt, LocalDateTime modifiedAt, Member creator, ResolutionProfile resolutionProfile) {
+    public ImageTask(Long id, String prompt, String oldPrompt, String imageUrl, Weight checkpoint, Weight lora, String runpodId, Status status, LocalDateTime createdAt, LocalDateTime modifiedAt, Member creator, ResolutionProfile resolutionProfile) {
         this.id = id;
         this.prompt = prompt;
         this.oldPrompt = oldPrompt;
+        this.imageUrl = imageUrl;
         this.checkpoint = checkpoint;
         this.lora = lora;
         this.runpodId = runpodId;
@@ -65,11 +68,22 @@ public class ImageTask {
                 .build();
     }
 
+    public static ImageTask from(Member creator, String oldPrompt, String prompt, String imageUrl, ResolutionProfile profile) {
+        return ImageTask.builder()
+                .prompt(prompt)
+                .oldPrompt(oldPrompt)
+                .imageUrl(imageUrl)
+                .resolutionProfile(profile)
+                .creator(creator)
+                .build();
+    }
+
     public ImageTask updateStatus(Status status, String runpodId){
         return ImageTask.builder()
                 .id(id)
                 .prompt(prompt)
                 .oldPrompt(oldPrompt)
+                .imageUrl(imageUrl)
                 .checkpoint(checkpoint)
                 .lora(lora)
                 .runpodId(runpodId)
@@ -87,5 +101,9 @@ public class ImageTask {
 
     public static ImageQueueV3Request toImageQueueRequest(Long taskId, ImageTaskV3Request imageTaskRequest, String checkpoint, String newPrompt, String negativePrompt, Member creator) {
         return new ImageQueueV3Request(taskId, checkpoint, newPrompt, negativePrompt, imageTaskRequest.getResolutionProfile().getWidth(), imageTaskRequest.getResolutionProfile().getHeight(), creator.getId());
+    }
+
+    public static I2IQueueRequest toI2IQueueRequest(Long taskId, String imageUrl, String newPrompt, Member creator) {
+        return new I2IQueueRequest(taskId, imageUrl, newPrompt, creator.getId());
     }
 }
