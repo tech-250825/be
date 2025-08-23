@@ -68,4 +68,21 @@ public class ImageTaskRepositoryImpl implements ImageTaskRepository {
         jpaRepository.deleteById(task.getId());
     }
 
+    @Override
+    public Slice<ImageTask> findByMemberAndImageUrlIsNotNull(Member member, PageRequest pageRequest) {
+        return jpaRepository.findByMemberAndImageUrlIsNotNull(MemberEntity.from(member), pageRequest).map(ImageTaskEntity::toModel);
+    }
+
+    @Override
+    public Slice<ImageTask> findCreatedAfterAndImageUrlIsNotNull(Member member, LocalDateTime createdAt, Pageable pageable) {
+        Specification<ImageTaskEntity> spec = SpecificationUtils.memberEqualsAndCreatedAfterAndImageUrlIsNotNull("member", "createdAt", "imageUrl", MemberEntity.from(member), createdAt);
+        return jpaRepository.findAll(spec, pageable).map(ImageTaskEntity::toModel);
+    }
+
+    @Override
+    public Slice<ImageTask> findCreatedBeforeAndImageUrlIsNotNull(Member member, LocalDateTime createdAt, Pageable pageable) {
+        Specification<ImageTaskEntity> spec = SpecificationUtils.memberEqualsAndCreatedBeforeAndImageUrlIsNotNull("member", "createdAt", "imageUrl", MemberEntity.from(member), createdAt);
+        return jpaRepository.findAll(spec, pageable).map(ImageTaskEntity::toModel);
+    }
+
 }

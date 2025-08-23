@@ -2,10 +2,14 @@ package com.ll.demo03.imageTask.controller;
 
 import com.ll.demo03.global.controller.request.I2IWebhookEvent;
 import com.ll.demo03.global.dto.GlobalResponse;
+import com.ll.demo03.global.util.CursorBasedPageable;
 import com.ll.demo03.global.util.JsonParser;
+import com.ll.demo03.global.util.PageResponse;
 import com.ll.demo03.imageTask.controller.port.I2ITaskService;
 import com.ll.demo03.imageTask.controller.request.I2ITask.I2ITaskRequest;
 import com.ll.demo03.imageTask.controller.request.I2ITask.I2ITaskRequestV2;
+import com.ll.demo03.imageTask.controller.response.TaskOrI2IResponse;
+import com.ll.demo03.imageTask.controller.response.TaskOrImageResponse;
 import com.ll.demo03.member.domain.Member;
 import com.ll.demo03.oauth.domain.PrincipalDetails;
 import com.ll.demo03.webhook.I2IWebhookProcessor;
@@ -17,6 +21,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Transactional
@@ -60,5 +66,17 @@ public class I2ITaskController {
 
         return GlobalResponse.success();
     }
+
+    @GetMapping("/task")
+    public GlobalResponse handle(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            CursorBasedPageable cursorBasedPageable) {
+
+        Member member = principalDetails.user();
+        PageResponse<List<TaskOrI2IResponse>>  result = i2ITaskService.getMyTasks(member, cursorBasedPageable);
+
+        return GlobalResponse.success(result);
+    }
+
 
 }

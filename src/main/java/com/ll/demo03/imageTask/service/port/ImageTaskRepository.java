@@ -25,6 +25,10 @@ public interface ImageTaskRepository {
 
     Slice<ImageTask> findCreatedAfter(Member member, LocalDateTime createdAt, Pageable pageable);
     Slice<ImageTask> findCreatedBefore(Member member, LocalDateTime createdAt, Pageable pageable);
+    
+    Slice<ImageTask> findByMemberAndImageUrlIsNotNull(Member member, PageRequest pageRequest);
+    Slice<ImageTask> findCreatedAfterAndImageUrlIsNotNull(Member member, LocalDateTime createdAt, Pageable pageable);
+    Slice<ImageTask> findCreatedBeforeAndImageUrlIsNotNull(Member member, LocalDateTime createdAt, Pageable pageable);
 
     Optional<ImageTask> findById(Long taskId);
     
