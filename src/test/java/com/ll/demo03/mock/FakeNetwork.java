@@ -35,11 +35,11 @@ public class FakeNetwork implements Network {
     }
 
     @Override
-    public boolean censorPrompt(String prompt) {return true;}
+    public boolean censorPrompt(String prompt) {return false;}
 
     @Override
     public boolean censorSoftPrompt(String prompt){
-        return true;
+        return false;
     }
 
     @Override

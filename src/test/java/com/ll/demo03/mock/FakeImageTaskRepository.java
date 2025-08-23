@@ -58,6 +58,7 @@ public class FakeImageTaskRepository implements ImageTaskRepository {
                 .modifiedAt(imageTask.getModifiedAt())
                 .creator(imageTask.getCreator())
                 .resolutionProfile(imageTask.getResolutionProfile())
+                .imageUrl(imageTask.getImageUrl())
                 .build();
 
         storage.put(id, saved);
@@ -92,6 +93,40 @@ public class FakeImageTaskRepository implements ImageTaskRepository {
     @Override
     public void delete(ImageTask task) {
         storage.remove(task.getId());
+    }
+
+    @Override
+    public Slice<ImageTask> findByMemberAndImageUrlIsNotNull(Member member, PageRequest pageRequest) {
+        List<ImageTask> filtered = storage.values().stream()
+                .filter(task -> task.getCreator().getId().equals(member.getId()) && task.getImageUrl() != null)
+                .sorted(Comparator.comparing(ImageTask::getCreatedAt).reversed())
+                .collect(Collectors.toList());
+
+        return getSlice(filtered, pageRequest);
+    }
+
+    @Override
+    public Slice<ImageTask> findCreatedAfterAndImageUrlIsNotNull(Member member, LocalDateTime createdAt, Pageable pageable) {
+        List<ImageTask> filtered = storage.values().stream()
+                .filter(task -> task.getCreator().getId().equals(member.getId()) 
+                        && task.getCreatedAt().isAfter(createdAt) 
+                        && task.getImageUrl() != null)
+                .sorted(Comparator.comparing(ImageTask::getCreatedAt).reversed())
+                .collect(Collectors.toList());
+
+        return getSlice(filtered, pageable);
+    }
+
+    @Override
+    public Slice<ImageTask> findCreatedBeforeAndImageUrlIsNotNull(Member member, LocalDateTime createdAt, Pageable pageable) {
+        List<ImageTask> filtered = storage.values().stream()
+                .filter(task -> task.getCreator().getId().equals(member.getId()) 
+                        && task.getCreatedAt().isBefore(createdAt) 
+                        && task.getImageUrl() != null)
+                .sorted(Comparator.comparing(ImageTask::getCreatedAt).reversed())
+                .collect(Collectors.toList());
+
+        return getSlice(filtered, pageable);
     }
 
     private Slice<ImageTask> getSlice(List<ImageTask> list, Pageable pageable) {
