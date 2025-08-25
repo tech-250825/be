@@ -43,7 +43,7 @@ public class MemberController {
         return GlobalResponse.success();
     }
 
-    @DeleteMapping("/verify19")
+    @PostMapping("/verify19")
     @PreAuthorize("isAuthenticated()")
     public GlobalResponse<Void> verify19(
             @AuthenticationPrincipal PrincipalDetails principalDetails
