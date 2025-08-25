@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface PaymentRepository extends JpaRepository<InvoiceEntity, Long> {
+public interface InvoiceJpaRepository extends JpaRepository<InvoiceEntity, Long> {
     Optional<InvoiceEntity> findByOrderId(String orderId);
     Optional<InvoiceEntity> findByPaymentKey(String paymentKey);
 }

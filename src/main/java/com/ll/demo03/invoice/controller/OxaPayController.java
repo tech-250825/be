@@ -1,11 +1,11 @@
 package com.ll.demo03.invoice.controller;
 
 import com.ll.demo03.global.dto.GlobalResponse;
+import com.ll.demo03.invoice.controller.port.OxaPayService;
 import com.ll.demo03.member.domain.Member;
 import com.ll.demo03.oauth.domain.PrincipalDetails;
 import com.ll.demo03.invoice.controller.request.OxaPayInvoiceRequest;
 import com.ll.demo03.invoice.controller.response.OxaPayStatusResponse;
-import com.ll.demo03.invoice.service.OxaPayService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,9 +25,9 @@ public class OxaPayController {
     public GlobalResponse createInvoice(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestBody OxaPayInvoiceRequest request) {
-        Member member = principalDetails.user();
+        Long memberId = principalDetails.user().getId();
 
-        oxaPayService.createInvoice(request, member);
+        oxaPayService.createInvoice(request, memberId);
 
         return GlobalResponse.success();
     }
@@ -36,9 +36,9 @@ public class OxaPayController {
     public GlobalResponse<OxaPayStatusResponse> getPaymentStatus(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @PathVariable String trackId) {
-        Member member = principalDetails.user();
+        Long memberId = principalDetails.user().getId();
 
-        OxaPayStatusResponse response = oxaPayService.getPaymentStatus(trackId, member);
+        OxaPayStatusResponse response = oxaPayService.getPaymentStatus(trackId, memberId);
 
         return GlobalResponse.success(response);
     }

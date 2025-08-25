@@ -4,15 +4,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.math.BigDecimal;
+
 @Getter
 @NoArgsConstructor
-@ToString
 public class OxaPayInvoiceRequest {
-    private Double amount;
+    private BigDecimal amount;
     private String currency;
-
-    public OxaPayInvoiceRequest(Double amount, String currency) {
-        this.amount = amount;
-        this.currency = currency;
-    }
 }

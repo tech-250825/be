@@ -1,4 +1,4 @@
-package com.ll.demo03.webhook;
+package com.ll.demo03.webhook.port;
 
 import com.ll.demo03.global.controller.request.WebhookEvent;
 

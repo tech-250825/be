@@ -2,15 +2,16 @@ package com.ll.demo03.invoice.service;
 
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
+import com.ll.demo03.invoice.controller.port.OxaPayService;
+import com.ll.demo03.invoice.domain.Currency;
 import com.ll.demo03.invoice.domain.Invoice;
+import com.ll.demo03.invoice.service.port.InvoiceRepository;
 import com.ll.demo03.member.domain.Member;
 import com.ll.demo03.member.service.port.MemberRepository;
 import com.ll.demo03.invoice.controller.request.OxaPayInvoiceRequest;
 import com.ll.demo03.invoice.controller.response.OxaPayStatusResponse;
-import com.ll.demo03.invoice.domain.Currency;
 import com.ll.demo03.invoice.domain.Status;
-import com.ll.demo03.invoice.infrastructure.InvoiceEntity;
-import com.ll.demo03.invoice.infrastructure.PaymentRepository;
+import com.ll.demo03.invoice.infrastructure.InvoiceJpaRepository;
 import lombok.RequiredArgsConstructor;
 import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
@@ -24,12 +25,11 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class OxaPayService {
+public class OxaPayServiceImpl implements OxaPayService {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final RestTemplate restTemplate = new RestTemplate();
     private final MemberRepository memberRepository;
-    private final PaymentRepository paymentRepository;
+    private final InvoiceRepository invoiceRepository;
 
     @Value("${oxapay.merchant.api-key:sandbox}")
     private String merchantApiKey;
@@ -40,8 +40,10 @@ public class OxaPayService {
     @Value("${server.domain:http://localhost:8080}")
     private String serverDomain;
 
-    public void createInvoice(OxaPayInvoiceRequest request, Member member) {
-        try {
+    @Override
+    public void createInvoice(OxaPayInvoiceRequest request, Long memberId) {
+            Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+
             String orderId = "ORD-" + System.currentTimeMillis();
 
             JSONObject requestBody = new JSONObject();
@@ -68,22 +70,19 @@ public class OxaPayService {
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
                 JSONObject responseBody = response.getBody();
                 String trackId = (String) responseBody.get("trackId");
-                String payLink = (String) responseBody.get("payLink");
 
-                Invoice invoice = Invoice.from(String trackId, Member member, request.getAmount(), Status.PENDING, LocalDateTime.now())
-                paymentRepository.save(invoiceEntity);
-                
-                logger.info("OxaPay invoice created and saved: orderId={}, trackId={}", orderId, trackId);
+                Invoice invoice = Invoice.from(trackId, member, request.getAmount(), Currency.valueOf(request.getCurrency()), Status.WAITING, LocalDateTime.now());
+                invoiceRepository.save(invoice);
+
             } else {
                 throw new CustomException(ErrorCode.PAYMENT_CONFIRMATION_FAILED);
             }
-        } catch (Exception e) {
-            throw new CustomException(ErrorCode.PAYMENT_CONFIRMATION_FAILED);
-        }
     }
 
-    public OxaPayStatusResponse getPaymentStatus(String trackId, Member member) {
-        try {
+    @Override
+    public OxaPayStatusResponse getPaymentStatus(String trackId, Long memberId) {
+            memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+
             JSONObject requestBody = new JSONObject();
             requestBody.put("merchant", merchantApiKey);
             requestBody.put("trackId", trackId);
@@ -102,24 +101,12 @@ public class OxaPayService {
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
                 return OxaPayStatusResponse.fromJsonObject(response.getBody(), 200);
             } else {
-                return OxaPayStatusResponse.error("결제 상태 조회 실패", "INQUIRY_FAILED", 500);
+                throw new CustomException(ErrorCode.PAYMENT_CONFIRMATION_FAILED);
             }
-
-        } catch (Exception e) {
-            logger.error("Payment status inquiry failed: {}", e.getMessage(), e);
-
-            return OxaPayStatusResponse.error(
-                "결제 상태 조회 중 오류가 발생했습니다: " + e.getMessage(),
-                "PAYMENT_STATUS_INQUIRY_FAILED",
-                500
-            );
-        }
     }
 
+    @Override
     public void handlePaymentCallback(Object callbackData) {
-        logger.info("Processing OxaPay payment callback: {}", callbackData);
-        
-        // 여기서 실제 비즈니스 로직 처리
-        // 예: 데이터베이스에 결제 상태 업데이트, 주문 처리 등
+
     }
 }

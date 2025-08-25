@@ -10,6 +10,7 @@ import com.ll.demo03.imageTask.domain.ImageTask;
 import com.ll.demo03.imageTask.service.port.ImageTaskRepository;
 import com.ll.demo03.member.domain.Member;
 import com.ll.demo03.member.service.port.MemberRepository;
+import com.ll.demo03.webhook.port.I2IWebhookProcessor;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Transactional
 @RequiredArgsConstructor
-public class I2IWebhookProcessorImpl implements I2IWebhookProcessor{
+public class I2IWebhookProcessorImpl implements I2IWebhookProcessor {
     private final ImageTaskRepository taskRepository;
     private final UGCRepository UGCRepository;
     private final RedisService redisService;
