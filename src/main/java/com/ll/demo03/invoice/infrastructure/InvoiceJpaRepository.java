@@ -7,4 +7,5 @@ import java.util.Optional;
 
 @Repository
 public interface InvoiceJpaRepository extends JpaRepository<InvoiceEntity, Long> {
+    Optional<InvoiceEntity> findByTrackId(String trackId);
 }

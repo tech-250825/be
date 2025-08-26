@@ -17,24 +17,6 @@ public class FakeMemberRepository implements MemberRepository {
     }
 
     @Override
-    public void resetAllMembersCredit() {
-        for (Map.Entry<Long, Member> entry : storage.entrySet()) {
-            Member original = entry.getValue();
-            Member updated = Member.builder()
-                    .id(original.getId())
-                    .email(original.getEmail())
-                    .name(original.getName())
-                    .profile(original.getProfile())
-                    .credit(100000) // 예시로 초기화 값 고정
-                    .role(original.getRole())
-                    .provider(original.getProvider())
-                    .providerId(original.getProviderId())
-                    .build();
-            storage.put(entry.getKey(), updated);
-        }
-    }
-
-    @Override
     public void delete(Member member) {
         storage.remove(member.getId());
     }
