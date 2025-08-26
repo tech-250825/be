@@ -19,11 +19,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class OxaPayServiceImpl implements OxaPayService {
 
