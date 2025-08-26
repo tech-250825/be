@@ -108,6 +108,28 @@ public class OxaPayServiceImpl implements OxaPayService {
 
     @Override
     public void handlePaymentCallback(Object callbackData) {
+        if (!(callbackData instanceof JSONObject json)) {
+            throw new CustomException(ErrorCode.ENTITY_NOT_FOUND);
+        }
 
+        String trackId = (String) json.get("trackId");
+        String status = (String) json.get("status");
+        Double paidAmount = Double.valueOf(json.getAsString("amount"));
+
+        Invoice invoice = invoiceRepository.findByTrackId(trackId).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+
+        if ("PAID".equalsIgnoreCase(status)) {
+            Member member = invoice.getMember();
+
+            member.increaseCredit(member.getCredit() + paidAmount.intValue());
+            memberRepository.save(member);
+
+            invoice.updateStatus(Status.PAID);
+            invoiceRepository.save(invoice);
+        } else {
+            invoice.updateStatus(Status.FAILED);
+            invoiceRepository.save(invoice);
+        }
     }
+
 }

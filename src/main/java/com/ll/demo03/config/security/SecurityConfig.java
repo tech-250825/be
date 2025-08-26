@@ -63,6 +63,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request ->
                                 request.requestMatchers(
                                                 "/",
+                                        "/api/oxapay/webhook",
                                                 "/api/images/webhook",
                                                 "/api/videos/webhook",
                                                 "/api/img2img/webhook",

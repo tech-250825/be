@@ -2,7 +2,6 @@ package com.ll.demo03.invoice.controller;
 
 import com.ll.demo03.global.dto.GlobalResponse;
 import com.ll.demo03.invoice.controller.port.OxaPayService;
-import com.ll.demo03.member.domain.Member;
 import com.ll.demo03.oauth.domain.PrincipalDetails;
 import com.ll.demo03.invoice.controller.request.OxaPayInvoiceRequest;
 import com.ll.demo03.invoice.controller.response.OxaPayStatusResponse;

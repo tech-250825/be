@@ -8,8 +8,6 @@ public interface MemberRepository {
 
     Optional<Member> findById(Long id);
 
-    void resetAllMembersCredit();
-
     void delete(Member member);
 
     Optional<Member> findByEmail(String email);

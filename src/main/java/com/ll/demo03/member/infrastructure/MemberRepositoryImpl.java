@@ -32,9 +32,4 @@ public class MemberRepositoryImpl implements MemberRepository {
     public void delete(Member member) {
         memberJpaRepository.delete(MemberEntity.from(member));
     }
-
-    @Override
-    public void resetAllMembersCredit(){
-        memberJpaRepository.resetAllMembersCredit();
-    };
 }
