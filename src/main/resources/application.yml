@@ -49,7 +49,7 @@ spring:
         format_sql: true
         highlight_sql: false
         use_sql_comments: true
-#        show-sql: true
+#        show-sql: truea
         dialect: org.hibernate.dialect.MySQLDialect
 management:
   endpoints:
