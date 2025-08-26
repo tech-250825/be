@@ -23,6 +23,8 @@ public class InvoiceEntity {
     @Column(nullable = false, unique = true)
     private String trackId;
 
+    private String orderId;
+
     @ManyToOne
     private MemberEntity member;
 

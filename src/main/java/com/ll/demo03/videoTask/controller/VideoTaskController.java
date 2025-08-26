@@ -40,6 +40,7 @@ public class VideoTaskController {
     private final MemberRepository memberRepository;
 
     @PostMapping(value = "/create/t2v")
+    @PreAuthorize("hasRole('ADMIN')")
     public GlobalResponse createT2V(
             @RequestBody VideoTaskRequest request,
             @AuthenticationPrincipal PrincipalDetails principalDetails
@@ -49,20 +50,8 @@ public class VideoTaskController {
             return GlobalResponse.success();
     }
 
-    @PostMapping(value = "/create/i2v" , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public GlobalResponse createI2V(
-            @RequestPart("request") String requestJson,
-            @RequestPart("image") MultipartFile image,
-            @AuthenticationPrincipal PrincipalDetails principalDetails
-    ) {
-            VideoTaskRequest request = JsonParser.parseJson(requestJson, VideoTaskRequest.class);
-
-            Member member = principalDetails.user();
-            videoTaskService.initateI2V(request, member, image);
-            return GlobalResponse.success();
-    }
-
     @PostMapping(value = "/create/i2v/v2")
+    @PreAuthorize("hasRole('ADMIN')")
     public GlobalResponse createI2V(
             @RequestBody I2VTaskRequest request,
             @AuthenticationPrincipal PrincipalDetails principalDetails
@@ -72,18 +61,8 @@ public class VideoTaskController {
             return GlobalResponse.success();
     }
 
-    @PostMapping(value = "/create/i2v/nfsw")
-    @PreAuthorize("hasRole('ADMIN')")
-    public GlobalResponse createNfswI2V(
-            @RequestBody I2VTaskRequest request,
-            @AuthenticationPrincipal PrincipalDetails principalDetails
-    ) {
-        Member member = principalDetails.user();
-        videoTaskService.initateNfswI2V(request, member);
-        return GlobalResponse.success();
-    }
-
     @PostMapping(value = "/create/i2v/v2/{boardId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public GlobalResponse createI2VWithBoard(
             @PathVariable Long boardId,
             @RequestBody I2VTaskRequest request,
@@ -95,6 +74,7 @@ public class VideoTaskController {
     }
 
     @PostMapping(value = "/create/t2v/{boardId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public GlobalResponse createT2VWithBoard(
             @PathVariable Long boardId,
             @RequestBody VideoTaskRequest request,
@@ -105,21 +85,8 @@ public class VideoTaskController {
         return GlobalResponse.success();
     }
 
-    @PostMapping(value = "/create/i2v/{boardId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public GlobalResponse createI2VWithBoard(
-            @PathVariable Long boardId,
-            @RequestPart("request") String requestJson,
-            @RequestPart("image") MultipartFile image,
-            @AuthenticationPrincipal PrincipalDetails principalDetails
-    ) {
-            VideoTaskRequest request = JsonParser.parseJson(requestJson, VideoTaskRequest.class);
-
-            Member member = principalDetails.user();
-            videoTaskService.initateI2V(request, member, image, boardId);
-            return GlobalResponse.success();
-    }
-
     @PostMapping(value = "/create/i2v/v3/{boardId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public GlobalResponse createI2VFromLatestFrame(
             @PathVariable Long boardId,
             @RequestBody I2VTaskRequest request,
@@ -154,6 +121,7 @@ public class VideoTaskController {
     }
 
     @GetMapping("/task")
+    @PreAuthorize("hasRole('ADMIN')")
     public GlobalResponse handle(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             CursorBasedPageable cursorBasedPageable) {
@@ -164,7 +132,7 @@ public class VideoTaskController {
     }
 
     @GetMapping("/board/{boardId}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ADMIN')")
     public GlobalResponse<PageResponse<List<TaskOrVideoResponse>>> getVideoTasksByBoardId(
             @PathVariable Long boardId,
             CursorBasedPageable cursorBasedPageable) {

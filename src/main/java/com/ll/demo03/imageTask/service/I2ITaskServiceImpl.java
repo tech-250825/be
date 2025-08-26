@@ -53,15 +53,11 @@ public class I2ITaskServiceImpl implements I2ITaskService {
         memberRepository.save(creator);
 
         String prompt = request.getPrompt();
-        boolean result = network.censorPrompt(prompt);
-        if (result== true) {throw new CustomException(ErrorCode.COMMUNITY_GUIDELINE_VIOLATION);}
-
-        String gptPrompt = weightService.updatePrompt(prompt);
-        ImageTask task = ImageTask.from(member, request.getPrompt(), gptPrompt, request.getImageUrl(), request.getResolutionProfile());
+        ImageTask task = ImageTask.from(member, request.getPrompt(), request.getImageUrl(), request.getResolutionProfile());
         task = task.updateStatus(Status.IN_PROGRESS, null);
         ImageTask saved = taskRepository.save(task);
 
-        I2IQueueRequest queueRequest = ImageTask.toI2IQueueRequest(saved.getId(), request.getImageUrl(), gptPrompt, member);
+        I2IQueueRequest queueRequest = ImageTask.toI2IQueueRequest(saved.getId(), request.getImageUrl(), prompt, member);
         messageProducer.sendCreationMessage(queueRequest);
     }
 
@@ -76,16 +72,12 @@ public class I2ITaskServiceImpl implements I2ITaskService {
         String url = s3Service.uploadFile(image);
 
         String prompt = request.getPrompt();
-        boolean result = network.censorPrompt(prompt);
-        if (result== true) {throw new CustomException(ErrorCode.COMMUNITY_GUIDELINE_VIOLATION);}
 
-        String gptPrompt = weightService.updatePrompt(prompt);
-
-        ImageTask task = ImageTask.from(member, request.getPrompt(), gptPrompt, url, request.getResolutionProfile());
+        ImageTask task = ImageTask.from(member, prompt, url, request.getResolutionProfile());
         task = task.updateStatus(Status.IN_PROGRESS, null);
         ImageTask saved = taskRepository.save(task);
 
-        I2IQueueRequest queueRequest = ImageTask.toI2IQueueRequest(saved.getId(), url, gptPrompt, member);
+        I2IQueueRequest queueRequest = ImageTask.toI2IQueueRequest(saved.getId(), url, prompt, member);
         messageProducer.sendCreationMessage(queueRequest);
     }
 

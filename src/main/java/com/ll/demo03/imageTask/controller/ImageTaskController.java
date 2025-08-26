@@ -35,40 +35,7 @@ public class ImageTaskController {
     private final MemberRepository memberRepository;
     private final ImageTaskService imageTaskService;
 
-    @PostMapping(value = "/create")
-    @PreAuthorize("isAuthenticated()")
-    public GlobalResponse createImages(
-            @RequestBody ImageTaskRequest request,
-            @AuthenticationPrincipal PrincipalDetails principalDetails
-    ) {
-        Member member = principalDetails.user();
-        imageTaskService.initate(request, member);
-        return GlobalResponse.success();
-    }
-
     @PostMapping(value = "/create/v2")
-    @PreAuthorize("isAuthenticated()")
-    public GlobalResponse createFaceDetailerImages(
-            @RequestBody ImageTaskRequest request,
-            @AuthenticationPrincipal PrincipalDetails principalDetails
-    ) {
-            Member member = principalDetails.user();
-            imageTaskService.initateFaceDetailer(request, member);
-            return GlobalResponse.success();
-    }
-
-    @PostMapping(value = "/create/v3")
-    @PreAuthorize("isAuthenticated()")
-    public GlobalResponse createPlainImages(
-            @RequestBody ImageTaskV3Request request,
-            @AuthenticationPrincipal PrincipalDetails principalDetails
-    ) {
-        Member member = principalDetails.user();
-        imageTaskService.initatePlainImage(request, member);
-        return GlobalResponse.success();
-    }
-
-    @PostMapping(value = "/create/v2/nfsw")
     @PreAuthorize("hasRole('ADMIN')")
     public GlobalResponse createNsfwFaceDetailerImages(
             @RequestBody ImageTaskRequest request,
@@ -79,7 +46,7 @@ public class ImageTaskController {
         return GlobalResponse.success();
     }
 
-    @PostMapping(value = "/create/v3/nsfw")
+    @PostMapping(value = "/create/v3")
     @PreAuthorize("hasRole('ADMIN')")
     public GlobalResponse createNsfwPlainImages(
             @RequestBody ImageTaskV3Request request,
@@ -109,6 +76,7 @@ public class ImageTaskController {
     }
 
     @GetMapping("/task")
+    @PreAuthorize("hasRole('ADMIN')")
     public GlobalResponse handle(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             CursorBasedPageable cursorBasedPageable) {

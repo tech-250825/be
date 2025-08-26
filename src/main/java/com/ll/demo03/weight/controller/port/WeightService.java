@@ -13,10 +13,4 @@ public interface WeightService {
     List<WeightResponse> get(MediaType mediaType, StyleType styleType, ModelType modelType);
 
     String addTriggerWord(Long id, String prompt);
-
-    String updatePrompt(Long id, String oldPrompt);
-
-    String updatePrompt(String oldPrompt);
-
-    String updatePrompt(WeightPromptRequest request);
 }

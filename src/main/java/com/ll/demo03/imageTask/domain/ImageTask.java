@@ -68,10 +68,9 @@ public class ImageTask {
                 .build();
     }
 
-    public static ImageTask from(Member creator, String oldPrompt, String prompt, String imageUrl, ResolutionProfile profile) {
+    public static ImageTask from(Member creator, String prompt, String imageUrl, ResolutionProfile profile) {
         return ImageTask.builder()
                 .prompt(prompt)
-                .oldPrompt(oldPrompt)
                 .imageUrl(imageUrl)
                 .resolutionProfile(profile)
                 .creator(creator)

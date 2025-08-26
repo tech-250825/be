@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 public class Invoice {
     private final Long id;
     private final String trackId;
+    private final String orderId;
     private final Member member;
     private final BigDecimal amount;
     private final Status status;
@@ -18,9 +19,10 @@ public class Invoice {
     private final LocalDateTime approvedAt;
 
     @Builder
-    public Invoice(Long id, String trackId, Member member, BigDecimal amount, Status status, Currency currency, LocalDateTime approvedAt){
+    public Invoice(Long id, String trackId, String orderId,  Member member, BigDecimal amount, Status status, Currency currency, LocalDateTime approvedAt){
         this.id = id;
         this.trackId = trackId;
+        this.orderId = orderId;
         this.member = member;
         this.amount = amount;
         this.status = status;
@@ -28,7 +30,7 @@ public class Invoice {
         this.approvedAt = approvedAt;
     }
 
-    public static Invoice from(String trackId, Member member, BigDecimal amount, Currency currency, Status status, LocalDateTime approvedAt){
+    public static Invoice from(String trackId,  Member member, BigDecimal amount, Currency currency, Status status, LocalDateTime approvedAt){
         return Invoice.builder()
                 .trackId(trackId)
                 .member(member)

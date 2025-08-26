@@ -15,11 +15,8 @@ import java.util.List;
 public interface VideoTaskService {
     void initateT2V(VideoTaskRequest request, Member member);
     void initateT2V(VideoTaskRequest request, Member member, Long boardId);
-    void initateI2V(VideoTaskRequest request, Member member, MultipartFile image);
     void initateI2V(I2VTaskRequest request, Member member);
-    void initateNfswI2V(I2VTaskRequest request, Member member);
     void initateI2V(I2VTaskRequest request, Member member, Long boardId);
-    void initateI2V(VideoTaskRequest request, Member member, MultipartFile image, Long boardId);
     void initateI2VFromLatestFrame(I2VTaskRequest request, Member member, Long boardId);
     void process(T2VQueueRequest message);
     void process(I2VQueueRequest message);

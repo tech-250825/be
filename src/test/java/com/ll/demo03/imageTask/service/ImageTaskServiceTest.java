@@ -53,54 +53,55 @@ class ImageTaskServiceTest {
         testContainer.fakeWeightRepository.addTestWeight(2L, "test-lora", "lora-trigger");
     }
 
-    @Test
-    void 프롬프트_변환하고_크레딧_차감하고_메시지_전송한다() {
-        // given
-        Member member = memberRepository.findById(1L).get();
+//    @Test
+//    void 프롬프트_변환하고_크레딧_차감하고_메시지_전송한다() {
+//        // given
+//        Member member = memberRepository.findById(1L).get();
+//
+//        ImageTaskRequest request = ImageTaskRequest.builder()
+//                .prompt("고양이 사진 그려줘")
+//                .checkpointId(1L)
+//                .loraId(2L)
+//                .resolutionProfile(com.ll.demo03.global.domain.ResolutionProfile.RATIO_9_16_SD)
+//                .build();
+//        log.info("감소 전 크레딧: {}, 요청 감소량: {}", member.getCredit(), 1);
+//
+//        // when
+//        imageTaskService.initate(request, member);
+//        imageTaskService.initate(request, member);
+//
+//        // then
+//        Member updated = memberRepository.findById(1L).get();
+//        log.info("감소 전 크레딧: {}, 요청 감소량: {}", updated.getCredit(), 1);
+//        assertEquals(0, updated.getCredit());
+//
+//        assertTrue(messageProducer.imageMessages.size() == 1);
+//        log.info("프롬프트:  {}" ,messageProducer.imageMessages.size());
+//        ImageQueueRequest sentMessage = messageProducer.imageMessages.get(0);
+//        log.info("프롬프트:  {}" ,sentMessage.getPrompt());
+//        assertTrue(sentMessage.getPrompt().contains("[FAKE_MODIFIED]"));
+//    }
 
-        ImageTaskRequest request = ImageTaskRequest.builder()
-                .prompt("고양이 사진 그려줘")
-                .checkpointId(1L)
-                .loraId(2L)
-                .resolutionProfile(com.ll.demo03.global.domain.ResolutionProfile.RATIO_9_16_SD)
-                .build();
-        log.info("감소 전 크레딧: {}, 요청 감소량: {}", member.getCredit(), 1);
-
-        // when
-        imageTaskService.initate(request, member);
-
-        // then
-        Member updated = memberRepository.findById(1L).get();
-        log.info("감소 전 크레딧: {}, 요청 감소량: {}", updated.getCredit(), 1);
-        assertEquals(0, updated.getCredit());
-
-        assertTrue(messageProducer.imageMessages.size() == 1);
-        log.info("프롬프트:  {}" ,messageProducer.imageMessages.size());
-        ImageQueueRequest sentMessage = messageProducer.imageMessages.get(0);
-        log.info("프롬프트:  {}" ,sentMessage.getPrompt());
-        assertTrue(sentMessage.getPrompt().contains("[FAKE_MODIFIED]"));
-    }
-
-    @Test
-    void 크레딧이_0이면_에러를_발생시킨다() {
-        // given
-        Member member = memberRepository.findById(2L).get();
-
-        ImageTaskRequest request = ImageTaskRequest.builder()
-                .prompt("고양이 사진 그려줘")
-                .checkpointId(1L)
-                .loraId(2L)
-                .resolutionProfile(com.ll.demo03.global.domain.ResolutionProfile.RATIO_9_16_SD)
-                .build();
-
-        // when
-        //then
-        assertThatThrownBy(() -> {
-            imageTaskService.initate(request, member);
-        }).isInstanceOf(CustomException.class)
-                .hasMessageContaining(ErrorCode.NO_CREDIT.getMessage());
-
-    }
+//    @Test
+//    void 크레딧이_0이면_에러를_발생시킨다() {
+//        // given
+//        Member member = memberRepository.findById(2L).get();
+//
+//        ImageTaskRequest request = ImageTaskRequest.builder()
+//                .prompt("고양이 사진 그려줘")
+//                .checkpointId(1L)
+//                .loraId(2L)
+//                .resolutionProfile(com.ll.demo03.global.domain.ResolutionProfile.RATIO_9_16_SD)
+//                .build();
+//
+//        // when
+//        //then
+//        assertThatThrownBy(() -> {
+//            imageTaskService.initate(request, member);
+//        }).isInstanceOf(CustomException.class)
+//                .hasMessageContaining(ErrorCode.NO_CREDIT.getMessage());
+//
+//    }
 
 //    @Test
 //    void 이미지_생성_테스크를_저장하고_큐에_넣고_네트워크_요청한다() {

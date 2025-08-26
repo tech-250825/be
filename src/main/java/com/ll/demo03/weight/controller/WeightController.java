@@ -29,10 +29,5 @@ public class WeightController {
         return GlobalResponse.success(weightService.get(mediaType, styleType, modelType));
     }
 
-    @PostMapping
-    public GlobalResponse<String> updatePrompt(@RequestBody WeightPromptRequest request){
-        return GlobalResponse.success(weightService.updatePrompt(request));
-    }
-
 }
 
