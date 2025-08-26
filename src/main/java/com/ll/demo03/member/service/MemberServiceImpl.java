@@ -43,6 +43,7 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.delete(member);
     }
 
+    @Transactional
     public void verify19(Long memberId){
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
