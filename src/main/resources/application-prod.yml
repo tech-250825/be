@@ -1,6 +1,6 @@
 app:
   client:
-    url: https://hoit.ai.kr/*
+    url: https://katin.org/*
 server:
   port: 8090
   shutdown: graceful
@@ -24,14 +24,14 @@ spring:
       client:
         registration:
           google:
-            redirect-uri: https://api.hoit.ai.kr/auth/google/redirect
+            redirect-uri: https://api.katin.org/auth/google/redirect
   lifecycle:
     # 스프링부트가 종료 요청을 받은 후 기다려줄 수 있는 최대한의 시간d
     timeout-per-shutdown-phase: 1h
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://data0815.cdogc6048p9x.ap-northeast-2.rds.amazonaws.com:3306/hoit_db
-    username: hoituser
+    url: jdbc:mysql://katin-rds-1.c1a4iqqe42es.ap-northeast-1.rds.amazonaws.com:3306/katin_db
+    username: katinuser
   data:
     redis:
       host: redis
@@ -52,7 +52,7 @@ logging:
     org.hibernate.orm.jdbc.extract: INFO
     org.springframework.transaction.interceptor: INFO
 custom:
-  webhook-url: https://api.hoit.ai.kr
+  webhook-url: https://api.katin.org
   site:
     name: "My Site Prod"
 management:
