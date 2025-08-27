@@ -26,8 +26,11 @@ public record PrincipalDetails(
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority(user.getRole().name()));
+        return Collections.singleton(
+                new SimpleGrantedAuthority("ROLE_" + user.getRole().name())
+        );
     }
+
 
     @Override
     public String getPassword() {
