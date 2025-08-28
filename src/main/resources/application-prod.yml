@@ -2,6 +2,7 @@ app:
   client:
     url: https://katin.org/*
 server:
+  frontend: https://katin.org
   port: 8090
   shutdown: graceful
 spring:

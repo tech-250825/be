@@ -32,12 +32,12 @@ public class InvoiceEntity {
     private BigDecimal amount;
 
     @Column(nullable = false)
-    private Status status;
+    @Enumerated(EnumType.STRING)
+    private Status status = Status.WAITING;
 
     @Column(nullable = false)
     private Currency currency;
 
-    @Column(nullable = false)
     private LocalDateTime approvedAt;
 
     public static InvoiceEntity from(Invoice invoice){
@@ -61,6 +61,7 @@ public class InvoiceEntity {
                 .amount(this.getAmount())
                 .status(this.getStatus())
                 .currency(this.getCurrency())
+                .approvedAt(this.getApprovedAt())
                 .build();
     }
 }

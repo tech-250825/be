@@ -2,6 +2,7 @@ app:
   client:
     url: http://localhost:8090
 server:
+  frontend: http://localhost:3000
   port: 8090
   shutdown: graceful
 spring:
@@ -24,6 +25,7 @@ spring:
   lifecycle:
     timeout-per-shutdown-phase: 1h
   datasource:
+    leak-detection-threshold: 20000
     maximum-pool-size: 3
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/katin_db?serverTimezone=Asia/Seoul
@@ -69,7 +71,7 @@ logging:
     org.springframework.security: DEBUG
 #    org.hibernate.SQL: DEBUG
 custom:
-  webhook-url: https://8fe2e2625a4d.ngrok-free.app
+  webhook-url: https://e10be22101e8.ngrok-free.app
   site:
     name: "My Site Prod"
 
