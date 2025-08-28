@@ -16,10 +16,8 @@ public class ResolutionProfileDeserializer extends JsonDeserializer<ResolutionPr
         String value = parser.getText();
         
         try {
-            // Try direct enum name first
             return ResolutionProfile.valueOf(value.toUpperCase());
         } catch (IllegalArgumentException e) {
-            // Try parsing as "ratio:quality" format (e.g., "16:9:HD", "1:1:SD")
             if (value.contains(":")) {
                 String[] parts = value.split(":");
                 if (parts.length >= 2) {

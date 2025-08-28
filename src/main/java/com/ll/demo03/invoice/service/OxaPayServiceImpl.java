@@ -3,6 +3,7 @@ package com.ll.demo03.invoice.service;
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
 import com.ll.demo03.invoice.controller.port.OxaPayService;
+import com.ll.demo03.invoice.controller.response.OxaPayInvoiceResponse;
 import com.ll.demo03.invoice.domain.Currency;
 import com.ll.demo03.invoice.domain.Invoice;
 import com.ll.demo03.invoice.service.port.InvoiceRepository;
@@ -11,20 +12,19 @@ import com.ll.demo03.member.service.port.MemberRepository;
 import com.ll.demo03.invoice.controller.request.OxaPayInvoiceRequest;
 import com.ll.demo03.invoice.controller.response.OxaPayStatusResponse;
 import com.ll.demo03.invoice.domain.Status;
-import com.ll.demo03.invoice.infrastructure.InvoiceJpaRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDateTime;
+import java.util.Map;
 
 @Service
+@Slf4j
 @Transactional
 @RequiredArgsConstructor
 public class OxaPayServiceImpl implements OxaPayService {
@@ -39,48 +39,56 @@ public class OxaPayServiceImpl implements OxaPayService {
     @Value("${oxapay.api.base-url:https://api.oxapay.com}")
     private String apiBaseUrl;
 
-    @Value("${server.domain:http://localhost:8080}")
+    @Value("${custom.webhook-url}")
     private String serverDomain;
 
+    @Value("${server.frontend}")
+    private String frontDomain;
+
     @Override
-    public void createInvoice(OxaPayInvoiceRequest request, Long memberId) {
-            Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+    public OxaPayInvoiceResponse createInvoice(OxaPayInvoiceRequest request, Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
-            String orderId = "ORD-" + System.currentTimeMillis();
+        String orderId = "ORD-" + System.currentTimeMillis();
 
-            JSONObject requestBody = new JSONObject();
-            requestBody.put("merchant", merchantApiKey);
-            requestBody.put("amount", request.getAmount());
-            requestBody.put("currency", request.getCurrency() != null ? request.getCurrency() : "TRX");
-            requestBody.put("orderId", orderId);
-            requestBody.put("description", "Purchase Credits");
-            requestBody.put("callbackUrl", serverDomain + "/api/oxapay/webhook");
-            requestBody.put("returnUrl", serverDomain + "/api/oxapay/success");
-            requestBody.put("lifeTime", 30);
-            requestBody.put("sandbox", true);
+        JSONObject requestBody = new JSONObject();
+        requestBody.put("merchant", merchantApiKey);
+        requestBody.put("amount", request.getAmount());
+        requestBody.put("currency", request.getCurrency() != null ? request.getCurrency() : "TRX");
+        requestBody.put("orderId", orderId);
+        requestBody.put("description", "Purchase Credits");
+        requestBody.put("callbackUrl", serverDomain + "/api/oxapay/webhook");
+        requestBody.put("returnUrl", frontDomain);
+        requestBody.put("lifeTime", 30);
+        requestBody.put("sandbox", true);
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
 
-            HttpEntity<JSONObject> entity = new HttpEntity<>(requestBody, headers);
+        HttpEntity<JSONObject> entity = new HttpEntity<>(requestBody, headers);
 
-            ResponseEntity<JSONObject> response = restTemplate.postForEntity(
+        ResponseEntity<JSONObject> response = restTemplate.postForEntity(
                 apiBaseUrl + "/merchants/request",
                 entity,
                 JSONObject.class
-            );
+        );
 
-            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                JSONObject responseBody = response.getBody();
-                String trackId = (String) responseBody.get("trackId");
+        if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+            JSONObject responseBody = response.getBody();
+            String trackId = (String) responseBody.get("trackId");
 
-                Invoice invoice = Invoice.from(trackId, member, request.getAmount(), Currency.valueOf(request.getCurrency()), Status.WAITING, LocalDateTime.now());
-                invoiceRepository.save(invoice);
+            Invoice invoice = Invoice.from(trackId, member, request.getAmount(),
+                    Currency.valueOf(request.getCurrency()), Status.WAITING, null);
+            invoiceRepository.save(invoice);
 
-            } else {
-                throw new CustomException(ErrorCode.PAYMENT_CONFIRMATION_FAILED);
-            }
+            return OxaPayInvoiceResponse.fromJsonObject(responseBody, response.getStatusCode().value());
+
+        } else {
+            return OxaPayInvoiceResponse.fromJsonObject(response.getBody(), response.getStatusCode().value());
+        }
     }
+
 
     @Override
     public OxaPayStatusResponse getPaymentStatus(String trackId, Long memberId) {
@@ -110,28 +118,34 @@ public class OxaPayServiceImpl implements OxaPayService {
 
     @Override
     public void handlePaymentCallback(Object callbackData) {
-        if (!(callbackData instanceof JSONObject json)) {
+        log.info("Received callback data: {}", callbackData);
+
+        if (!(callbackData instanceof Map<?, ?> callbackMap)) {
             throw new CustomException(ErrorCode.ENTITY_NOT_FOUND);
         }
 
-        String trackId = (String) json.get("trackId");
-        String status = (String) json.get("status");
-        Double paidAmount = Double.valueOf(json.getAsString("amount"));
+        String trackId = (String) callbackMap.get("trackId");
+        String status = (String) callbackMap.get("status");
+        String amountStr = (String) callbackMap.get("amount");
+        Double paidAmount = Double.valueOf(amountStr);
 
         Invoice invoice = invoiceRepository.findByTrackId(trackId).orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
-        if ("PAID".equalsIgnoreCase(status)) {
+        if ("Paid".equalsIgnoreCase(status)) {
             Member member = invoice.getMember();
 
-            member.increaseCredit(member.getCredit() + paidAmount.intValue());
+            int creditToAdd;
+            if (paidAmount.intValue() == 10) {
+                creditToAdd = 1100; // 10일 때만 특별 케이스
+            } else {
+                creditToAdd = paidAmount.intValue() * 100; // 그 외 일반 케이스
+            }
+
+            member.increaseCredit(member.getCredit() + creditToAdd);
             memberRepository.save(member);
 
-            invoice.updateStatus(Status.PAID);
-            invoiceRepository.save(invoice);
-        } else {
-            invoice.updateStatus(Status.FAILED);
-            invoiceRepository.save(invoice);
+            Invoice updatedInvoice = invoice.updateStatus(Status.PAID);
+            invoiceRepository.save(updatedInvoice);
         }
     }
-
 }

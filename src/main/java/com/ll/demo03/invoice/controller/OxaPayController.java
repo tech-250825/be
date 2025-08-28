@@ -5,6 +5,7 @@ import com.ll.demo03.invoice.controller.port.OxaPayService;
 import com.ll.demo03.oauth.domain.PrincipalDetails;
 import com.ll.demo03.invoice.controller.request.OxaPayInvoiceRequest;
 import com.ll.demo03.invoice.controller.response.OxaPayStatusResponse;
+import com.ll.demo03.invoice.controller.response.OxaPayInvoiceResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,14 +22,14 @@ public class OxaPayController {
     private final OxaPayService oxaPayService;
 
     @PostMapping("/invoice")
-    public GlobalResponse createInvoice(
+    public GlobalResponse<OxaPayInvoiceResponse> createInvoice(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestBody OxaPayInvoiceRequest request) {
         Long memberId = principalDetails.user().getId();
 
-        oxaPayService.createInvoice(request, memberId);
+        OxaPayInvoiceResponse response = oxaPayService.createInvoice(request, memberId);
 
-        return GlobalResponse.success();
+        return GlobalResponse.success(response);
     }
 
     @GetMapping("/status/{trackId}")
@@ -47,11 +48,5 @@ public class OxaPayController {
         oxaPayService.handlePaymentCallback(callbackData);
         
         return GlobalResponse.success();
-    }
-
-    @GetMapping("/success")
-    public String paymentSuccess(HttpServletRequest request) {
-        log.info("OxaPay payment success page accessed");
-        return "redirect:/payment-success";
     }
 }
