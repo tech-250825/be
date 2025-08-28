@@ -25,7 +25,7 @@ public class CookieUtils {
         cookie.setPath("/");
         cookie.setHttpOnly(true);
         cookie.setMaxAge(maxAge);
-        cookie.setDomain("katin.org");
+        // cookie.setDomain("katin.org");
         response.addCookie(cookie);
     }
 
@@ -38,7 +38,7 @@ public class CookieUtils {
                 cookie.setValue("");
                 cookie.setPath("/");
                 cookie.setMaxAge(0);
-                cookie.setDomain("katin.org");
+                // cookie.setDomain("katin.org");
                 response.addCookie(cookie);
             }
         }
