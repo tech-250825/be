@@ -63,7 +63,7 @@ public class OxaPayServiceImpl implements OxaPayService {
         requestBody.put("callbackUrl", serverDomain + "/api/oxapay/webhook");
         requestBody.put("returnUrl", frontDomain + "/home");
         requestBody.put("lifeTime", 30);
-        requestBody.put("sandbox", true);
+        requestBody.put("sandbox", false);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
