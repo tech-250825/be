@@ -141,7 +141,7 @@ public class OxaPayServiceImpl implements OxaPayService {
                 creditToAdd = paidAmount.intValue() * 100; // 그 외 일반 케이스
             }
 
-            member.increaseCredit(member.getCredit() + creditToAdd);
+            member.increaseCredit(creditToAdd);
             memberRepository.save(member);
 
             Invoice updatedInvoice = invoice.updateStatus(Status.PAID);
