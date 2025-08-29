@@ -48,7 +48,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 log.info("기본 리다이렉트 URI 사용: {}", redirectUri);
             }
 
-            addCookie(response, "_hoauth", accessToken, 604800);
+            addCookie(response, "_hoauth", accessToken, 604810);
             addCookie(response, "_hrauth", refreshToken, 604800);
 
             httpCookieOAuth2AuthorizationRequestRepository.removeAuthorizationRequestCookies(request, response);
