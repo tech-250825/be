@@ -59,7 +59,7 @@ public class OxaPayServiceImpl implements OxaPayService {
         requestBody.put("orderId", orderId);
         requestBody.put("description", "Purchase Credits");
         requestBody.put("callbackUrl", serverDomain + "/api/oxapay/webhook");
-        requestBody.put("returnUrl", frontDomain + "/payment/payment-close");
+        requestBody.put("returnUrl", frontDomain);
         requestBody.put("lifeTime", 30);
         requestBody.put("sandbox", true);
 
