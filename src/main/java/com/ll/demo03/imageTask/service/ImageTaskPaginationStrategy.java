@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+
 @Component
 public class ImageTaskPaginationStrategy implements CursorPaginationStrategy<ImageTask> {
     private final ImageTaskRepository taskRepository;
@@ -30,7 +31,7 @@ public class ImageTaskPaginationStrategy implements CursorPaginationStrategy<Ima
     public Slice<ImageTask> getFirstPage(Member member, CursorBasedPageable pageable) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         PageRequest pageRequest = PageRequest.of(0, pageable.getSize(), sort);
-        return taskRepository.findByMember(member, pageRequest);
+        return taskRepository.findByMemberAndImageUrlIsNull(member, pageRequest);
     }
 
     @Override
@@ -40,7 +41,7 @@ public class ImageTaskPaginationStrategy implements CursorPaginationStrategy<Ima
 
         Sort sort = Sort.by(Sort.Direction.ASC, "createdAt");
         PageRequest pageRequest = PageRequest.of(0, pageable.getSize(), sort);
-        Slice<ImageTask> taskPage = taskRepository.findCreatedAfter(member, cursorCreatedAt, pageRequest);
+        Slice<ImageTask> taskPage = taskRepository.findCreatedAfterAndImageUrlIsNull(member, cursorCreatedAt, pageRequest);
 
         List<ImageTask> reversed = new ArrayList<>(taskPage.getContent());
         Collections.reverse(reversed);
@@ -55,7 +56,7 @@ public class ImageTaskPaginationStrategy implements CursorPaginationStrategy<Ima
         Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
         PageRequest pageRequest = PageRequest.of(0, pageable.getSize(), sort);
 
-        return taskRepository.findCreatedBefore(member, cursorCreatedAt, pageRequest);
+        return taskRepository.findCreatedBeforeAndImageUrlIsNull(member, cursorCreatedAt, pageRequest);
     }
 
 
@@ -64,8 +65,8 @@ public class ImageTaskPaginationStrategy implements CursorPaginationStrategy<Ima
         ImageTask first = content.get(0);
         ImageTask last = content.get(content.size() - 1);
 
-        boolean hasPrev = taskRepository.existsByMemberAndCreatedAtGreaterThan(member, first.getCreatedAt());
-        boolean hasNext = taskRepository.existsByMemberAndCreatedAtLessThan(member, last.getCreatedAt());
+        boolean hasPrev = taskRepository.existsByMemberAndCreatedAtGreaterThanAndImageUrlIsNull(member, first.getCreatedAt());
+        boolean hasNext = taskRepository.existsByMemberAndCreatedAtLessThanAndImageUrlIsNull(member, last.getCreatedAt());
 
         String prevCursor = pageable.getEncodedCursor(first.getCreatedAt().toString(), hasPrev);
         String nextCursor = pageable.getEncodedCursor(last.getCreatedAt().toString(), hasNext);
@@ -73,4 +74,3 @@ public class ImageTaskPaginationStrategy implements CursorPaginationStrategy<Ima
         return new PageCursors(prevCursor, nextCursor);
     }
 }
-

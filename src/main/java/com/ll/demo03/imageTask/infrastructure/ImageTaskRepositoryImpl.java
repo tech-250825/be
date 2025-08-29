@@ -42,24 +42,39 @@ public class ImageTaskRepositoryImpl implements ImageTaskRepository {
     };
 
     @Override
-    public boolean existsByMemberAndCreatedAtGreaterThan(Member creator, LocalDateTime createdAt){
-        return jpaRepository.existsByMemberAndCreatedAtGreaterThan(MemberEntity.from(creator), createdAt);
+    public Slice<ImageTask> findByMemberAndImageUrlIsNull(Member creator, PageRequest pageRequest){
+        return jpaRepository.findByMemberAndImageUrlIsNull(MemberEntity.from(creator), pageRequest).map(ImageTaskEntity::toModel);
     };
 
     @Override
-    public boolean existsByMemberAndCreatedAtLessThan(Member creator, LocalDateTime createdAt){
-        return jpaRepository.existsByMemberAndCreatedAtLessThan(MemberEntity.from(creator), createdAt);
+    public boolean existsByMemberAndCreatedAtGreaterThanAndImageUrlIsNotNull(Member creator, LocalDateTime createdAt){
+        return jpaRepository.existsByMemberAndCreatedAtGreaterThanAndImageUrlIsNotNull(MemberEntity.from(creator), createdAt);
     };
 
     @Override
-    public Slice<ImageTask> findCreatedAfter(Member member, LocalDateTime createdAt, Pageable pageable) {
-        Specification<ImageTaskEntity> spec = SpecificationUtils.memberEqualsAndCreatedAfter("member", "createdAt", MemberEntity.from(member),createdAt);
+    public boolean existsByMemberAndCreatedAtGreaterThanAndImageUrlIsNull(Member creator, LocalDateTime createdAt){
+        return jpaRepository.existsByMemberAndCreatedAtGreaterThanAndImageUrlIsNull(MemberEntity.from(creator), createdAt);
+    };
+
+    @Override
+    public boolean existsByMemberAndCreatedAtLessThanAndImageUrlIsNotNull(Member creator, LocalDateTime createdAt){
+        return jpaRepository.existsByMemberAndCreatedAtLessThanAndImageUrlIsNotNull(MemberEntity.from(creator), createdAt);
+    };
+
+    @Override
+    public boolean existsByMemberAndCreatedAtLessThanAndImageUrlIsNull(Member creator, LocalDateTime createdAt){
+        return jpaRepository.existsByMemberAndCreatedAtLessThanAndImageUrlIsNull(MemberEntity.from(creator), createdAt);
+    };
+
+    @Override
+    public Slice<ImageTask> findCreatedAfterAndImageUrlIsNull(Member member, LocalDateTime createdAt, Pageable pageable) {
+        Specification<ImageTaskEntity> spec = SpecificationUtils.memberEqualsAndCreatedAfterAndImageUrlIsNull("member", "createdAt", "imageUrl", MemberEntity.from(member), createdAt);
         return jpaRepository.findAll(spec, pageable).map(ImageTaskEntity::toModel);
     }
 
     @Override
-    public Slice<ImageTask> findCreatedBefore(Member member, LocalDateTime createdAt, Pageable pageable) {
-        Specification<ImageTaskEntity> spec = SpecificationUtils.memberEqualsAndCreatedBefore("member", "createdAt", MemberEntity.from(member),createdAt);
+    public Slice<ImageTask> findCreatedBeforeAndImageUrlIsNull(Member member, LocalDateTime createdAt, Pageable pageable) {
+        Specification<ImageTaskEntity> spec = SpecificationUtils.memberEqualsAndCreatedBeforeAndImageUrlIsNull("member", "createdAt", "imageUrl", MemberEntity.from(member), createdAt);
         return jpaRepository.findAll(spec, pageable).map(ImageTaskEntity::toModel);
     }
 

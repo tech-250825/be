@@ -19,9 +19,15 @@ public interface ImageTaskJpaRepository extends JpaRepository<ImageTaskEntity, L
 
     Slice<ImageTaskEntity> findByMember(MemberEntity creator, PageRequest pageRequest);
 
-    boolean existsByMemberAndCreatedAtGreaterThan(MemberEntity creator, LocalDateTime createdAt);
+    Slice<ImageTaskEntity> findByMemberAndImageUrlIsNull(MemberEntity creator, PageRequest pageRequest);
 
-    boolean existsByMemberAndCreatedAtLessThan(MemberEntity creator, LocalDateTime createdAt);
+    boolean existsByMemberAndCreatedAtGreaterThanAndImageUrlIsNotNull(MemberEntity creator, LocalDateTime createdAt);
+
+    boolean existsByMemberAndCreatedAtGreaterThanAndImageUrlIsNull(MemberEntity creator, LocalDateTime createdAt);
+
+    boolean existsByMemberAndCreatedAtLessThanAndImageUrlIsNotNull(MemberEntity creator, LocalDateTime createdAt);
+
+    boolean existsByMemberAndCreatedAtLessThanAndImageUrlIsNull(MemberEntity creator, LocalDateTime createdAt);
 
     Slice<ImageTaskEntity> findByMemberAndImageUrlIsNotNull(MemberEntity member, PageRequest pageRequest);
 

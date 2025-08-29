@@ -32,7 +32,7 @@ public class ImageTaskResponseConverter implements ResponseConverter<ImageTask, 
         if (!completedTasks.isEmpty()) {
             taskImageMap = ugcRepository.findByImageTaskIn(completedTasks)
                     .stream()
-    //                .collect(Collectors.groupingBy(UGC::getImageTask)); UGC::getImageTask()가 equals()/hashCode() 구현이 없어서 Map 키 매핑에 실패 ..DB에서 조회된 imageTask는 영속 개체인데 tasks 리스트의 ImageTask는 다른 객체로 메모리상 같지 않음
+                    //                .collect(Collectors.groupingBy(UGC::getImageTask)); UGC::getImageTask()가 equals()/hashCode() 구현이 없어서 Map 키 매핑에 실패 ..DB에서 조회된 imageTask는 영속 개체인데 tasks 리스트의 ImageTask는 다른 객체로 메모리상 같지 않음
                     .collect(Collectors.groupingBy(ugc -> ugc.getImageTask().getId()));
         }
 
@@ -52,4 +52,3 @@ public class ImageTaskResponseConverter implements ResponseConverter<ImageTask, 
         return responses;
     }
 }
-
