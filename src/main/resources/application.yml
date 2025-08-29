@@ -71,7 +71,7 @@ logging:
     org.springframework.security: DEBUG
 #    org.hibernate.SQL: DEBUG
 custom:
-  webhook-url: https://e10be22101e8.ngrok-free.app
+  webhook-url: https://180ede33d0e7.ngrok-free.app
   site:
     name: "My Site Prod"
 
