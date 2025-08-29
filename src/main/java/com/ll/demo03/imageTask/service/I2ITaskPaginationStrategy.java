@@ -62,8 +62,8 @@ public class I2ITaskPaginationStrategy implements CursorPaginationStrategy<Image
         ImageTask first = content.get(0);
         ImageTask last = content.get(content.size() - 1);
 
-        boolean hasPrev = taskRepository.existsByMemberAndCreatedAtGreaterThan(member, first.getCreatedAt());
-        boolean hasNext = taskRepository.existsByMemberAndCreatedAtLessThan(member, last.getCreatedAt());
+        boolean hasPrev = taskRepository.existsByMemberAndCreatedAtGreaterThanAndImageUrlIsNotNull(member, first.getCreatedAt());
+        boolean hasNext = taskRepository.existsByMemberAndCreatedAtLessThanAndImageUrlIsNotNull(member, last.getCreatedAt());
 
         String prevCursor = pageable.getEncodedCursor(first.getCreatedAt().toString(), hasPrev);
         String nextCursor = pageable.getEncodedCursor(last.getCreatedAt().toString(), hasNext);

@@ -36,4 +36,20 @@ public class SpecificationUtils {
                 cb.isNotNull(root.get(imageUrlField))
         );
     }
+
+    public static <T> Specification<T> memberEqualsAndCreatedAfterAndImageUrlIsNull(String memberField, String createdAtField, String imageUrlField, MemberEntity member, LocalDateTime createdAt) {
+        return (root, query, cb) -> cb.and(
+                cb.equal(root.get(memberField), member),
+                cb.greaterThan(root.get(createdAtField), createdAt),
+                cb.isNull(root.get(imageUrlField))
+        );
+    }
+
+    public static <T> Specification<T> memberEqualsAndCreatedBeforeAndImageUrlIsNull(String memberField, String createdAtField, String imageUrlField, MemberEntity member, LocalDateTime createdAt) {
+        return (root, query, cb) -> cb.and(
+                cb.equal(root.get(memberField), member),
+                cb.lessThan(root.get(createdAtField), createdAt),
+                cb.isNull(root.get(imageUrlField))
+        );
+    }
 }

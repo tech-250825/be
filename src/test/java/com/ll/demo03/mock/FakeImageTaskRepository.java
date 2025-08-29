@@ -31,16 +31,71 @@ public class FakeImageTaskRepository implements ImageTaskRepository {
         return getSlice(filtered, pageRequest);
     }
 
+
     @Override
-    public boolean existsByMemberAndCreatedAtGreaterThan(Member creator, LocalDateTime createdAt) {
-        return storage.values().stream()
-                .anyMatch(task -> task.getCreator().getId().equals(creator.getId()) && task.getCreatedAt().isAfter(createdAt));
+    public Slice<ImageTask> findByMemberAndImageUrlIsNull(Member creator, PageRequest pageRequest) {
+        List<ImageTask> filtered = storage.values().stream()
+                .filter(task -> task.getCreator().getId().equals(creator.getId()) && task.getImageUrl() == null)
+                .sorted(Comparator.comparing(ImageTask::getCreatedAt).reversed())
+                .collect(Collectors.toList());
+
+        return getSlice(filtered, pageRequest);
     }
 
     @Override
-    public boolean existsByMemberAndCreatedAtLessThan(Member creator, LocalDateTime createdAt) {
+    public Slice<ImageTask> findCreatedAfterAndImageUrlIsNull(Member member, LocalDateTime createdAt, Pageable pageable) {
+        List<ImageTask> filtered = storage.values().stream()
+                .filter(task -> task.getCreator().getId().equals(member.getId()) 
+                        && task.getCreatedAt().isAfter(createdAt) 
+                        && task.getImageUrl() == null)
+                .sorted(Comparator.comparing(ImageTask::getCreatedAt).reversed())
+                .collect(Collectors.toList());
+
+        return getSlice(filtered, pageable);
+    }
+
+    @Override
+    public Slice<ImageTask> findCreatedBeforeAndImageUrlIsNull(Member member, LocalDateTime createdAt, Pageable pageable) {
+        List<ImageTask> filtered = storage.values().stream()
+                .filter(task -> task.getCreator().getId().equals(member.getId()) 
+                        && task.getCreatedAt().isBefore(createdAt) 
+                        && task.getImageUrl() == null)
+                .sorted(Comparator.comparing(ImageTask::getCreatedAt).reversed())
+                .collect(Collectors.toList());
+
+        return getSlice(filtered, pageable);
+    }
+
+    @Override
+    public boolean existsByMemberAndCreatedAtGreaterThanAndImageUrlIsNull(Member creator, LocalDateTime createdAt) {
         return storage.values().stream()
-                .anyMatch(task -> task.getCreator().getId().equals(creator.getId()) && task.getCreatedAt().isBefore(createdAt));
+                .anyMatch(task -> task.getCreator().getId().equals(creator.getId()) 
+                        && task.getCreatedAt().isAfter(createdAt) 
+                        && task.getImageUrl() == null);
+    }
+
+    @Override
+    public boolean existsByMemberAndCreatedAtLessThanAndImageUrlIsNull(Member creator, LocalDateTime createdAt) {
+        return storage.values().stream()
+                .anyMatch(task -> task.getCreator().getId().equals(creator.getId()) 
+                        && task.getCreatedAt().isBefore(createdAt) 
+                        && task.getImageUrl() == null);
+    }
+
+    @Override
+    public boolean existsByMemberAndCreatedAtGreaterThanAndImageUrlIsNotNull(Member creator, LocalDateTime createdAt) {
+        return storage.values().stream()
+                .anyMatch(task -> task.getCreator().getId().equals(creator.getId()) 
+                        && task.getCreatedAt().isAfter(createdAt) 
+                        && task.getImageUrl() != null);
+    }
+
+    @Override
+    public boolean existsByMemberAndCreatedAtLessThanAndImageUrlIsNotNull(Member creator, LocalDateTime createdAt) {
+        return storage.values().stream()
+                .anyMatch(task -> task.getCreator().getId().equals(creator.getId()) 
+                        && task.getCreatedAt().isBefore(createdAt) 
+                        && task.getImageUrl() != null);
     }
 
     @Override
@@ -65,25 +120,6 @@ public class FakeImageTaskRepository implements ImageTaskRepository {
         return saved;
     }
 
-    @Override
-    public Slice<ImageTask> findCreatedAfter(Member member, LocalDateTime createdAt, Pageable pageable) {
-        List<ImageTask> filtered = storage.values().stream()
-                .filter(task -> task.getCreator().getId().equals(member.getId()) && task.getCreatedAt().isAfter(createdAt))
-                .sorted(Comparator.comparing(ImageTask::getCreatedAt).reversed())
-                .collect(Collectors.toList());
-
-        return getSlice(filtered, pageable);
-    }
-
-    @Override
-    public Slice<ImageTask> findCreatedBefore(Member member, LocalDateTime createdAt, Pageable pageable) {
-        List<ImageTask> filtered = storage.values().stream()
-                .filter(task -> task.getCreator().getId().equals(member.getId()) && task.getCreatedAt().isBefore(createdAt))
-                .sorted(Comparator.comparing(ImageTask::getCreatedAt).reversed())
-                .collect(Collectors.toList());
-
-        return getSlice(filtered, pageable);
-    }
 
     @Override
     public Optional<ImageTask> findById(Long taskId) {
