@@ -3,6 +3,7 @@ package com.ll.demo03.invoice.service;
 import com.ll.demo03.global.error.ErrorCode;
 import com.ll.demo03.global.exception.CustomException;
 import com.ll.demo03.invoice.controller.port.OxaPayService;
+import com.ll.demo03.invoice.controller.response.InvoiceListResponse;
 import com.ll.demo03.invoice.controller.response.OxaPayInvoiceResponse;
 import com.ll.demo03.invoice.domain.Currency;
 import com.ll.demo03.invoice.domain.Invoice;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -147,5 +149,15 @@ public class OxaPayServiceImpl implements OxaPayService {
             Invoice updatedInvoice = invoice.updateStatus(Status.PAID);
             invoiceRepository.save(updatedInvoice);
         }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<InvoiceListResponse> getPaidInvoices(Long memberId) {
+        memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+
+        List<Invoice> paidInvoices = invoiceRepository.findByMemberIdAndStatus(memberId, Status.PAID);
+        return InvoiceListResponse.from(paidInvoices);
     }
 }

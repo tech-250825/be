@@ -1,10 +1,12 @@
 package com.ll.demo03.invoice.infrastructure;
 
 import com.ll.demo03.invoice.domain.Invoice;
+import com.ll.demo03.invoice.domain.Status;
 import com.ll.demo03.invoice.service.port.InvoiceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -22,5 +24,12 @@ public class InvoiceRepositoryImpl implements InvoiceRepository {
     public Optional<Invoice> findByTrackId(String trackId) {
         return invoiceJpaRepository.findByTrackId(trackId)
                 .map(InvoiceEntity::toModel);
+    }
+
+    @Override
+    public List<Invoice> findByMemberIdAndStatus(Long memberId, Status status) {
+        return invoiceJpaRepository.findByMemberIdAndStatus(memberId, status).stream()
+                .map(InvoiceEntity::toModel)
+                .toList();
     }
 }
