@@ -4,14 +4,16 @@ import com.ll.demo03.global.dto.GlobalResponse;
 import com.ll.demo03.invoice.controller.port.OxaPayService;
 import com.ll.demo03.oauth.domain.PrincipalDetails;
 import com.ll.demo03.invoice.controller.request.OxaPayInvoiceRequest;
+import com.ll.demo03.invoice.controller.response.InvoiceListResponse;
 import com.ll.demo03.invoice.controller.response.OxaPayStatusResponse;
 import com.ll.demo03.invoice.controller.response.OxaPayInvoiceResponse;
+
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/oxapay")
@@ -39,6 +41,16 @@ public class OxaPayController {
         Long memberId = principalDetails.user().getId();
 
         OxaPayStatusResponse response = oxaPayService.getPaymentStatus(trackId, memberId);
+
+        return GlobalResponse.success(response);
+    }
+
+    @GetMapping("/invoices")
+    public GlobalResponse<List<InvoiceListResponse>> getPaidInvoices(
+            @AuthenticationPrincipal PrincipalDetails principalDetails) {
+        Long memberId = principalDetails.user().getId();
+
+        List<InvoiceListResponse> response = oxaPayService.getPaidInvoices(memberId);
 
         return GlobalResponse.success(response);
     }
